@@ -14,3 +14,15 @@ V1.0.0 (24/08/20):
   * Added package.json
   * Added support for TelegramBot (auto send notification on new update)
   * Added NPM_UDPATE support (for npm @bugsounet/npmcheck library)
+  
+  Configuration sample is the same as the default module
+```js
+{
+  module: "MMM-UpdateNotification",
+  position: "top_bar",	// This can be any of the regions.
+  config: {
+    // The config property is optional.
+    // See 'Configuration options' for more information.
+  }
+},
+ ```
