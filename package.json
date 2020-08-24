@@ -1,0 +1,19 @@
+{
+  "name": "MMM-UpdateNotification",
+  "version": "1.0.0",
+  "description": "Update notification",
+  "main": "MMM-UpdateNotification.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bugsounet/MMM-UpdateNotification"
+  },
+  "author": [
+    "Michael Teeuw",
+    "@bugsounet"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bugsounet/MMM-UpdateNotification/issues"
+  },
+  "homepage": "https://github.com/bugsounet/MMM-UpdateNotification"
+}
