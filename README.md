@@ -7,6 +7,7 @@ For configuration options, please check the [MagicMirror² documentation](https:
 
 ---
 This module is a Fork of `Update Notication` default module of MagicMirror
+
 All credit to `Michael Teeuw https://michaelteeuw.nl` and not to me :)
 
 V1.0.0 (24/08/20):
