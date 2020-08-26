@@ -83,14 +83,15 @@ Module.register("MMM-UpdateNotification", {
   // Override dom generator.
   getDom: function () {
     var wrapper = document.createElement("div")
-    if (this.suspended === false) {
-      // process the hash of module info found
-      for (var key of Object.keys(this.moduleList)) {
-        if (typeof this.notiTB[key] === "undefined") {
-          this.notiTB[key] = true
-        }
-        let m = this.moduleList[key]
+    // process the hash of module info found
+    for (var key of Object.keys(this.moduleList)) {
+      if (typeof this.notiTB[key] === "undefined") {
+        this.notiTB[key] = true
+      }
+      let m = this.moduleList[key]
+      var updateInfoKeyName = m.behind === 1 ? "UPDATE_INFO_SINGLE" : "UPDATE_INFO_MULTIPLE"
 
+      if (this.suspended === false) {
         var message = document.createElement("div")
         message.className = "small bright"
 
@@ -99,8 +100,7 @@ Module.register("MMM-UpdateNotification", {
         icon.innerHTML = "&nbsp;"
         message.appendChild(icon)
 
-        var updateInfoKeyName = m.behind === 1 ? "UPDATE_INFO_SINGLE" : "UPDATE_INFO_MULTIPLE"
-
+        //var updateInfoKeyName = m.behind === 1 ? "UPDATE_INFO_SINGLE" : "UPDATE_INFO_MULTIPLE"
         var subtextHtml = this.translate(updateInfoKeyName, {
           COMMIT_COUNT: m.behind,
           BRANCH_NAME: m.current
@@ -122,25 +122,29 @@ Module.register("MMM-UpdateNotification", {
         subtext.innerHTML = subtextHtml
         subtext.className = "xsmall dimmed"
         wrapper.appendChild(subtext)
-
-        if (this.notiTB[key]) {
-          let TB = null
-          if (m.module === "default") {
-            TB = this.translate("UPDATE_NOTIFICATION")
-          } else {
-            TB = this.translate("UPDATE_NOTIFICATION_MODULE", { MODULE_NAME: m.module }) + "\n"
-          }
-          TB += this.translate(updateInfoKeyName, { COMMIT_COUNT: m.behind, BRANCH_NAME: m.current }) + "\n"
-          console.log("[UPDATE] ", TB)
-          this.sendNotification("TELBOT_TELL_ADMIN", TB)
-          this.notiTB[key] = false
-        }
       }
-      for (var key of Object.keys(this.npmList)) {
-        if (typeof this.notiTB[key] === "undefined") {
-          this.notiTB[key] = true
+
+      /** send a noti wia telegram **/
+      if (this.notiTB[key]) {
+        let TB = null
+        if (m.module === "default") {
+          TB = this.translate("UPDATE_NOTIFICATION")
+        } else {
+          TB = this.translate("UPDATE_NOTIFICATION_MODULE", { MODULE_NAME: m.module }) + "\n"
         }
-        let npm = this.npmList[key]
+        TB += this.translate(updateInfoKeyName, { COMMIT_COUNT: m.behind, BRANCH_NAME: m.current }) + "\n"
+        console.log("[UPDATE] ", TB)
+        this.sendNotification("TELBOT_TELL_ADMIN", TB)
+        this.notiTB[key] = false
+      }
+    }
+    for (var key of Object.keys(this.npmList)) {
+      if (typeof this.notiTB[key] === "undefined") {
+        this.notiTB[key] = true
+      }
+      let npm = this.npmList[key]
+
+      if (this.suspended === false) {
         var message = document.createElement("div")
         message.className = "small bright"
 
@@ -163,16 +167,18 @@ Module.register("MMM-UpdateNotification", {
         subtext.innerHTML = subtextHtml
         subtext.className = "xsmall dimmed"
         wrapper.appendChild(subtext)
-        /** send a noti wia telegram **/
-        if (this.notiTB[key]) {
-          let TB = this.translate("UPDATE_NOTIFICATION_MODULE", { MODULE_NAME: npm.module }) + "\n"
-          TB += "[NPM] " + npm.library + " v" + npm.installed +" -> v" + npm.latest + "\n"
-          this.sendNotification("TELBOT_TELL_ADMIN", TB)
-          console.log("[UPDATE] ", TB)
-          this.notiTB[key] = false
-        }
+      }
+
+      /** send a noti wia telegram **/
+      if (this.notiTB[key]) {
+        let TB = this.translate("UPDATE_NOTIFICATION_MODULE", { MODULE_NAME: npm.module }) + "\n"
+        TB += "[NPM] " + npm.library + " v" + npm.installed +" -> v" + npm.latest + "\n"
+        this.sendNotification("TELBOT_TELL_ADMIN", TB)
+        console.log("[UPDATE] ", TB)
+        this.notiTB[key] = false
       }
     }
+
     return wrapper
   },
 
