@@ -12,6 +12,11 @@ All credit to `Michael Teeuw https://michaelteeuw.nl` and not to me :)
 
 I have just added TelegramBot notification and NPM Check result for my mpn libraries
 
+Updates:
+
+V1.0.1 (26/08/20):
+  * Send TelegramBot notification when module is disabled too
+
 V1.0.0 (25/08/20):
   * Added package.json
   * Added support for TelegramBot (auto send notification on new update)
