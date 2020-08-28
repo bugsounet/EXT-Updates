@@ -78,6 +78,7 @@ module.exports = NodeHelper.create({
   },
 
   performFetch: function () {
+    console.log("fetch.. info")
     simpleGits.forEach((sg) => {
       sg.git.fetch().status((err, data) => {
         data.module = sg.module
@@ -86,6 +87,7 @@ module.exports = NodeHelper.create({
             if (!err && data2.latest && "hash" in data2.latest) {
               data.hash = data2.latest.hash
               this.sendSocketNotification("STATUS", data)
+              console.log("send satus", data)
             }
           })
         }

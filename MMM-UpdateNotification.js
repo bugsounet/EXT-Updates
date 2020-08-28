@@ -58,12 +58,14 @@ Module.register("MMM-UpdateNotification", {
       this.sendSocketNotification("MODULES", Module.definitions)
     }
     if (notification === "NPM_UPDATE") {
+      console.log("npm", payload)
       this.updateUI(payload)
     }
   },
 
   socketNotificationReceived: function (notification, payload) {
     if (notification === "STATUS") {
+      console.log("modules", payload)
       this.updateUI(payload)
     }
     if (notification === "UPDATED") {
