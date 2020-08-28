@@ -216,7 +216,7 @@ Module.register("MMM-UpdateNotification", {
           console.log("[UPDATE] ", TB)
         }
         if (this.config.update.autoUpdate && !this.updating) {
-          this.updateProcess(mpn.module)
+          this.updateProcess(npm.module)
           this.updating = true
         }
         this.notiTB[key] = false
