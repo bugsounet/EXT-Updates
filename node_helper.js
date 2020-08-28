@@ -10,7 +10,6 @@ const defaultModules = require(__dirname + "/../default/defaultmodules.js")
 const Log = require(__dirname + "/../../js/logger.js")
 const NodeHelper = require("node_helper")
 var exec = require('child_process').exec
-var spawn = require('child_process').spawn
 
 module.exports = NodeHelper.create({
   config: {},
@@ -79,34 +78,34 @@ module.exports = NodeHelper.create({
   },
 
   performFetch: function () {
-    console.log("fetch.. info")
+    var self = this;
     simpleGits.forEach((sg) => {
       sg.git.fetch().status((err, data) => {
-        data.module = sg.module
+        data.module = sg.module;
         if (!err) {
           sg.git.log({ "-1": null }, (err, data2) => {
             if (!err && data2.latest && "hash" in data2.latest) {
-              data.hash = data2.latest.hash
-              this.sendSocketNotification("STATUS", data)
-              console.log("send satus", data)
+              data.hash = data2.latest.hash;
+              self.sendSocketNotification("STATUS", data);
             }
-          })
+          });
         }
-      })
-    })
+      });
+    });
 
-    this.scheduleNextFetch(this.config.updateInterval)
+    this.scheduleNextFetch(this.config.updateInterval);
   },
 
   scheduleNextFetch: function (delay) {
     if (delay < 60 * 1000) {
-      delay = 60 * 1000
+      delay = 60 * 1000;
     }
 
-    clearTimeout(this.updateTimer)
-    this.updateTimer = setTimeout(() => {
-      this.performFetch()
-    }, delay)
+    var self = this;
+    clearTimeout(this.updateTimer);
+    this.updateTimer = setTimeout(function () {
+      self.performFetch();
+    }, delay);
   },
 
   ignoreUpdateChecking: function (moduleName) {

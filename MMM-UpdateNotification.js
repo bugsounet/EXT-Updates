@@ -42,15 +42,16 @@ Module.register("MMM-UpdateNotification", {
   notiTB: {},
 
   start: function () {
+    var self = this;
     console.log("[UPDATE] Start MMM-UpdateNotification")
     this.config = configMerge({}, this.defaults, this.config)
     this.suspended = !this.config.notification.useScreen
     this.updating = false
     setInterval(() => {
-      this.moduleList = {}
-      this.npmList = {}
-      this.updateDom(2)
-    }, this.config.refreshInterval)
+      self.moduleList = {}
+      self.npmList = {}
+      self.updateDom(2)
+    }, self.config.refreshInterval)
   },
 
   notificationReceived: function (notification, payload, sender) {
@@ -84,17 +85,18 @@ Module.register("MMM-UpdateNotification", {
   },
 
   updateUI: function (payload) {
+    var self = this;
     if (payload) {
       if (payload.installed && payload.latest && payload.library) {
         this.npmList[payload.library + " [" + payload.module +"]"] = payload
-        this.updateDom(2)
+        self.updateDom(2);
       }
       else if (payload.behind > 0) {
         // if we haven't seen info for this module
         if (this.moduleList[payload.module] === undefined) {
           // save it
           this.moduleList[payload.module] = payload
-          this.updateDom(2)
+          self.updateDom(2);
         }
       } else if (payload.behind === 0) {
         // if the module WAS in the list, but shouldn't be
@@ -105,7 +107,7 @@ Module.register("MMM-UpdateNotification", {
         if (this.moduleList[payload.module] !== undefined) {
           // remove it
           delete this.moduleList[payload.module]
-          this.updateDom(2)
+          self.updateDom(2);
         }
       }
     }
