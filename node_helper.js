@@ -8,6 +8,8 @@ const path = require("path")
 const defaultModules = require(__dirname + "/../default/defaultmodules.js")
 const Log = require(__dirname + "/../../js/logger.js")
 const NodeHelper = require("node_helper")
+var exec = require('child_process').exec
+var spawn = require('child_process').spawn
 
 module.exports = NodeHelper.create({
   config: {},
@@ -57,6 +59,7 @@ module.exports = NodeHelper.create({
         this.configureModules(payload).then(() => this.performFetch())
       }
     }
+    if (notification == "UPDATE") this.updateProcess(payload)
   },
 
   resolveRemote: function (moduleName, moduleFolder) {
@@ -116,5 +119,54 @@ module.exports = NodeHelper.create({
 
     // The rest of the modules that passes should check for updates
     return false
+  },
+
+  /** update **/
+  updateProcess: function (module) {
+    var Path = path.normalize(__dirname + "/../")
+    var modulePath = Path + module
+    var Command= "git pull && npm install"
+    this.config.updateCommands.forEach(updateCommand => {
+      if (updateCommand.module == module) Command = updateCommand.command
+    })
+
+    exec(Command, {cwd : modulePath } , (error, stdout, stderr) => {
+      if (error) {
+        console.error(`[UN] exec error: ${error}`);
+        this.sendSocketNotification("SendResult", error.toString())
+        this.sendSocketNotification("ERROR_UPDATE" , module)
+        return
+      }
+      console.log(`[UN] output stdout: ${stdout}`);
+      if (!error) {
+        this.sendSocketNotification("SendResult", stdout.toString())
+        this.sendSocketNotification("UPDATED" , module)
+        console.log("[NU] Process update done! You are so lazy :)))")
+        if (this.config.update.autoUpdate || this.config.update.autoRestart) this.restartMM()
+      }
+    });
+
+  },
+
+  restartMM: function() {
+    if (this.config.update.usePM2) {
+      exec ("pm2 restart " + this.config.update.PM2Name, (err,stdo,stde) => {
+        if (err) {
+          console.log("[NU] " + err)
+          this.sendSocketNotification("SendResult", err.toString())
+        }
+      })
+    }
+    else {
+      var Path = path.normalize(__dirname + "/../MMM-UpdateNotification")
+      console.log("Pid:", process.pid)
+      // don't work i will try another method...
+
+      //spawn("sh", ["restart.sh", process.pid ], { shell: true, cwd: Path }) //(error, stdout, stderr) => {
+       //if (error) console.error(`[UN] exec error: ${error}`)
+       //else console.log("no error") //process.abort()
+       //console.log(`[UN] output stdout: ${stdout}`)
+      //})
+    }
   }
 });

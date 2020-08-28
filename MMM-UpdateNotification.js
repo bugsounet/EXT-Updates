@@ -12,7 +12,27 @@ Module.register("MMM-UpdateNotification", {
   defaults: {
     updateInterval: 60 * 1000, // every 10 minutes
     refreshInterval: 24 * 60 * 60 * 1000, // one day
-    ignoreModules: []
+    ignoreModules: [],
+    updateCommands: [
+      {
+        module: "MMM-GoogleAssistant",
+        command: "npm run update -- without-prompt"
+      },
+      {
+        module: "MMM-Assistant2Display",
+        command: "npm run update -- without-prompt"
+      }
+    ],
+    notification: {
+      useTelegramBot: false,
+      useScreen: true
+    },
+    update: {
+      autoUpdate: true,
+      autoRestart: true,
+      usePM2: true, // only coded true
+      PM2Name: "0"
+    }
   },
 
   suspended: false,
@@ -22,6 +42,9 @@ Module.register("MMM-UpdateNotification", {
 
   start: function () {
     console.log("[UPDATE] Start MMM-UpdateNotification")
+    this.config = configMerge({}, this.defaults, this.config)
+    this.suspended = !this.config.notification.useScreen
+    this.updating = false
     setInterval(() => {
       this.moduleList = {}
       this.npmList = {}
@@ -43,10 +66,21 @@ Module.register("MMM-UpdateNotification", {
     if (notification === "STATUS") {
       this.updateUI(payload)
     }
+    if (notification === "UPDATED") {
+      this.updating = false
+      this.sendNotification("TELBOT_TELL_ADMIN", "Update done with success: " + payload)
+    }
+    if (notification === "ERROR_UPDATE") {
+      this.updating = false
+      this.sendNotification("TELBOT_TELL_ADMIN", "Update Error: " + payload)
+    }
+    if (notification === "SendResult") {
+      this.updating = false
+      this.sendNotification("TELBOT_TELL_ADMIN", payload)
+    }
   },
 
   updateUI: function (payload) {
-
     if (payload) {
       if (payload.installed && payload.latest && payload.library) {
         this.npmList[payload.library + " [" + payload.module +"]"] = payload
@@ -126,15 +160,21 @@ Module.register("MMM-UpdateNotification", {
 
       /** send a noti wia telegram **/
       if (this.notiTB[key]) {
-        let TB = null
-        if (m.module === "default") {
-          TB = this.translate("UPDATE_NOTIFICATION")
-        } else {
-          TB = this.translate("UPDATE_NOTIFICATION_MODULE", { MODULE_NAME: m.module }) + "\n"
+        if (this.config.notification.useTelegramBot) {
+          let TB = null
+          if (m.module === "default") {
+            TB = this.translate("UPDATE_NOTIFICATION")
+          } else {
+            TB = this.translate("UPDATE_NOTIFICATION_MODULE", { MODULE_NAME: m.module }) + "\n"
+          }
+          TB += this.translate(updateInfoKeyName, { COMMIT_COUNT: m.behind, BRANCH_NAME: m.current }) + "\n"
+          console.log("[UPDATE] ", TB)
+          this.sendNotification("TELBOT_TELL_ADMIN", TB)
         }
-        TB += this.translate(updateInfoKeyName, { COMMIT_COUNT: m.behind, BRANCH_NAME: m.current }) + "\n"
-        console.log("[UPDATE] ", TB)
-        this.sendNotification("TELBOT_TELL_ADMIN", TB)
+        if (this.config.update.autoUpdate && !this.updating) {
+          this.updateProcess(m.module)
+          this.updating = true
+        }
         this.notiTB[key] = false
       }
     }
@@ -156,9 +196,7 @@ Module.register("MMM-UpdateNotification", {
         var subtextHtml = "[NPM] " + npm.library + " v" + npm.installed +" --> v" + npm.latest
 
         var text = document.createElement("span")
-        text.innerHTML = this.translate("UPDATE_NOTIFICATION_MODULE", {
-            MODULE_NAME: npm.module
-          })
+        text.innerHTML = this.translate("UPDATE_NOTIFICATION_MODULE", { MODULE_NAME: npm.module })
 
         message.appendChild(text)
         wrapper.appendChild(message)
@@ -171,10 +209,16 @@ Module.register("MMM-UpdateNotification", {
 
       /** send a noti wia telegram **/
       if (this.notiTB[key]) {
-        let TB = this.translate("UPDATE_NOTIFICATION_MODULE", { MODULE_NAME: npm.module }) + "\n"
-        TB += "[NPM] " + npm.library + " v" + npm.installed +" -> v" + npm.latest + "\n"
-        this.sendNotification("TELBOT_TELL_ADMIN", TB)
-        console.log("[UPDATE] ", TB)
+        if (this.config.notification.useTelegramBot) {
+          let TB = this.translate("UPDATE_NOTIFICATION_MODULE", { MODULE_NAME: npm.module }) + "\n"
+          TB += "[NPM] " + npm.library + " v" + npm.installed +" -> v" + npm.latest + "\n"
+          this.sendNotification("TELBOT_TELL_ADMIN", TB)
+          console.log("[UPDATE] ", TB)
+        }
+        if (this.config.update.autoUpdate && !this.updating) {
+          this.updateProcess(mpm.module)
+          this.updating = true
+        }
         this.notiTB[key] = false
       }
     }
@@ -186,7 +230,84 @@ Module.register("MMM-UpdateNotification", {
     this.suspended = true
   },
   resume: function () {
-    this.suspended = false
-    this.updateDom(2)
+    if (this.config.notification.useScreen) {
+      this.suspended = false
+      this.updateDom(2)
+    }
+  },
+
+  /** Update from Telegram **/
+  getCommands: function(commander) {
+    commander.add({
+      command: "update",
+      description: "update command manager",
+      callback: "Update"
+    })
+  },
+
+  getTranslations: function() {
+    return {
+      en: "translations/en.json",
+      fr: "translations/fr.json",
+      it: "translations/it.json",
+      de: "translations/de.json",
+    }
+  },
+
+  getScripts: function () {
+    return [
+     "configMerge.min.js"
+    ]
+  },
+
+  /** TelegramBot Commands **/
+
+  Update: function(command, handler) {
+    if (this.updating) handler.reply("TEXT", "Please wait update in progress !")
+    if (handler.args) {
+      var found = false
+      /** update process **/
+      for (let [name, value] of Object.entries(this.notiTB)) {
+        if (this.updating) return
+        if (name) {
+          if ((this.npmList[name] && this.npmList[name].module == handler.args) || (this.moduleList[name] && this.moduleList[name].module == handler.args)) {
+            found = true
+            this.updating = true
+            handler.reply("TEXT", "Updating: " + handler.args)
+            return this.updateProcess(handler.args)
+          }
+        }
+      }
+      if (!found) handler.reply("TEXT", "Module not found:" + handler.args)
+    }
+    else {
+      /** List of all update **/
+      var updateTxt = ""
+      for (let [name, value] of Object.entries(this.notiTB)) {
+        if (name) {
+          if (this.npmList[name]) {
+            updateTxt += "- *" + this.npmList[name].module + "*: " + this.npmList[name].library + " v" + this.npmList[name].installed + " --> v" +  this.npmList[name].latest + "\n"
+          }
+          else if (this.moduleList[name]) {
+            if (this.moduleList[name].module === "default") {
+              updateTxt += "- *MagicMirror²*: "
+            } else {
+              updateTxt += "- *" + this.moduleList[name].module + "*: "
+            }
+            var updateInfoKeyName = this.moduleList[name].behind === 1 ? "UPDATE_INFO_SINGLE" : "UPDATE_INFO_MULTIPLE"
+            updateTxt += this.translate(updateInfoKeyName, { COMMIT_COUNT: this.moduleList[name].behind, BRANCH_NAME: this.moduleList[name].current }) + "\n"
+          }
+        }
+      }
+      if (updateTxt) {
+        updateTxt += "\n"+ this.translate("UPDATE_HELPTB")
+        handler.reply("TEXT", this.translate("UPDATE_TB") + "\n" + updateTxt, {parse_mode:'Markdown'})
+      }
+      else handler.reply("TEXT", this.translate("NOUPDATE_TB"), {parse_mode:'Markdown'})
+    }
+  },
+
+  updateProcess(module) {
+    this.sendSocketNotification("UPDATE", module)
   }
 });
