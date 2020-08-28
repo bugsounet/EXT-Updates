@@ -1,5 +1,6 @@
 /** All credit to Michael Teeuw https://michaelteeuw.nl **/
-/** modified by @bugsounet for TelegramBot and NPM_UPDATE checker support **/
+/** modified by @bugsounet for TelegramBot, NPM_UPDATE checker support **/
+/** and add auto-updater **/
 
 const SimpleGit = require("simple-git")
 const simpleGits = []
@@ -135,14 +136,18 @@ module.exports = NodeHelper.create({
     exec(Command, {cwd : modulePath } , (error, stdout, stderr) => {
       if (error) {
         console.error(`[UN] exec error: ${error}`);
-        this.sendSocketNotification("SendResult", error.toString())
-        this.sendSocketNotification("ERROR_UPDATE" , module)
+        this.config.notification.useTelegramBot {
+          this.sendSocketNotification("SendResult", error.toString())
+          this.sendSocketNotification("ERROR_UPDATE" , module)
+        }
         return
       }
       console.log(`[UN] output stdout: ${stdout}`);
       if (!error) {
-        this.sendSocketNotification("SendResult", stdout.toString())
-        this.sendSocketNotification("UPDATED" , module)
+        if (this.config.notification.useTelegramBot) {
+          if (this.config.notification.useCallback) this.sendSocketNotification("SendResult", stdout.toString())
+          this.sendSocketNotification("UPDATED" , module)
+        }
         console.log("[NU] Process update done! You are so lazy :)))")
         if (this.config.update.autoUpdate || this.config.update.autoRestart) this.restartMM()
       }
@@ -155,13 +160,13 @@ module.exports = NodeHelper.create({
       exec ("pm2 restart " + this.config.update.PM2Name, (err,stdo,stde) => {
         if (err) {
           console.log("[NU] " + err)
-          this.sendSocketNotification("SendResult", err.toString())
+          if (this.config.notification.useTelegramBot) this.sendSocketNotification("SendResult", err.toString())
         }
       })
     }
     else {
-      var Path = path.normalize(__dirname + "/../MMM-UpdateNotification")
-      console.log("Pid:", process.pid)
+      //var Path = path.normalize(__dirname + "/../MMM-UpdateNotification")
+      //console.log("Pid:", process.pid)
       // don't work i will try another method...
 
       //spawn("sh", ["restart.sh", process.pid ], { shell: true, cwd: Path }) //(error, stdout, stderr) => {

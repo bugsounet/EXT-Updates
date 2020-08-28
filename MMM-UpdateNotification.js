@@ -10,7 +10,7 @@
 
 Module.register("MMM-UpdateNotification", {
   defaults: {
-    updateInterval: 60 * 1000, // every 10 minutes
+    updateInterval: 10 * 60  * 1000, // every 10 minutes
     refreshInterval: 24 * 60 * 60 * 1000, // one day
     ignoreModules: [],
     updateCommands: [
@@ -24,13 +24,14 @@ Module.register("MMM-UpdateNotification", {
       }
     ],
     notification: {
-      useTelegramBot: false,
+      useTelegramBot: true,
       useScreen: true
+      useCallback: true
     },
     update: {
-      autoUpdate: true,
-      autoRestart: true,
-      usePM2: true, // only coded true
+      autoUpdate: false,
+      autoRestart: false,
+      usePM2: true, // only coded for pm2 user and not for @Saljoke !!! :)))
       PM2Name: "0"
     }
   },
@@ -58,14 +59,14 @@ Module.register("MMM-UpdateNotification", {
       this.sendSocketNotification("MODULES", Module.definitions)
     }
     if (notification === "NPM_UPDATE") {
-      console.log("npm", payload)
+      //console.log("npm", payload)
       this.updateUI(payload)
     }
   },
 
   socketNotificationReceived: function (notification, payload) {
     if (notification === "STATUS") {
-      console.log("modules", payload)
+      //console.log("modules", payload)
       this.updateUI(payload)
     }
     if (notification === "UPDATED") {
@@ -136,7 +137,7 @@ Module.register("MMM-UpdateNotification", {
         icon.innerHTML = "&nbsp;"
         message.appendChild(icon)
 
-        //var updateInfoKeyName = m.behind === 1 ? "UPDATE_INFO_SINGLE" : "UPDATE_INFO_MULTIPLE"
+
         var subtextHtml = this.translate(updateInfoKeyName, {
           COMMIT_COUNT: m.behind,
           BRANCH_NAME: m.current
