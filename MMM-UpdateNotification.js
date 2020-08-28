@@ -25,7 +25,7 @@ Module.register("MMM-UpdateNotification", {
     ],
     notification: {
       useTelegramBot: true,
-      useScreen: true
+      useScreen: true,
       useCallback: true
     },
     update: {
