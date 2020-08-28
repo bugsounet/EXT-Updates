@@ -122,7 +122,7 @@ Module.register("MMM-UpdateNotification", {
       if (typeof this.notiTB[key] === "undefined") {
         this.notiTB[key] = true
       }
-      let m = this.moduleList[key]
+      var m = this.moduleList[key]
       var updateInfoKeyName = m.behind === 1 ? "UPDATE_INFO_SINGLE" : "UPDATE_INFO_MULTIPLE"
 
       if (this.suspended === false) {
@@ -182,7 +182,7 @@ Module.register("MMM-UpdateNotification", {
       if (typeof this.notiTB[key] === "undefined") {
         this.notiTB[key] = true
       }
-      let npm = this.npmList[key]
+      var npm = this.npmList[key]
 
       if (this.suspended === false) {
         var message = document.createElement("div")
