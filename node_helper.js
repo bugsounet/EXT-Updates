@@ -136,7 +136,7 @@ module.exports = NodeHelper.create({
     exec(Command, {cwd : modulePath } , (error, stdout, stderr) => {
       if (error) {
         console.error(`[UN] exec error: ${error}`);
-        this.config.notification.useTelegramBot {
+        if (this.config.notification.useTelegramBot) {
           this.sendSocketNotification("SendResult", error.toString())
           this.sendSocketNotification("ERROR_UPDATE" , module)
         }
