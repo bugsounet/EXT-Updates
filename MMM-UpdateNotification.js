@@ -29,8 +29,8 @@ Module.register("MMM-UpdateNotification", {
       useCallback: true
     },
     update: {
-      autoUpdate: false,
-      autoRestart: false,
+      autoUpdate: true,
+      autoRestart: true,
       usePM2: true, // only coded for pm2 user and not for @Saljoke !!! :)))
       PM2Name: "0"
     }
