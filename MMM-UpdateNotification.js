@@ -309,5 +309,6 @@ Module.register("MMM-UpdateNotification", {
 
   updateProcess(module) {
     this.sendSocketNotification("UPDATE", module)
+    this.sendNotification("WAKEUP")
   }
 });
