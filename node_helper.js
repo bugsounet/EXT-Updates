@@ -11,6 +11,10 @@ const Log = require(__dirname + "/../../js/logger.js")
 const NodeHelper = require("node_helper")
 var exec = require('child_process').exec
 
+/** don't like this MichMich shitted code **/
+/** don't see all update **/
+/** try to do better **/
+
 module.exports = NodeHelper.create({
   config: {},
 
@@ -19,7 +23,7 @@ module.exports = NodeHelper.create({
 
   start: function () {
     console.log("[UPDATE] MMM-UpdateNotification Version:", require('./package.json').version)
-    },
+  },
 
   configureModules: function (modules) {
     // Push MagicMirror itself , biggest chance it'll show up last in UI and isn't overwritten
@@ -35,10 +39,11 @@ module.exports = NodeHelper.create({
         var moduleFolder = path.normalize(__dirname + "/../" + moduleName)
 
         try {
-          console.log("Checking git for module: " + moduleName)
+          console.log("[NU] Checking git for module: " + moduleName)
           let stat = fs.statSync(path.join(moduleFolder, ".git"))
           promises.push(this.resolveRemote(moduleName, moduleFolder))
         } catch (err) {
+          console.log("[NNU] err: " + err)
           // Error when directory .git doesn't exist
           // This module is not managed with git, skip
           continue
@@ -78,7 +83,8 @@ module.exports = NodeHelper.create({
   },
 
   performFetch: function () {
-    var self = this;
+    var self = this
+    var moduleGitInfo = null
     simpleGits.forEach((sg) => {
       sg.git.fetch().status((err, data) => {
         data.module = sg.module;
@@ -86,7 +92,16 @@ module.exports = NodeHelper.create({
           sg.git.log({ "-1": null }, (err, data2) => {
             if (!err && data2.latest && "hash" in data2.latest) {
               data.hash = data2.latest.hash;
-              self.sendSocketNotification("STATUS", data);
+              /** send ONLY needed info **/
+              moduleGitInfo = {
+                module: data.module,
+                behind: data.behind,
+                current: data.current,
+                hash: data.hash,
+                tracking: data.tracking
+              }
+              console.log("[NU] Module info:", moduleGitInfo)
+              self.sendSocketNotification("STATUS", moduleGitInfo);
             }
           });
         }
@@ -101,10 +116,9 @@ module.exports = NodeHelper.create({
       delay = 60 * 1000;
     }
 
-    var self = this;
     clearTimeout(this.updateTimer);
-    this.updateTimer = setTimeout(function () {
-      self.performFetch();
+    this.updateTimer = setTimeout(()=> {
+      this.performFetch();
     }, delay);
   },
 

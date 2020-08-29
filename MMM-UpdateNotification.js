@@ -10,7 +10,7 @@
 
 Module.register("MMM-UpdateNotification", {
   defaults: {
-    updateInterval: 10 * 60  * 1000, // every 10 minutes
+    updateInterval: 30  * 1000, // every 10 minutes
     refreshInterval: 24 * 60 * 60 * 1000, // one day
     ignoreModules: [],
     updateCommands: [
@@ -42,16 +42,15 @@ Module.register("MMM-UpdateNotification", {
   notiTB: {},
 
   start: function () {
-    var self = this;
     console.log("[UPDATE] Start MMM-UpdateNotification")
     this.config = configMerge({}, this.defaults, this.config)
     this.suspended = !this.config.notification.useScreen
     this.updating = false
     setInterval(() => {
-      self.moduleList = {}
-      self.npmList = {}
-      self.updateDom(2)
-    }, self.config.refreshInterval)
+      this.moduleList = {}
+      this.npmList = {}
+      this.updateDom(2)
+    }, this.config.refreshInterval)
   },
 
   notificationReceived: function (notification, payload, sender) {
@@ -67,7 +66,7 @@ Module.register("MMM-UpdateNotification", {
 
   socketNotificationReceived: function (notification, payload) {
     if (notification === "STATUS") {
-      //console.log("modules", payload)
+      console.log("modules", payload)
       this.updateUI(payload)
     }
     if (notification === "UPDATED") {
@@ -85,18 +84,17 @@ Module.register("MMM-UpdateNotification", {
   },
 
   updateUI: function (payload) {
-    var self = this;
     if (payload) {
       if (payload.installed && payload.latest && payload.library) {
         this.npmList[payload.library + " [" + payload.module +"]"] = payload
-        self.updateDom(2);
+        this.updateDom(2);
       }
       else if (payload.behind > 0) {
         // if we haven't seen info for this module
         if (this.moduleList[payload.module] === undefined) {
           // save it
           this.moduleList[payload.module] = payload
-          self.updateDom(2);
+          this.updateDom(2);
         }
       } else if (payload.behind === 0) {
         // if the module WAS in the list, but shouldn't be
@@ -107,7 +105,7 @@ Module.register("MMM-UpdateNotification", {
         if (this.moduleList[payload.module] !== undefined) {
           // remove it
           delete this.moduleList[payload.module]
-          self.updateDom(2);
+          this.updateDom(2);
         }
       }
     }
