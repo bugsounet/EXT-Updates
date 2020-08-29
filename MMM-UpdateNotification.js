@@ -43,7 +43,7 @@ Module.register("MMM-UpdateNotification", {
   notiTB: {},
 
   start: function () {
-    console.log("[UPDATE] Start MMM-UpdateNotification")
+    console.log("[UN] Start MMM-UpdateNotification")
     this.config = configMerge({}, this.defaults, this.config)
     this.suspended = !this.config.notification.useScreen
     this.updating = false
@@ -67,7 +67,7 @@ Module.register("MMM-UpdateNotification", {
 
   socketNotificationReceived: function (notification, payload) {
     if (notification === "STATUS") {
-      console.log("modules", payload)
+      //console.log("modules", payload)
       this.updateUI(payload)
     }
     if (notification === "UPDATED") {
@@ -172,7 +172,7 @@ Module.register("MMM-UpdateNotification", {
             TB = this.translate("UPDATE_NOTIFICATION_MODULE", { MODULE_NAME: m.module }) + "\n"
           }
           TB += this.translate(updateInfoKeyName, { COMMIT_COUNT: m.behind, BRANCH_NAME: m.current }) + "\n"
-          console.log("[UPDATE] ", TB)
+          console.log("[UN] ", TB)
           this.sendNotification("TELBOT_TELL_ADMIN", TB)
         }
         if (this.config.update.autoUpdate && !this.updating) {
@@ -217,7 +217,7 @@ Module.register("MMM-UpdateNotification", {
           let TB = this.translate("UPDATE_NOTIFICATION_MODULE", { MODULE_NAME: npm.module }) + "\n"
           TB += "[NPM] " + npm.library + " v" + npm.installed +" -> v" + npm.latest + "\n"
           this.sendNotification("TELBOT_TELL_ADMIN", TB)
-          console.log("[UPDATE] ", TB)
+          console.log("[UN] ", TB)
         }
         if (this.config.update.autoUpdate && !this.updating) {
           this.updateProcess(npm.module)
