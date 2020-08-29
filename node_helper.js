@@ -156,7 +156,7 @@ module.exports = NodeHelper.create({
       log(`output stdout: ${stdout}`);
       if (!error) {
         if (this.config.notification.useTelegramBot) {
-          if (this.config.notification.useCallback) this.sendSocketNotification("SendResult", stdout)
+          if (this.config.notification.useCallback) this.sendSocketNotification("SendResult", stdout.toString())
           this.sendSocketNotification("UPDATED" , module)
         }
         console.log("[UN] Process update done! You are so lazy :)))")
@@ -171,7 +171,7 @@ module.exports = NodeHelper.create({
       exec ("pm2 restart " + this.config.update.PM2Name, (err,stdo,stde) => {
         if (err) {
           console.log("[UN] " + err)
-          if (this.config.notification.useTelegramBot) this.sendSocketNotification("SendResult", err)
+          if (this.config.notification.useTelegramBot) this.sendSocketNotification("SendResult", err.toString())
         }
       })
     }
