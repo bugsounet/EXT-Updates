@@ -10,11 +10,6 @@ const defaultModules = require(__dirname + "/../default/defaultmodules.js")
 const Log = require(__dirname + "/../../js/logger.js")
 const NodeHelper = require("node_helper")
 var exec = require('child_process').exec
-
-/** don't like this MichMich shitted code **/
-/** don't see all update **/
-/** try to do better **/
-
 var log = (...args) => { /* do nothing */ }
 
 module.exports = NodeHelper.create({
