@@ -15,6 +15,8 @@ var exec = require('child_process').exec
 /** don't see all update **/
 /** try to do better **/
 
+var log = (...args) => { /* do nothing */ }
+
 module.exports = NodeHelper.create({
   config: {},
 
@@ -22,7 +24,7 @@ module.exports = NodeHelper.create({
   updateProcessStarted: false,
 
   start: function () {
-    console.log("[UPDATE] MMM-UpdateNotification Version:", require('./package.json').version)
+    console.log("[UN] MMM-UpdateNotification Version:", require('./package.json').version)
   },
 
   configureModules: function (modules) {
@@ -39,11 +41,11 @@ module.exports = NodeHelper.create({
         var moduleFolder = path.normalize(__dirname + "/../" + moduleName)
 
         try {
-          console.log("[NU] Checking git for module: " + moduleName)
+          log("Checking git for module: " + moduleName)
           let stat = fs.statSync(path.join(moduleFolder, ".git"))
           promises.push(this.resolveRemote(moduleName, moduleFolder))
         } catch (err) {
-          console.log("[NNU] err: " + err)
+          console.log("[UN] err: " + err)
           // Error when directory .git doesn't exist
           // This module is not managed with git, skip
           continue
@@ -57,6 +59,7 @@ module.exports = NodeHelper.create({
   socketNotificationReceived: function (notification, payload) {
     if (notification === "CONFIG") {
       this.config = payload
+      if (this.config.debug) log = (...args) => { console.log("[UN]", ...args) }
     } else if (notification === "MODULES") {
       // if this is the 1st time thru the update check process
       if (!this.updateProcessStarted) {
@@ -84,7 +87,7 @@ module.exports = NodeHelper.create({
 
   performFetch: function () {
     var self = this
-    var moduleGitInfo = null
+    var moduleGitInfo = {}
     simpleGits.forEach((sg) => {
       sg.git.fetch().status((err, data) => {
         data.module = sg.module;
@@ -100,7 +103,7 @@ module.exports = NodeHelper.create({
                 hash: data.hash,
                 tracking: data.tracking
               }
-              console.log("[NU] Module info:", moduleGitInfo)
+              log("Module info:", moduleGitInfo)
               self.sendSocketNotification("STATUS", moduleGitInfo);
             }
           });
@@ -141,7 +144,7 @@ module.exports = NodeHelper.create({
   updateProcess: function (module) {
     var Path = path.normalize(__dirname + "/../")
     var modulePath = Path + module
-    var Command= "git pull && npm install"
+    var Command= "git pull && npm install" // default command
     this.config.updateCommands.forEach(updateCommand => {
       if (updateCommand.module == module) Command = updateCommand.command
     })
@@ -155,13 +158,13 @@ module.exports = NodeHelper.create({
         }
         return
       }
-      console.log(`[UN] output stdout: ${stdout}`);
+      log(`output stdout: ${stdout}`);
       if (!error) {
         if (this.config.notification.useTelegramBot) {
-          if (this.config.notification.useCallback) this.sendSocketNotification("SendResult", stdout.toString())
+          if (this.config.notification.useCallback) this.sendSocketNotification("SendResult", stdout)
           this.sendSocketNotification("UPDATED" , module)
         }
-        console.log("[NU] Process update done! You are so lazy :)))")
+        console.log("[UN] Process update done! You are so lazy :)))")
         if (this.config.update.autoUpdate || this.config.update.autoRestart) this.restartMM()
       }
     });
@@ -172,8 +175,8 @@ module.exports = NodeHelper.create({
     if (this.config.update.usePM2) {
       exec ("pm2 restart " + this.config.update.PM2Name, (err,stdo,stde) => {
         if (err) {
-          console.log("[NU] " + err)
-          if (this.config.notification.useTelegramBot) this.sendSocketNotification("SendResult", err.toString())
+          console.log("[UN] " + err)
+          if (this.config.notification.useTelegramBot) this.sendSocketNotification("SendResult", err)
         }
       })
     }
