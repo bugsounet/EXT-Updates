@@ -155,12 +155,13 @@ module.exports = NodeHelper.create({
       log(`Update logs of ${module}: ${stdout}`)
       if (!error) {
         if (this.config.notification.useTelegramBot) {
-          /** trying to parse stdout to Telegram without errors ... **/
+          /** trying to parse stdout to Telegram without errors ... it's horrible ! **/
           var res = {'results': stdout.split('\n')}
           var final = "Update logs of " + module + "\n"
           res.results.forEach(value => {
-            if (value) final += this.removeExtraChars(value) + "\n"
+            if (value) final += this.ExtraChars(value) + "\n"
           })
+          log("[UN] Final for telegramBot:", final)
           if (this.config.notification.useCallback) this.sendSocketNotification("SendResult", final)
           this.sendSocketNotification("UPDATED" , module)
         }
@@ -181,6 +182,7 @@ module.exports = NodeHelper.create({
       })
     }
     else {
+      this.sendSocketNotification("SendResult", "Not yet coded actually, please restart manually @Saljoke...")
       //var Path = path.normalize(__dirname + "/../MMM-UpdateNotification")
       //console.log("Pid:", process.pid)
       // don't work i will try another method...
@@ -193,11 +195,16 @@ module.exports = NodeHelper.create({
     }
   },
 
-  removeExtraChars: function(str) {
-    str = str.replace(/[\s]{2,}/g," ") // Enlève les espaces doubles, triples, etc.
-    str = str.replace(/^[\s]/, "") // Enlève les espaces au début
-    str = str.replace(/[\s]$/,"") // Enlève les espaces à la fin
-    str = str.replace("|",":")
+  ExtraChars: function(str) {
+    str = str.replace(/[\s]{2,}/g," ") // delete space doubles, and more
+    str = str.replace(/^[\s]/, "") // delete space on the begin
+    str = str.replace(/[\s]$/,"") // delete space on the end
+    str = str.replace("|",":") // simple replace | to : for more visibility
+    /** special markdown for Telegram **/
+    str = str.replace(new RegExp("_", "g"), "\\_") //
+    str = str.replace(new RegExp("\\*", "g"), "\\*")
+    str = str.replace(new RegExp("\\[", "g"), "\\[")
+    str = str.replace(new RegExp("`", "g"), "\\`")
     return str
 }
 });
