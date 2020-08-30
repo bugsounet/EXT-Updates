@@ -41,7 +41,7 @@ V1.0.0 (25/08/20):
  ```
  don't forget to delete or disable `updatenotification`, in this case
  
- # Installing
+ # Installing 
  
  ```sh
  cd ~/MagicMirror/modules
