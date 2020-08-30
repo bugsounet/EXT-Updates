@@ -79,7 +79,7 @@ module.exports = NodeHelper.create({
   },
 
   performFetch: function () {
-    var self = this
+    //var self = this
     var moduleGitInfo = {}
     console.log("[UN] Module List:", this.simpleGits)
     this.simpleGits.forEach((sg) => {
@@ -87,11 +87,22 @@ module.exports = NodeHelper.create({
         data.module = sg.module;
         console.log("[UN] Scan:", data.module)
         if (!err) {
+          /** send ONLY needed info **/
+          moduleGitInfo = {
+            module: data.module,
+            behind: data.behind,
+            current: data.current,
+            hash: data.hash,
+            tracking: data.tracking
+          }
+          log("Module info:", moduleGitInfo)
+          this.sendSocketNotification("STATUS", moduleGitInfo)
+          /*
           sg.git.log({ "-1": null }, (err, data2) => {
             console.log("[UN] data2: " + data.module, data2)
             if (!err && data2.latest && "hash" in data2.latest) {
               data.hash = data2.latest.hash
-              /** send ONLY needed info **/
+              
               moduleGitInfo = {
                 module: data.module,
                 behind: data.behind,
@@ -104,7 +115,7 @@ module.exports = NodeHelper.create({
             } else {
               console.log("[UN] Scan Log Error: "  +data.module, err)
             }
-          });
+          })*/
         } else {
           console.log("[UN] Scan Error: " +data.module, err)
         }
