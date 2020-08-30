@@ -145,27 +145,22 @@ module.exports = NodeHelper.create({
 
     exec(Command, {cwd : modulePath } , (error, stdout, stderr) => {
       if (error) {
-        console.error(`[UN] exec error: ${error}`);
+        console.error(`[UN] exec error: ${error}`)
         if (this.config.notification.useTelegramBot) {
           this.sendSocketNotification("SendResult", error.toString())
           this.sendSocketNotification("ERROR_UPDATE" , module)
         }
         return
       }
-      log(`output stdout: ${stdout}`);
+      log(`Update logs of ${module}: ${stdout}`)
       if (!error) {
         if (this.config.notification.useTelegramBot) {
           /** trying to parse stdout to Telegram without errors ... **/
           var res = {'results': stdout.split('\n')}
-          console.log(res)
-          var final = ""
-          res.result.forEach(value => {
-            if (value) {
-              //console.log(removeExtraSpace(value))
-              final += this.removeExtraChars(value) + "\n"
-            }
+          var final = "Update logs of " + module + "\n"
+          res.results.forEach(value => {
+            if (value) final += this.removeExtraChars(value) + "\n"
           })
-          console.log(final)
           if (this.config.notification.useCallback) this.sendSocketNotification("SendResult", final)
           this.sendSocketNotification("UPDATED" , module)
         }
@@ -182,7 +177,7 @@ module.exports = NodeHelper.create({
           console.log("[UN] " + err)
           if (this.config.notification.useTelegramBot) this.sendSocketNotification("SendResult", err.toString())
         }
-        else if (this.config.notification.useTelegramBot) this.sendSocketNotification("SendResult", "Restarting...")
+        else if (this.config.notification.useTelegramBot) this.sendSocketNotification("SendResult", "Restarting MagicMirror...")
       })
     }
     else {
