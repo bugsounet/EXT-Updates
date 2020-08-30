@@ -83,7 +83,7 @@ module.exports = NodeHelper.create({
     this.simpleGits.forEach((sg) => {
       sg.git.fetch().status((err, data) => {
         data.module = sg.module;
-        log("[UN] Scan:", data.module)
+        log("Scan:", data.module)
         if (!err) {
           /** send ONLY needed info **/
           moduleGitInfo = {
@@ -92,10 +92,10 @@ module.exports = NodeHelper.create({
             current: data.current,
             tracking: data.tracking
           }
-          log("Module info:", moduleGitInfo)
+          log("Scan Infos:", moduleGitInfo)
           this.sendSocketNotification("STATUS", moduleGitInfo)
         } else {
-          log("[UN] Scan Error: " + data.module, err)
+          log("Scan Error: " + data.module, err)
         }
       })
     })
