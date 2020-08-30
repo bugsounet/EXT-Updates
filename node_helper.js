@@ -3,7 +3,6 @@
 /** and add auto-updater **/
 
 const SimpleGit = require("simple-git")
-const simpleGits = []
 const fs = require("fs")
 const path = require("path")
 const defaultModules = require(__dirname + "/../default/defaultmodules.js")
@@ -13,12 +12,11 @@ var exec = require('child_process').exec
 var log = (...args) => { /* do nothing */ }
 
 module.exports = NodeHelper.create({
-  config: {},
-
-  updateTimer: null,
-  updateProcessStarted: false,
-
   start: function () {
+    this.simpleGits = []
+    this.config= {}
+    this.updateTimer= null
+    this.updateProcessStarted= false
     console.log("[UN] MMM-UpdateNotification Version:", require('./package.json').version)
   },
 
@@ -26,7 +24,7 @@ module.exports = NodeHelper.create({
     // Push MagicMirror itself , biggest chance it'll show up last in UI and isn't overwritten
     // others will be added in front
     // this method returns promises so we can't wait for every one to resolve before continuing
-    simpleGits.push({ module: "default", git: SimpleGit(path.normalize(__dirname + "/../../")) })
+    this.simpleGits.push({ module: "default", git: SimpleGit(path.normalize(__dirname + "/../../")) })
 
     var promises = []
 
@@ -34,7 +32,7 @@ module.exports = NodeHelper.create({
       if (!this.ignoreUpdateChecking(moduleName)) {
         // Default modules are included in the main MagicMirror repo
         var moduleFolder = path.normalize(__dirname + "/../" + moduleName)
-
+        log("moduleFolder:", moduleFolder)
         try {
           log("Checking git for module: " + moduleName)
           let stat = fs.statSync(path.join(moduleFolder, ".git"))
@@ -74,7 +72,7 @@ module.exports = NodeHelper.create({
           return resolve()
         }
         // Folder has .git and has at least one git remote, watch this folder
-        simpleGits.unshift({ module: moduleName, git: git })
+        this.simpleGits.unshift({ module: moduleName, git: git })
         resolve()
       })
     })
@@ -83,7 +81,8 @@ module.exports = NodeHelper.create({
   performFetch: function () {
     var self = this
     var moduleGitInfo = {}
-    simpleGits.forEach((sg) => {
+    console.log("Module List:", this.simpleGits)
+    this.simpleGits.forEach((sg) => {
       sg.git.fetch().status((err, data) => {
         data.module = sg.module;
         if (!err) {
