@@ -11,7 +11,7 @@
 Module.register("MMM-UpdateNotification", {
   defaults: {
     debug: true,
-    updateInterval: 30 * 1000, // every 10 minutes
+    updateInterval: 60 * 1000, // every 10 minutes
     refreshInterval: 24 * 60 * 60 * 1000, // restart time : one day
     ignoreModules: [],
     updateCommands: [
