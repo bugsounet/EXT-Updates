@@ -155,7 +155,18 @@ module.exports = NodeHelper.create({
       log(`output stdout: ${stdout}`);
       if (!error) {
         if (this.config.notification.useTelegramBot) {
-          if (this.config.notification.useCallback) this.sendSocketNotification("SendResult", stdout.toString())
+          /** trying to parse stdout to Telegram without errors ... **/
+          var res = {'results': stdout.split('\n')}
+          console.log(res)
+          var final = ""
+          res.result.forEach(value => {
+            if (value) {
+              //console.log(removeExtraSpace(value))
+              final += this.removeExtraChars(value) + "\n"
+            }
+          })
+          console.log(final)
+          if (this.config.notification.useCallback) this.sendSocketNotification("SendResult", final)
           this.sendSocketNotification("UPDATED" , module)
         }
         console.log("[UN] Process update done! You are so lazy :)))")
@@ -185,5 +196,13 @@ module.exports = NodeHelper.create({
        //console.log(`[UN] output stdout: ${stdout}`)
       //})
     }
-  }
+  },
+
+  removeExtraChars: function(str) {
+    str = str.replace(/[\s]{2,}/g," ") // Enlève les espaces doubles, triples, etc.
+    str = str.replace(/^[\s]/, "") // Enlève les espaces au début
+    str = str.replace(/[\s]$/,"") // Enlève les espaces à la fin
+    str = str.replace("|",":")
+    return str
+}
 });
