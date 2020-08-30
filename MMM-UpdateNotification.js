@@ -112,13 +112,6 @@ Module.register("MMM-UpdateNotification", {
     }
   },
 
-  diffLink: function (module, text) {
-    /** Really needed ??? **/
-    var localRef = module.hash
-    var remoteRef = module.tracking.replace(/.*\//, "")
-    return '<a href="https://github.com/MichMich/MagicMirror/compare/' + localRef + "..." + remoteRef + '" ' + 'class="xsmall dimmed" ' + 'style="text-decoration: none;" ' + 'target="_blank" >' + text + "</a>"
-  },
-
   // Override dom generator.
   getDom: function () {
     var wrapper = document.createElement("div")
@@ -148,7 +141,7 @@ Module.register("MMM-UpdateNotification", {
         var text = document.createElement("span")
         if (m.module === "default") {
           text.innerHTML = this.translate("UPDATE_NOTIFICATION")
-          subtextHtml = this.diffLink(m, subtextHtml)
+          subtextHtml = ""
         } else {
           text.innerHTML = this.translate("UPDATE_NOTIFICATION_MODULE", {
           MODULE_NAME: m.module
