@@ -81,14 +81,16 @@ module.exports = NodeHelper.create({
   performFetch: function () {
     var self = this
     var moduleGitInfo = {}
-    console.log("Module List:", this.simpleGits)
+    console.log("[UN] Module List:", this.simpleGits)
     this.simpleGits.forEach((sg) => {
       sg.git.fetch().status((err, data) => {
         data.module = sg.module;
+        console.log("[UN] Scan:", data.module)
         if (!err) {
           sg.git.log({ "-1": null }, (err, data2) => {
+            console.log("[UN] data2: " + data.module, data2)
             if (!err && data2.latest && "hash" in data2.latest) {
-              data.hash = data2.latest.hash;
+              data.hash = data2.latest.hash
               /** send ONLY needed info **/
               moduleGitInfo = {
                 module: data.module,
@@ -98,12 +100,16 @@ module.exports = NodeHelper.create({
                 tracking: data.tracking
               }
               log("Module info:", moduleGitInfo)
-              self.sendSocketNotification("STATUS", moduleGitInfo);
+              self.sendSocketNotification("STATUS", moduleGitInfo)
+            } else {
+              console.log("[UN] Scan Log Error: "  +data.module, err)
             }
           });
+        } else {
+          console.log("[UN] Scan Error: " +data.module, err)
         }
-      });
-    });
+      })
+    })
 
     this.scheduleNextFetch(this.config.updateInterval);
   },
