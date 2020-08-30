@@ -11,10 +11,14 @@
 Module.register("MMM-UpdateNotification", {
   defaults: {
     debug: true,
-    updateInterval: 60 * 1000, // every 10 minutes
+    updateInterval: 5 * 60 * 1000, // every 5 minutes
     refreshInterval: 24 * 60 * 60 * 1000, // restart time : one day
     ignoreModules: [],
     updateCommands: [
+      {
+        module: "MagicMirror",
+        command: "rm package-lock.json && git pull && npm install"
+      },
       {
         module: "MMM-GoogleAssistant",
         command: "npm run update -- without-prompt"
@@ -33,7 +37,8 @@ Module.register("MMM-UpdateNotification", {
       autoUpdate: true,
       autoRestart: true,
       usePM2: true, // only coded for pm2 user and not for @Saljoke !!! :)))
-      PM2Name: "0"
+      PM2Name: "0",
+      defaultCommand: "git pull && npm install"
     }
   },
 
@@ -303,7 +308,7 @@ Module.register("MMM-UpdateNotification", {
             updateTxt += "- *" + this.npmList[name].module + "*: " + this.npmList[name].library + " v" + this.npmList[name].installed + " --> v" +  this.npmList[name].latest + "\n"
           }
           else if (this.moduleList[name]) {
-            if (this.moduleList[name].module === "default") {
+            if (this.moduleList[name].module === "MagicMirror") {
               updateTxt += "- *MagicMirror²*: "
             } else {
               updateTxt += "- *" + this.moduleList[name].module + "*: "
@@ -322,7 +327,7 @@ Module.register("MMM-UpdateNotification", {
   },
 
   updateProcess(module) {
-    this.sendSocketNotification("UPDATE", module)
     this.sendNotification("WAKEUP")
+    this.sendSocketNotification("UPDATE", module)
   }
 });

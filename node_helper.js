@@ -132,9 +132,13 @@ module.exports = NodeHelper.create({
 
   /** update **/
   updateProcess: function (module) {
-    var Path = path.normalize(__dirname + "/../")
-    var modulePath = Path + module
-    var Command= "git pull && npm install" // default command
+    if (module == "MagicMirror") {
+      var modulePath = path.normalize(__dirname + "/../../")
+    } else {
+      var Path = path.normalize(__dirname + "/../")
+      var modulePath = Path + module
+      var Command= this.config.update.defaultCommand
+    }
     this.config.updateCommands.forEach(updateCommand => {
       if (updateCommand.module == module) Command = updateCommand.command
     })
