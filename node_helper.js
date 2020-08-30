@@ -92,8 +92,12 @@ module.exports = NodeHelper.create({
             current: data.current,
             tracking: data.tracking
           }
-          log("Scan Infos:", moduleGitInfo)
-          this.sendSocketNotification("STATUS", moduleGitInfo)
+          if (!moduleGitInfo.current || !moduleGitInfo.tracking) {
+            return log("Scan Infos not complete:", data.module)
+          } else {
+            log("Scan Infos:", moduleGitInfo)
+            this.sendSocketNotification("STATUS", moduleGitInfo)
+          }
         } else {
           log("Scan Error: " + data.module, err)
         }
