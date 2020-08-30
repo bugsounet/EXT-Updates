@@ -16,7 +16,6 @@ module.exports = NodeHelper.create({
     this.simpleGits = []
     this.config= {}
     this.updateTimer= null
-    this.updateProcessStarted= false
     console.log("[UN] MMM-UpdateNotification Version:", require('./package.json').version)
   },
 
@@ -24,28 +23,26 @@ module.exports = NodeHelper.create({
     // Push MagicMirror itself , biggest chance it'll show up last in UI and isn't overwritten
     // others will be added in front
     // this method returns promises so we can't wait for every one to resolve before continuing
-    this.simpleGits.push({ module: "default", git: SimpleGit(path.normalize(__dirname + "/../../")) })
+    this.simpleGits.push({ module: "MagicMirror", git: SimpleGit(path.normalize(__dirname + "/../../")) })
 
     var promises = []
 
-    for (var moduleName in modules) {
+    modules.forEach(moduleName => {
       if (!this.ignoreUpdateChecking(moduleName)) {
         // Default modules are included in the main MagicMirror repo
         var moduleFolder = path.normalize(__dirname + "/../" + moduleName)
-        log("moduleFolder:", moduleFolder)
         try {
-          log("Checking git for module: " + moduleName)
+          log("Checking git for module: " + moduleName + " in " + moduleFolder)
           let stat = fs.statSync(path.join(moduleFolder, ".git"))
           promises.push(this.resolveRemote(moduleName, moduleFolder))
         } catch (err) {
-          console.log("[UN] err: " + err)
+          return console.log("[UN] err: " + err)
           // Error when directory .git doesn't exist
           // This module is not managed with git, skip
-          continue
         }
-      }
-    }
-
+      } else log("Ignore module: " + moduleName)
+    })
+    log("Total modules to Check:", promises.length)
     return Promise.all(promises)
   },
 
@@ -53,12 +50,12 @@ module.exports = NodeHelper.create({
     if (notification === "CONFIG") {
       this.config = payload
       if (this.config.debug) log = (...args) => { console.log("[UN]", ...args) }
-    } else if (notification === "MODULES") {
-      // if this is the 1st time thru the update check process
-      if (!this.updateProcessStarted) {
-        this.updateProcessStarted = true
-        this.configureModules(payload).then(() => this.performFetch())
-      }
+    }
+    if (notification === "MODULES") {
+      clearTimeout(this.updateTimer)
+      this.updateTimer = null
+      this.simpleGits = []
+      this.configureModules(payload).then(() => this.performFetch())
     }
     if (notification == "UPDATE") this.updateProcess(payload)
   },
@@ -80,10 +77,10 @@ module.exports = NodeHelper.create({
 
   performFetch: function () {
     var moduleGitInfo = {}
-    this.simpleGits.forEach((sg) => {
+    this.simpleGits.forEach((sg,nb) => {
       sg.git.fetch().status((err, data) => {
         data.module = sg.module;
-        log("Scan:", data.module)
+        log("[" + (nb+1) + "/" + this.simpleGits.length +"] Scan:" , data.module)
         if (!err) {
           /** send ONLY needed info **/
           moduleGitInfo = {
@@ -161,7 +158,6 @@ module.exports = NodeHelper.create({
         if (this.config.update.autoUpdate || this.config.update.autoRestart) this.restartMM()
       }
     });
-
   },
 
   restartMM: function() {
@@ -171,6 +167,7 @@ module.exports = NodeHelper.create({
           console.log("[UN] " + err)
           if (this.config.notification.useTelegramBot) this.sendSocketNotification("SendResult", err.toString())
         }
+        else if (this.config.notification.useTelegramBot) this.sendSocketNotification("SendResult", "Restarting...")
       })
     }
     else {

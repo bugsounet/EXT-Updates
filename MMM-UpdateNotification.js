@@ -11,8 +11,8 @@
 Module.register("MMM-UpdateNotification", {
   defaults: {
     debug: true,
-    updateInterval: 30  * 1000, // every 10 minutes
-    refreshInterval: 24 * 60 * 60 * 1000, // one day
+    updateInterval: 30 * 1000, // every 10 minutes
+    refreshInterval: 24 * 60 * 60 * 1000, // restart time : one day
     ignoreModules: [],
     updateCommands: [
       {
@@ -47,9 +47,14 @@ Module.register("MMM-UpdateNotification", {
     this.config = configMerge({}, this.defaults, this.config)
     this.suspended = !this.config.notification.useScreen
     this.updating = false
+    this.modulesName= []
+    this.modulesInfo( cb => console.log("[UN] Modules find:", this.modulesName.length))
     setInterval(() => {
+      /** reset all and restart **/
+      this.modulesName= []
       this.moduleList = {}
       this.npmList = {}
+      this.modulesInfo(cb => this.sendSocketNotification("MODULES", this.modulesName))
       this.updateDom(2)
     }, this.config.refreshInterval)
   },
@@ -57,7 +62,7 @@ Module.register("MMM-UpdateNotification", {
   notificationReceived: function (notification, payload, sender) {
     if (notification === "DOM_OBJECTS_CREATED") {
       this.sendSocketNotification("CONFIG", this.config)
-      this.sendSocketNotification("MODULES", Module.definitions)
+      this.sendSocketNotification("MODULES", this.modulesName)
     }
     if (notification === "NPM_UPDATE") {
       //console.log("npm", payload)
@@ -80,7 +85,7 @@ Module.register("MMM-UpdateNotification", {
     }
     if (notification === "SendResult") {
       this.updating = false
-      this.sendNotification("TELBOT_TELL_ADMIN", payload)
+      this.sendNotification("TELBOT_TELL_ADMIN", payload, {parse_mode:'Markdown'})
     }
   },
 
@@ -139,7 +144,7 @@ Module.register("MMM-UpdateNotification", {
         })
 
         var text = document.createElement("span")
-        if (m.module === "default") {
+        if (m.module === "MagicMirror") {
           text.innerHTML = this.translate("UPDATE_NOTIFICATION")
           subtextHtml = ""
         } else {
@@ -160,7 +165,7 @@ Module.register("MMM-UpdateNotification", {
       if (this.notiTB[key]) {
         if (this.config.notification.useTelegramBot) {
           let TB = null
-          if (m.module === "default") {
+          if (m.module === "MagicMirror") {
             TB = this.translate("UPDATE_NOTIFICATION")
           } else {
             TB = this.translate("UPDATE_NOTIFICATION_MODULE", { MODULE_NAME: m.module }) + "\n"
@@ -256,6 +261,17 @@ Module.register("MMM-UpdateNotification", {
     return [
      "configMerge.min.js"
     ]
+  },
+
+  /** List Of all Modules with reading config file **/
+  /** Module.definition return no info sometimes **/
+  modulesInfo: function (cb) {
+    for (let [item, value] of Object.entries(config.modules)) {
+      if (!value.disabled) {
+        this.modulesName.push(value.module)
+      }
+    }
+    cb()
   },
 
   /** TelegramBot Commands **/
