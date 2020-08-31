@@ -11,9 +11,9 @@
 Module.register("MMM-UpdateNotification", {
   defaults: {
     debug: true,
-    updateInterval: 5 * 60 * 1000, // every 5 minutes
-    refreshInterval: 60 * 60 * 1000, // restart time : one hour
-    startDelay: 60 * 1000,
+    updateInterval: 10 * 60 * 1000, // every 10 minutes
+    refreshInterval: 24 * 60 * 60 * 1000, // restart time : 24 hours
+    startDelay: 60 * 1000, // delay before 1st scan
     ignoreModules: [],
     updateCommands: [
       {
@@ -68,6 +68,7 @@ Module.register("MMM-UpdateNotification", {
   notificationReceived: function (notification, payload, sender) {
     if (notification === "DOM_OBJECTS_CREATED") {
       this.sendSocketNotification("CONFIG", this.config)
+      /** wait a little time ... every one is loading ! it's just an RPI !!! **/
       setTimeout(() => this.sendSocketNotification("MODULES", this.modulesName), this.config.startDelay)
     }
     if (notification === "NPM_UPDATE") {

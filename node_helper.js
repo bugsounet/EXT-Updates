@@ -166,7 +166,7 @@ module.exports = NodeHelper.create({
           this.sendSocketNotification("UPDATED" , module)
         }
         console.log("[UN] Process update done! You are so lazy :)))")
-        if (this.config.update.autoUpdate || this.config.update.autoRestart) this.restartMM()
+        if (this.config.update.autoUpdate || this.config.update.autoRestart) setTimeout(() => this.restartMM(), 3000)
       }
     });
   },
