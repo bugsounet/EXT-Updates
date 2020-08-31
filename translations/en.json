@@ -1,5 +1,12 @@
 {
   "UPDATE_TB": "Update available:",
   "NOUPDATE_TB": "No update available.",
-  "UPDATE_HELPTB": "You can update modules with `/update <module_name>`"
+  "UPDATE_HELPTB": "You can update modules with `/update <module_name>`",
+  "UPDATE_DONE": "Update done with success: {MODULE_NAME}",
+  "UPDATE_ERROR": "Update Error: {ERROR}",
+  "UPDATE_INPROGRESS": "Please wait update in progress !",
+  "UPDATING" : "Updating: {MODULE_NAME}",
+  "MODULENOTFOUND": "Module not found: {MODULE_NAME}",
+  "INIT_INPROGRESS" : "MMM-UpdateNotification is not yet initialized !",
+  "UPDATE_SCAN":  "Force update scanning..."
 }

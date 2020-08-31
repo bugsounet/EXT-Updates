@@ -52,7 +52,8 @@ Module.register("MMM-UpdateNotification", {
     console.log("[UN] Start MMM-UpdateNotification")
     this.config = configMerge({}, this.defaults, this.config)
     this.suspended = !this.config.notification.useScreen
-    this.updating = false
+    this.init= false
+    this.updating= false
     this.modulesName= []
     this.modulesInfo( cb => console.log("[UN] Modules find:", this.modulesName.length))
     setInterval(() => {
@@ -79,16 +80,17 @@ Module.register("MMM-UpdateNotification", {
 
   socketNotificationReceived: function (notification, payload) {
     if (notification === "STATUS") {
+      this.init=true
       //console.log("modules", payload)
       this.updateUI(payload)
     }
     if (notification === "UPDATED") {
       this.updating = false
-      this.sendNotification("TELBOT_TELL_ADMIN", "Update done with success: " + payload)
+      this.sendNotification("TELBOT_TELL_ADMIN", this.translate("UPDATE_DONE", { MODULE_NAME: payload}))
     }
     if (notification === "ERROR_UPDATE") {
       this.updating = false
-      this.sendNotification("TELBOT_TELL_ADMIN", "Update Error: " + payload)
+      this.sendNotification("TELBOT_TELL_ADMIN",  this.translate("UPDATE_ERROR", { ERROR: payload}))
     }
     if (notification === "SendResult") {
       this.updating = false
@@ -232,7 +234,6 @@ Module.register("MMM-UpdateNotification", {
         this.notiTB[key] = false
       }
     }
-
     return wrapper
   },
 
@@ -252,6 +253,11 @@ Module.register("MMM-UpdateNotification", {
       command: "update",
       description: "update command manager",
       callback: "Update"
+    })
+    commander.add({
+      command: "scan",
+      description: "Force Scan if any update needed",
+      callback: "Scan"
     })
   },
 
@@ -282,9 +288,15 @@ Module.register("MMM-UpdateNotification", {
   },
 
   /** TelegramBot Commands **/
+  Scan: function(command, handler) {
+    if (!this.init) return handler.reply("TEXT", this.translate("INIT_INPROGRESS"))
+    handler.reply("TEXT", this.translate("UPDATE_SCAN"))
+    this.sendSocketNotification("FORCE_CHECK")
+  },
 
   Update: function(command, handler) {
-    if (this.updating) handler.reply("TEXT", "Please wait update in progress !")
+    if (!this.init) return handler.reply("TEXT", this.translate("INIT_INPROGRESS"))
+    if (this.updating) return handler.reply("TEXT", this.translate("UPDATE_INPROGRESS"))
     if (handler.args) {
       var found = false
       /** update process **/
@@ -294,12 +306,12 @@ Module.register("MMM-UpdateNotification", {
           if ((this.npmList[name] && this.npmList[name].module == handler.args) || (this.moduleList[name] && this.moduleList[name].module == handler.args)) {
             found = true
             this.updating = true
-            handler.reply("TEXT", "Updating: " + handler.args)
+            handler.reply("TEXT", this.translate("UPDATING", { MODULE_NAME: handler.args}))
             return this.updateProcess(handler.args)
           }
         }
       }
-      if (!found) handler.reply("TEXT", "Module not found:" + handler.args)
+      if (!found) handler.reply("TEXT", this.translate("MODULENOTFOUND",  { MODULE_NAME: handler.args}))
     }
     else {
       /** List of all update **/

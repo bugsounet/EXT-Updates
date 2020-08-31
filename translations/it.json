@@ -1,5 +1,12 @@
 {
   "UPDATE_TB": "Aggiornamento disponibile:",
   "NOUPDATE_TB": "Nessun aggiornamento disponibile",
-  "UPDATE_HELPTB": "Puoi aggiornare i moduli con `/update <module_name>`"
+  "UPDATE_HELPTB": "Puoi aggiornare i moduli con `/update <nome_del_modulo>`",
+  "UPDATE_DONE": "Aggiornamento eseguito con successo: {MODULE_NAME}",
+  "UPDATE_ERROR": "Errore di aggiornamento: {ERROR}",
+  "UPDATE_INPROGRESS": "Attendi, aggiornamento in corso!",
+  "UPDATING" : "Aggiornamento: {MODULE_NAME}",
+  "MODULENOTFOUND": "Modulo non trovato: {MODULE_NAME}",
+  "INIT_INPROGRESS" : "MMM-UpdateNotification non è ancora attivo!",
+  "UPDATE_SCAN":  "Mettiti comodo...sto cercando aggiornamenti da eseguire"
 }

@@ -58,6 +58,7 @@ module.exports = NodeHelper.create({
       this.configureModules(payload).then(() => this.performFetch())
     }
     if (notification == "UPDATE") this.updateProcess(payload)
+    if (notification == "FORCE_CHECK") this.performFetch()
   },
 
   resolveRemote: function (moduleName, moduleFolder) {
