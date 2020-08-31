@@ -161,7 +161,7 @@ module.exports = NodeHelper.create({
           res.results.forEach(value => {
             if (value) final += this.ExtraChars(value) + "\n"
           })
-          log("[UN] Final for telegramBot:", final)
+          //log("[UN] Final for telegramBot:", final)
           if (this.config.notification.useCallback) this.sendSocketNotification("SendResult", final)
           this.sendSocketNotification("UPDATED" , module)
         }
