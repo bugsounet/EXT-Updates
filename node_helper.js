@@ -9,6 +9,7 @@ const defaultModules = require(__dirname + "/../default/defaultmodules.js")
 const Log = require(__dirname + "/../../js/logger.js")
 const NodeHelper = require("node_helper")
 var exec = require('child_process').exec
+var spawn = require('child_process').spawn
 var log = (...args) => { /* do nothing */ }
 
 module.exports = NodeHelper.create({
@@ -17,6 +18,7 @@ module.exports = NodeHelper.create({
     this.config= {}
     this.updateTimer= null
     console.log("[UN] MMM-UpdateNotification Version:", require('./package.json').version)
+    console.log("[UN] MagicMirror is running on pid:", process.pid)
   },
 
   configureModules: function (modules) {
@@ -59,6 +61,7 @@ module.exports = NodeHelper.create({
     }
     if (notification == "UPDATE") this.updateProcess(payload)
     if (notification == "FORCE_CHECK") this.performFetch()
+    if (notification == "CLOSEMM") process.abort()
   },
 
   resolveRemote: function (moduleName, moduleFolder) {
@@ -179,20 +182,19 @@ module.exports = NodeHelper.create({
           console.log("[UN] " + err)
           if (this.config.notification.useTelegramBot) this.sendSocketNotification("SendResult", err.toString())
         }
-        else if (this.config.notification.useTelegramBot) this.sendSocketNotification("SendResult", "Restarting MagicMirror...")
       })
     }
     else {
-      this.sendSocketNotification("SendResult", "Not yet coded actually, please restart manually @Saljoke...")
-      //var Path = path.normalize(__dirname + "/../MMM-UpdateNotification")
-      //console.log("Pid:", process.pid)
-      // don't work i will try another method...
-
-      //spawn("sh", ["restart.sh", process.pid ], { shell: true, cwd: Path }) //(error, stdout, stderr) => {
-       //if (error) console.error(`[UN] exec error: ${error}`)
-       //else console.log("no error") //process.abort()
-       //console.log(`[UN] output stdout: ${stdout}`)
-      //})
+      /** if don't use PM2 and launched with mpn start **/
+      /** but no control of it **/
+      /** I add stopMM command on telegram to stop process **/
+      log("Restarting MagicMirror...")
+      var MMdir = path.normalize(__dirname + "/../../")
+      const out = this.config.update.logToConsole ? process.stdout : fs.openSync('./MagicMirror.log', 'a')
+      const err = this.config.update.logToConsole ? process.stderr : fs.openSync('./MagicMirror.log', 'a')
+      const subprocess = spawn("npm start", {cwd: MMdir, shell: true, detached: true , stdio: [ 'ignore', out, err ]})
+      subprocess.unref()
+      process.exit()
     }
   },
 
@@ -207,5 +209,5 @@ module.exports = NodeHelper.create({
     str = str.replace(new RegExp("\\[", "g"), "\\[")
     str = str.replace(new RegExp("`", "g"), "\\`")
     return str
-}
+  }
 });

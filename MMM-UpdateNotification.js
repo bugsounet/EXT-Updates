@@ -37,9 +37,11 @@ Module.register("MMM-UpdateNotification", {
     update: {
       autoUpdate: true,
       autoRestart: true,
-      usePM2: true, // only coded for pm2 user and not for @Saljoke !!! :)))
+      usePM2: false,
       PM2Name: "0",
-      defaultCommand: "git pull && npm install"
+      defaultCommand: "git pull && npm install",
+      updateMagicMirror: false,
+      logToConsole: false
     }
   },
 
@@ -184,6 +186,9 @@ Module.register("MMM-UpdateNotification", {
           this.sendNotification("TELBOT_TELL_ADMIN", TB)
         }
         if (this.config.update.autoUpdate && !this.updating) {
+          if (m.module == "MagicMirror" && !this.config.updateMagicMirror) {
+            return this.notiTB[key] = false
+          }
           this.updateProcess(m.module)
           this.updating = true
         }
@@ -259,6 +264,13 @@ Module.register("MMM-UpdateNotification", {
       description: "Force Scan if any update needed",
       callback: "Scan"
     })
+    if (!this.config.update.usePM2) {
+      commander.add({
+        command: "stopMM",
+        description: "Force to close MagicMirror",
+        callback: "Stop"
+      })
+    }
   },
 
   getTranslations: function() {
@@ -288,6 +300,11 @@ Module.register("MMM-UpdateNotification", {
   },
 
   /** TelegramBot Commands **/
+  Stop: function(command, handler) {
+    handler.reply("TEXT", "Bye Bye!")
+    this.sendSocketNotification("CLOSEMM")
+  },
+
   Scan: function(command, handler) {
     if (!this.init) return handler.reply("TEXT", this.translate("INIT_INPROGRESS"))
     handler.reply("TEXT", this.translate("UPDATE_SCAN"))
