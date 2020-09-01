@@ -1,12 +1,12 @@
 {
   "UPDATE_TB": "Aktualisierung verfügbar:",
   "NOUPDATE_TB": "Keine Aktualisierung verfügbar.",
-  "UPDATE_HELPTB": "You can update modules with `/update <module_name>`",
-  "UPDATE_DONE": "Update done with success: {MODULE_NAME}",
-  "UPDATE_ERROR": "Update Error: {ERROR}",
-  "UPDATE_INPROGRESS": "Please wait update in progress !",
-  "UPDATING" : "Updating: {MODULE_NAME}",
-  "MODULENOTFOUND": "Module not found: {MODULE_NAME}",
-  "INIT_INPROGRESS" : "MMM-UpdateNotification is not yet initialized !",
-  "UPDATE_SCAN":  "Force update scanning..."
+  "UPDATE_HELPTB": "Module können mit `/update <module_name>` aktualisiert werden.",
+  "UPDATE_DONE": "Aktualisierung von {MODULE_NAME} erfolgreich.",
+  "UPDATE_ERROR": "Aktualisierungsfehler: {ERROR}",
+  "UPDATE_INPROGRESS": "Bitte den Abschluss des Aktualisierungsprozesses abwarten!",
+  "UPDATING" : "Aktualisiere {MODULE_NAME}",
+  "MODULENOTFOUND": "Modul {MODULE_NAME} nicht gefunden.",
+  "INIT_INPROGRESS" : "MMM-UpdateNotification ist noch nicht inizialisiert!",
+  "UPDATE_SCAN":  "Überprüfung auf Aktualisierungen..."
 }
