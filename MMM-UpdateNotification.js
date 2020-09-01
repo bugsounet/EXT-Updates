@@ -256,7 +256,7 @@ Module.register("MMM-UpdateNotification", {
   getCommands: function(commander) {
     commander.add({
       command: "update",
-      description: "update command manager",
+      description: this.translate("HELP_UPDATE"),
       callback: "Update"
     })
     commander.add({

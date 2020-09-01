@@ -8,5 +8,6 @@
   "UPDATING" : "Updating: {MODULE_NAME}",
   "MODULENOTFOUND": "Module not found: {MODULE_NAME}",
   "INIT_INPROGRESS" : "MMM-UpdateNotification is not yet initialized !",
-  "UPDATE_SCAN":  "Force update scanning..."
+  "UPDATE_SCAN": "Force update scanning...",
+  "HELP_UPDATE": "Update command manager"
 }
