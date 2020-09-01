@@ -261,13 +261,13 @@ Module.register("MMM-UpdateNotification", {
     })
     commander.add({
       command: "scan",
-      description: "Force Scan if any update needed",
+      description: this.translate("HELP_SCAN"),
       callback: "Scan"
     })
     if (!this.config.update.usePM2) {
       commander.add({
         command: "stopMM",
-        description: "Force to close MagicMirror",
+        description: this.translate("HELP_STOP"),
         callback: "Stop"
       })
     }

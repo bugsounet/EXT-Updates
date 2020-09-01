@@ -8,5 +8,9 @@
   "UPDATING" : "Mise à jour de: {MODULE_NAME}",
   "MODULENOTFOUND": "Module non trouvé: {MODULE_NAME}",
   "INIT_INPROGRESS" : "MMM-UpdateNotification n'est pas encore initialisé !",
-  "UPDATE_SCAN": "Recherche de nouvelles mises à jour (Force)..."
+  "UPDATE_SCAN": "Recherche de nouvelles mises à jour (Force)...",
+  "HELP_UPDATE": "Gestionnaire de mise à jour",
+  "HELP_SCAN": "Force la recherche de mise à jour",
+  "HELP_STOP": "Force l'arrêt de MagicMirror",
+  "HELP_RESTART": "Force le redémarrage MagicMirror"
 }
