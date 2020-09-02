@@ -10,6 +10,7 @@ const Log = require(__dirname + "/../../js/logger.js")
 const NodeHelper = require("node_helper")
 var exec = require('child_process').exec
 var spawn = require('child_process').spawn
+const pm2 = require('pm2')
 var log = (...args) => { /* do nothing */ }
 
 module.exports = NodeHelper.create({
@@ -17,6 +18,8 @@ module.exports = NodeHelper.create({
     this.simpleGits = []
     this.config= {}
     this.updateTimer= null
+    this.ForceCheck = false
+    this.init = false
     console.log("[UN] MMM-UpdateNotification Version:", require('./package.json').version)
     console.log("[UN] MagicMirror is running on pid:", process.pid)
   },
@@ -49,19 +52,34 @@ module.exports = NodeHelper.create({
   },
 
   socketNotificationReceived: function (notification, payload) {
-    if (notification === "CONFIG") {
-      this.config = payload
-      if (this.config.debug) log = (...args) => { console.log("[UN]", ...args) }
+    switch (notification) {
+      case "CONFIG":
+        this.config = payload
+        if (this.config.debug) log = (...args) => { console.log("[UN]", ...args) }
+        if (this.config.notification.useTelegramBot && this.config.notification.sendReady) {
+          this.sendSocketNotification("WELCOME", process.pid)
+        }
+        break
+      case "MODULES":
+        clearTimeout(this.updateTimer)
+        this.updateTimer = null
+        this.simpleGits = []
+        this.configureModules(payload).then(() => this.performFetch())
+        break
+      case "UPDATE":
+        this.updateProcess(payload)
+        break
+      case "FORCE_CHECK":
+        this.ForceCheck = true
+        this.performFetch()
+        break
+      case "CLOSEMM":
+        this.doClose()
+        break
+      case "RESTARTMM":
+        this.restartMM()
+        break
     }
-    if (notification === "MODULES") {
-      clearTimeout(this.updateTimer)
-      this.updateTimer = null
-      this.simpleGits = []
-      this.configureModules(payload).then(() => this.performFetch())
-    }
-    if (notification == "UPDATE") this.updateProcess(payload)
-    if (notification == "FORCE_CHECK") this.performFetch()
-    if (notification == "CLOSEMM") process.abort()
   },
 
   resolveRemote: function (moduleName, moduleFolder) {
@@ -81,9 +99,10 @@ module.exports = NodeHelper.create({
 
   performFetch: function () {
     var moduleGitInfo = {}
+    if (this.ForceCheck) log("Force Scan Start")
     this.simpleGits.forEach((sg,nb) => {
       sg.git.fetch().status((err, data) => {
-        data.module = sg.module;
+        data.module = sg.module
         log("[" + (nb+1) + "/" + this.simpleGits.length +"] Scan:" , data.module)
         if (!err) {
           /** send ONLY needed info **/
@@ -98,14 +117,29 @@ module.exports = NodeHelper.create({
           } else {
             log("Scan Infos:", moduleGitInfo)
             this.sendSocketNotification("STATUS", moduleGitInfo)
+            if (this.ForceCheck || !this.init) this.scanChk(nb,this.simpleGits.length-1, this.init)
           }
         } else {
           log("Scan Error: " + data.module, err)
+          if (this.ForceCheck || !this.init) this.scanChk(nb,this.simpleGits.length-1, this.init)
         }
       })
     })
-
     this.scheduleNextFetch(this.config.updateInterval);
+  },
+
+  scanChk: function(nb,length, init) {
+    if (nb == length) {
+      if (this.init) {
+        this.ForceCheck = false
+        log("Force Scan Complete")
+        this.sendSocketNotification("SCAN_COMPLETE")
+      }
+      else {
+        this.init = true
+        this.sendSocketNotification("INITIALIZED", require('./package.json').version)
+      }
+    }
   },
 
   scheduleNextFetch: function (delay) {
@@ -166,38 +200,56 @@ module.exports = NodeHelper.create({
             if (value) final += this.ExtraChars(value) + "\n"
           })
           //log("[UN] Final for telegramBot:", final)
+          final += this.ExtraChars("[UN] Process update done! I do it... because you are so too lazy :)))") + "\n"
           if (this.config.notification.useCallback) this.sendSocketNotification("SendResult", final)
           this.sendSocketNotification("UPDATED" , module)
         }
-        console.log("[UN] Process update done! You are so lazy :)))")
+        console.log("[UN] Process update done! I do it... because you are so too lazy :)))")
         if (this.config.update.autoUpdate || this.config.update.autoRestart) setTimeout(() => this.restartMM(), 3000)
       }
     });
   },
 
+  /** MagicMirror restart and stop **/
   restartMM: function() {
     if (this.config.update.usePM2) {
-      exec ("pm2 restart " + this.config.update.PM2Name, (err,stdo,stde) => {
+      pm2.restart(this.config.update.PM2Name, (err, proc) => {
         if (err) {
           console.log("[UN] " + err)
           if (this.config.notification.useTelegramBot) this.sendSocketNotification("SendResult", err.toString())
         }
       })
     }
+    else this.doRestart()
+  },
+
+  doRestart: function() {
+    /** if don't use PM2 and launched with mpn start **/
+    /** but no control of it **/
+    /** I add stopMM command on telegram to stop process **/
+    /** @Saljoke is happy it's sooOOooOO Good ! **/
+    log("Restarting MagicMirror...")
+    var MMdir = path.normalize(__dirname + "/../../")
+    const out = this.config.update.logToConsole ? process.stdout : fs.openSync('./MagicMirror.log', 'a')
+    const err = this.config.update.logToConsole ? process.stderr : fs.openSync('./MagicMirror.log', 'a')
+    const subprocess = spawn("npm start", {cwd: MMdir, shell: true, detached: true , stdio: [ 'ignore', out, err ]})
+    subprocess.unref()
+    process.exit()
+  },
+
+  doClose: function() {
+    if (!this.config.update.usePM2) process.abort()
     else {
-      /** if don't use PM2 and launched with mpn start **/
-      /** but no control of it **/
-      /** I add stopMM command on telegram to stop process **/
-      log("Restarting MagicMirror...")
-      var MMdir = path.normalize(__dirname + "/../../")
-      const out = this.config.update.logToConsole ? process.stdout : fs.openSync('./MagicMirror.log', 'a')
-      const err = this.config.update.logToConsole ? process.stderr : fs.openSync('./MagicMirror.log', 'a')
-      const subprocess = spawn("npm start", {cwd: MMdir, shell: true, detached: true , stdio: [ 'ignore', out, err ]})
-      subprocess.unref()
-      process.exit()
+      pm2.stop(this.config.update.PM2Name, (err, proc) => {
+        if (err) {
+          console.log("[UN] " + err)
+          if (this.config.notification.useTelegramBot) this.sendSocketNotification("SendResult", err.toString())
+        }
+      })
     }
   },
 
+  /** remove ExtraChars for telegramBot markdown **/
   ExtraChars: function(str) {
     str = str.replace(/[\s]{2,}/g," ") // delete space doubles, and more
     str = str.replace(/^[\s]/, "") // delete space on the begin

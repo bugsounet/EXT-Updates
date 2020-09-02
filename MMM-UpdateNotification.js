@@ -31,6 +31,7 @@ Module.register("MMM-UpdateNotification", {
     ],
     notification: {
       useTelegramBot: true,
+      sendReady: true,
       useScreen: true,
       useCallback: true
     },
@@ -69,34 +70,49 @@ Module.register("MMM-UpdateNotification", {
   },
 
   notificationReceived: function (notification, payload, sender) {
-    if (notification === "DOM_OBJECTS_CREATED") {
-      this.sendSocketNotification("CONFIG", this.config)
-      /** wait a little time ... every one is loading ! it's just an RPI !!! **/
-      setTimeout(() => this.sendSocketNotification("MODULES", this.modulesName), this.config.startDelay)
-    }
-    if (notification === "NPM_UPDATE") {
-      //console.log("npm", payload)
-      this.updateUI(payload)
+    switch (notification) {
+      case "DOM_OBJECTS_CREATED":
+        this.sendSocketNotification("CONFIG", this.config)
+        /** wait a little time ... every one is loading ! it's just an RPI !!! **/
+        setTimeout(() => this.sendSocketNotification("MODULES", this.modulesName), this.config.startDelay)
+        break
+      case "NPM_UPDATE":
+        //console.log("npm", payload)
+        this.updateUI(payload)
+        break
     }
   },
 
   socketNotificationReceived: function (notification, payload) {
-    if (notification === "STATUS") {
-      this.init=true
-      //console.log("modules", payload)
-      this.updateUI(payload)
-    }
-    if (notification === "UPDATED") {
-      this.updating = false
-      this.sendNotification("TELBOT_TELL_ADMIN", this.translate("UPDATE_DONE", { MODULE_NAME: payload}))
-    }
-    if (notification === "ERROR_UPDATE") {
-      this.updating = false
-      this.sendNotification("TELBOT_TELL_ADMIN",  this.translate("UPDATE_ERROR", { ERROR: payload}))
-    }
-    if (notification === "SendResult") {
-      this.updating = false
-      this.sendNotification("TELBOT_TELL_ADMIN", payload, {parse_mode:'Markdown'})
+    switch (notification) {
+      case "STATUS":
+        //console.log("modules", payload)
+        this.updateUI(payload)
+        break
+      case "INITIALIZED":
+        this.init=true
+        if (this.config.notification.useTelegramBot && this.config.notification.sendReady) {
+          this.sendNotification("TELBOT_TELL_ADMIN", this.translate("INITIALIZED", { VERSION: payload }))
+        }
+        break
+      case "WELCOME":
+        this.sendNotification("TELBOT_TELL_ADMIN", this.translate(this.config.update.usePM2 ? "WELCOME" : "WELCOMEPID", this.config.update.usePM2 ? {} : { PID: payload }))
+        break
+      case "UPDATED":
+        this.updating = false
+        this.sendNotification("TELBOT_TELL_ADMIN", this.translate("UPDATE_DONE", { MODULE_NAME: payload }))
+        break
+      case "ERROR_UPDATE":
+        this.updating = false
+        this.sendNotification("TELBOT_TELL_ADMIN",  this.translate("UPDATE_ERROR", { ERROR: payload }))
+        break
+      case "SendResult":
+        this.updating = false
+        this.sendNotification("TELBOT_TELL_ADMIN", payload, {parse_mode:'Markdown'})
+        break
+      case "SCAN_COMPLETE":
+        this.checkCallback()
+        break
     }
   },
 
@@ -264,13 +280,21 @@ Module.register("MMM-UpdateNotification", {
       description: this.translate("HELP_SCAN"),
       callback: "Scan"
     })
-    if (!this.config.update.usePM2) {
-      commander.add({
-        command: "stopMM",
-        description: this.translate("HELP_STOP"),
-        callback: "Stop"
-      })
-    }
+    commander.add({
+      command: "stopMM",
+      description: this.translate("HELP_STOP"),
+      callback: "Stop"
+    })
+    commander.add({
+      command: "restartMM",
+      description: this.translate("HELP_RESTART"),
+      callback: "Restart"
+    })
+    commander.add({
+      command: "UN",
+      description: this.translate("HELP_UN"),
+      callback: "UNCommands"
+    })
   },
 
   getTranslations: function() {
@@ -305,6 +329,24 @@ Module.register("MMM-UpdateNotification", {
     this.sendSocketNotification("CLOSEMM")
   },
 
+  Restart: function(command, handler) {
+    /** @Saljoke says: Saljoke [02.09.20 00:27] Cedric philosophy 😂 **/
+    /** So I make Joke ! **/
+    handler.reply("TEXT", "[UN] Daddy @bugsounet haven't found a pretty sentence for restarting!\n")
+    handler.reply("TEXT", "[@bugsounet] Ok... So restart now! You are lazy UpdateNotification ???")
+    handler.reply("TEXT", "[UN] Sorry, I will restart ! I'M NOT LAZY !!!")
+    setTimeout(() => {
+      handler.reply("TEXT", "[@Saljoke] Cedric philosophy 😂")
+      this.sendSocketNotification("RESTARTMM")
+    }, 2000)
+  },
+
+  UNCommands: function(command, handler) {
+    var helping = this.translate("HELP_UN") + "\n/update\n/scan\n/stopMM\n/restartMM\n"
+    helping += this.translate("HELP_COMMAND")
+    handler.reply("TEXT", helping + "\n")
+  },
+
   Scan: function(command, handler) {
     if (!this.init) return handler.reply("TEXT", this.translate("INIT_INPROGRESS"))
     handler.reply("TEXT", this.translate("UPDATE_SCAN"))
@@ -328,7 +370,12 @@ Module.register("MMM-UpdateNotification", {
           }
         }
       }
-      if (!found) handler.reply("TEXT", this.translate("MODULENOTFOUND",  { MODULE_NAME: handler.args}))
+      if (!found) {
+        if (this.modulesName.indexOf(handler.args) > 0) {
+          handler.reply("TEXT", this.translate("NOUPDATE_TB",  { MODULE_NAME: handler.args}))
+        }
+        else handler.reply("TEXT", this.translate("MODULENOTFOUND",  { MODULE_NAME: handler.args}))
+      }
     }
     else {
       /** List of all update **/
@@ -355,6 +402,15 @@ Module.register("MMM-UpdateNotification", {
       }
       else handler.reply("TEXT", this.translate("NOUPDATE_TB"), {parse_mode:'Markdown'})
     }
+  },
+
+  checkCallback() {
+    /** callback for no module found **/
+    var found = 0
+    for (let [name, value] of Object.entries(this.notiTB)) {
+      if (this.npmList[name] || this.moduleList[name]) found = 1
+    }
+    if (!found) this.sendNotification("TELBOT_TELL_ADMIN", this.translate("NOUPDATE_TB"))
   },
 
   updateProcess(module) {

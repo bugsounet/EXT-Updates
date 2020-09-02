@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/bugsounet/MMM-UpdateNotification/issues"
   },
-  "homepage": "https://github.com/bugsounet/MMM-UpdateNotification"
+  "homepage": "https://github.com/bugsounet/MMM-UpdateNotification",
+  "dependencies": {
+    "pm2": "^4.4.1"
+  }
 }

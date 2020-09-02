@@ -9,8 +9,13 @@
   "MODULENOTFOUND": "Module non trouvé: {MODULE_NAME}",
   "INIT_INPROGRESS" : "MMM-UpdateNotification n'est pas encore initialisé !",
   "UPDATE_SCAN": "Recherche de nouvelles mises à jour (Force)...",
-  "HELP_UPDATE": "Gestionnaire de mise à jour",
-  "HELP_SCAN": "Force la recherche de mise à jour",
+  "HELP_UPDATE": "Gestionnaire de mises à jour",
+  "HELP_SCAN": "Force la recherche de mises à jour",
   "HELP_STOP": "Force l'arrêt de MagicMirror",
-  "HELP_RESTART": "Force le redémarrage MagicMirror"
+  "HELP_RESTART": "Force le redémarrage MagicMirror",
+  "INITIALIZED": "MMM-UpdateNotification v{VERSION} est maintenant actif !",
+  "WELCOME": "Bienvenue sur MMM-UpdateNotification,\nPour connaître toutes les commandes disponibles essayez\n/UN\n",
+  "WELCOMEPID": "Bienvenue sur MMM-UpdateNotification,\nMagicMirror fonctionne sur le PID {PID}\n\nPour connaître toutes les commandes disponibles essayez\n/UN\n",
+  "HELP_UN" : "Liste des commandes de UpdateNotification",
+  "HELP_COMMAND": "Pour plus d'information, utilisez `/help <commande>`"
 }

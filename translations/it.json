@@ -12,5 +12,10 @@
   "HELP_UPDATE": "Update command manager",
   "HELP_SCAN": "Force Scan if any update needed",
   "HELP_STOP": "Force to close MagicMirror",
-  "HELP_RESTART": "Force to restart MagicMirror"
+  "HELP_RESTART": "Force to restart MagicMirror",
+  "INITIALIZED": "MMM-UpdateNotification v{VERSION} is now initialized !",
+  "WELCOME": "Welcome to MMM-UpdateNotification,\nFor know all available commands try /UN",
+  "WELCOMEPID": "Welcome to MMM-UpdateNotification,\nMagicMirror is running on PID {PID}\n\nFor know all available commands try\n/UN\n",
+  "HELP_UN" : "List of UpdateNotification commands",
+  "HELP_COMMAND": "For more informations about command: use `/help <command>`"
 }
