@@ -37,7 +37,7 @@ Module.register("MMM-UpdateNotification", {
     update: {
       autoUpdate: true,
       autoRestart: true,
-      usePM2: false,
+      usePM2: true,
       PM2Name: "0",
       defaultCommand: "git pull && npm install",
       updateMagicMirror: false,
