@@ -17,5 +17,6 @@
   "WELCOME": "Welcome to MMM-UpdateNotification,\nFor know all available commands try /UN",
   "WELCOMEPID": "Welcome to MMM-UpdateNotification,\nMagicMirror is running on PID {PID}\n\nFor know all available commands try\n/UN\n",
   "HELP_UN" : "List of UpdateNotification commands",
-  "HELP_COMMAND": "For more informations about command: use `/help <command>`"
+  "HELP_COMMAND": "For more informations about command: use `/help <command>`",
+  "NEEDRESTART": "Don't forget to restart MagicMirror!"
 }

@@ -200,12 +200,15 @@ module.exports = NodeHelper.create({
             if (value) final += this.ExtraChars(value) + "\n"
           })
           //log("[UN] Final for telegramBot:", final)
-          final += this.ExtraChars("[UN] Process update done! I do it... because you are so too lazy :)))") + "\n"
+          final += "\n" + this.ExtraChars("[UN] Process update done, i do it... because you are so too lazy :)))") + "\n"
           if (this.config.notification.useCallback) this.sendSocketNotification("SendResult", final)
           this.sendSocketNotification("UPDATED" , module)
+          if (!this.config.update.autoRestart) this.sendSocketNotification("NEEDRESTART")
         }
-        console.log("[UN] Process update done! I do it... because you are so too lazy :)))")
-        if (this.config.update.autoUpdate || this.config.update.autoRestart) setTimeout(() => this.restartMM(), 3000)
+        if (this.config.update.autoRestart) {
+          log("Process update done, i do it... because you are so too lazy :)))")
+          setTimeout(() => this.restartMM(), 3000)
+        } else log("Process update done, don't forget to restart MagicMirror!")
       }
     });
   },

@@ -102,6 +102,9 @@ Module.register("MMM-UpdateNotification", {
         this.updating = false
         this.sendNotification("TELBOT_TELL_ADMIN", this.translate("UPDATE_DONE", { MODULE_NAME: payload }))
         break
+      case "NEEDRESTART":
+        this.sendNotification("TELBOT_TELL_ADMIN",  this.translate("NEEDRESTART"))
+        break
       case "ERROR_UPDATE":
         this.updating = false
         this.sendNotification("TELBOT_TELL_ADMIN",  this.translate("UPDATE_ERROR", { ERROR: payload }))
@@ -164,7 +167,6 @@ Module.register("MMM-UpdateNotification", {
         icon.innerHTML = "&nbsp;"
         message.appendChild(icon)
 
-
         var subtextHtml = this.translate(updateInfoKeyName, {
           COMMIT_COUNT: m.behind,
           BRANCH_NAME: m.current
@@ -179,6 +181,7 @@ Module.register("MMM-UpdateNotification", {
           MODULE_NAME: m.module
           })
         }
+
         message.appendChild(text)
         wrapper.appendChild(message)
 
@@ -193,7 +196,7 @@ Module.register("MMM-UpdateNotification", {
         if (this.config.notification.useTelegramBot) {
           let TB = null
           if (m.module === "MagicMirror") {
-            TB = this.translate("UPDATE_NOTIFICATION")
+            TB = this.translate("UPDATE_NOTIFICATION") + "\n"
           } else {
             TB = this.translate("UPDATE_NOTIFICATION_MODULE", { MODULE_NAME: m.module }) + "\n"
           }
@@ -203,10 +206,14 @@ Module.register("MMM-UpdateNotification", {
         }
         if (this.config.update.autoUpdate && !this.updating) {
           if (m.module == "MagicMirror" && !this.config.updateMagicMirror) {
-            return this.notiTB[key] = false
+            /** don't update MM **/
+            this.notiTB[key] = false
+            this.updating = false
           }
-          this.updateProcess(m.module)
-          this.updating = true
+          else {
+            this.updateProcess(m.module)
+            this.updating = true
+          }
         }
         this.notiTB[key] = false
       }
@@ -387,7 +394,7 @@ Module.register("MMM-UpdateNotification", {
           }
           else if (this.moduleList[name]) {
             if (this.moduleList[name].module === "MagicMirror") {
-              updateTxt += "- *MagicMirror²*: "
+              updateTxt += "- *MagicMirror*: "
             } else {
               updateTxt += "- *" + this.moduleList[name].module + "*: "
             }
