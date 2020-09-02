@@ -5,10 +5,10 @@
   "UPDATE_DONE": "Aktualisierung von {MODULE_NAME} erfolgreich.",
   "UPDATE_ERROR": "Aktualisierungsfehler: {ERROR}",
   "UPDATE_INPROGRESS": "Bitte den Abschluss des Aktualisierungsprozesses abwarten!",
-  "UPDATING" : "Aktualisiere {MODULE_NAME}",
+  "UPDATING": "Aktualisiere {MODULE_NAME}",
   "MODULENOTFOUND": "Modul {MODULE_NAME} nicht gefunden.",
-  "INIT_INPROGRESS" : "MMM-UpdateNotification ist noch nicht bereit!",
-  "UPDATE_SCAN":  "Überprüfung auf Aktualisierungen...",
+  "INIT_INPROGRESS": "MMM-UpdateNotification ist noch nicht bereit!",
+  "UPDATE_SCAN": "Überprüfung auf Aktualisierungen...",
   "HELP_UPDATE": "Aktualisierungen manuell starten.",
   "HELP_SCAN": "Überprüfung auf Aktualisierungen manuell starten",
   "HELP_STOP": "MagicMirror beenden",
@@ -16,7 +16,7 @@
   "INITIALIZED": "MMM-UpdateNotification v{VERSION} ist jetzt bereit!",
   "WELCOME": "Willkommen.\nVerfügbare UpdateNotification-Befehle mit `/UN` anzeigen.",
   "WELCOMEPID": "Willkommen.\nMagicMirror is running on PID {PID}\n\nVerfügbare UpdateNotification-Befehle mit `/UN` anzeigen.",
-  "HELP_UN" : "Verfügbare UpdateNotification-Befehle anzeigen.",
+  "HELP_UN": "Verfügbare UpdateNotification-Befehle anzeigen.",
   "HELP_COMMAND": "Weitere Informationen mit `/help <command>` anzeigen.",
   "NEEDRESTART": "Bitte MagicMirror neu starten!"
 }
