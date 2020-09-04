@@ -22,5 +22,5 @@ Read the docs in [wiki](https://github.com/bugsounet/MMM-UpdateNotification/wiki
 
 [![](https://i9.ytimg.com/vi/ip0wGeLl-7s/mq1.jpg?sqp=CNjjyvoF&rs=AOn4CLBTXsgpPfs-EOt8q0nxc6jmcYWiSQ)](https://www.youtube.com/watch?v=ip0wGeLl-7s)
 
-![](shot1)
-![](shot2)
+![](shot1.png)
+![](shot2.png)
