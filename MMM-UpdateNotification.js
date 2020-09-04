@@ -218,11 +218,20 @@ Module.register("MMM-UpdateNotification", {
         this.notiTB[key] = false
       }
     }
+    /** display NPN module update **/
     for (var key of Object.keys(this.npmList)) {
       if (typeof this.notiTB[key] === "undefined") {
         this.notiTB[key] = true
       }
       let npm = this.npmList[key]
+
+      /** NPM: if module is on ignoreModules array ... delete it **/
+      if (this.config.ignoreModules.indexOf(npm.module) >= 0) {
+        console.log(this.npmList, this.notiTB)
+        delete this.notiTB[key]
+        delete this.npmList[key]
+        continue
+      }
 
       if (this.suspended === false) {
         var message = document.createElement("div")
