@@ -1,4 +1,4 @@
-# MMM-UpdateNotification beta2
+# MMM-UpdateNotification beta3
 
 The `updatenotification` module is one of the default modules of the MagicMirror.<br>
 This will display a message whenever a new version of the MagicMirror application is available.
