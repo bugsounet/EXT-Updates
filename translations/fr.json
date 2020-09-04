@@ -27,6 +27,6 @@
   "DOUBLECONFIG": "La configuration est en double avec {MODULE_NAME} (Déjà définie)",
   "COMMANDCONFIG": "La commande n'est pas trouvé dans le module {MODULE_NAME}",
   "MODULECONFIG": "Le nom du module n'est pas défini",
-  "HELP_UPDATECOMMAND": "Liste des commandes de mise à jour automatique",
+  "HELP_UPDATECOMMAND": "Liste des commandes de mise à jour automatisée des modules",
   "WELCOMEERROR": "Vous avez {ERROR} erreur(s) dans updateCommands !\nMerci de résoudre ce conflit.\nMMM-UpdateNotification n'est pas activé\n\nEssayez /updateCommands pour plus d'informations\n"
 }
