@@ -1,50 +1,28 @@
-# Module: MMM-UpdateNotification
+# MMM-UpdateNotification beta3
 
-The `updatenotification` module is one of the default modules of the MagicMirror.
+The `updatenotification` module is one of the default modules of the MagicMirror.<br>
 This will display a message whenever a new version of the MagicMirror application is available.
-
-For configuration options, please check the [MagicMirror² documentation](https://docs.magicmirror.builders/modules/updatenotification.html).
 
 ---
 This module is a Fork of `Update Notication` default module of MagicMirror
 
-All credit to `Michael Teeuw https://michaelteeuw.nl` and not to me :)
+All credit to `Michael Teeuw https://michaelteeuw.nl` for scanning Git modules and not to me :)
 
-I have just added TelegramBot notification and NPM Check result for my mpn libraries
+* Added: TelegramBot notification and functions
+* Added: NPM Check result for my @bugsounet mpn libraries
+* Added: Auto-updater any module and MagicMirror
+* Added: Auto-restart your mirror (`PM2` version and `npm start` version)
 
-Updates:
+---
+# Installation, update & Guides
+Read the docs in [wiki](https://github.com/bugsounet/MMM-UpdateNotification/wiki)<br>
 
-V1.0.1 (26/08/20):
-  * Send TelegramBot notification when module is disabled too
+---
+# Demo and screenshots:
 
-V1.0.0 (25/08/20):
-  * Added package.json
-  * Added support for TelegramBot (auto send notification on new update)
-  * Added NPM_UDPATE support (for npm @bugsounet/npmcheck library)
-  * correct some part of Mich code (I don't like code with `self` value using)
+- demo<br>
+[![](https://i9.ytimg.com/vi/ip0wGeLl-7s/mq1.jpg?sqp=CNjjyvoF&rs=AOn4CLBTXsgpPfs-EOt8q0nxc6jmcYWiSQ)](https://www.youtube.com/watch?v=ip0wGeLl-7s)
 
- # Configuration sample is the same as the default module
- No Feature will be added, so the configuration is the same.
- 
- You can, if you want just replace the name of module `updatenotification` by `MMM-UpdateNotification`
- 
- Or create config:
-```js
-{
-  module: "MMM-UpdateNotification",
-  position: "top_bar",	// This can be any of the regions.
-  config: {
-    // The config property is optional.
-    // See 'Configuration options' for more information.
-  }
-},
- ```
- don't forget to delete or disable `updatenotification`, in this case
- 
- # Installing
- 
- ```sh
- cd ~/MagicMirror/modules
- git clone https://github.com/bugsounet/MMM-UpdateNotification
- npm install
- ```
+- screenshots<br>
+![](https://raw.githubusercontent.com/bugsounet/MMM-UpdateNotification/dev/shoot/shot1.png)
+![](https://raw.githubusercontent.com/bugsounet/MMM-UpdateNotification/dev/shoot/shot2.png)
