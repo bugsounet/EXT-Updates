@@ -14,7 +14,7 @@
   "HELP_STOP": "MagicMirror beenden",
   "HELP_RESTART": "MagicMirror neu starten.",
   "INITIALIZED": "MMM-UpdateNotification v{VERSION} ist jetzt bereit!",
-  "WELCOME": "Willkommen.\nVerfügbare UpdateNotification-Befehle mit `/UN` anzeigen.",
+  "WELCOME": "Willkommen.\nUpdateNotification-Befehle mit `/UN` anzeigen.",
   "WELCOMEPID": "Willkommen.\nMagicMirror is running on PID {PID}\n\nVerfügbare UpdateNotification-Befehle mit `/UN` anzeigen.",
   "HELP_UN": "Verfügbare UpdateNotification-Befehle anzeigen.",
   "HELP_COMMAND": "Weitere Informationen mit `/help <command>` anzeigen.",
