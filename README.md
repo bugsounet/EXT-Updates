@@ -18,9 +18,11 @@ All credit to `Michael Teeuw https://michaelteeuw.nl` for scanning Git modules a
 Read the docs in [wiki](https://github.com/bugsounet/MMM-UpdateNotification/wiki)<br>
 
 ---
-# Demo and screenshot:
+# Demo and screenshots:
 
+- demo<br>
 [![](https://i9.ytimg.com/vi/ip0wGeLl-7s/mq1.jpg?sqp=CNjjyvoF&rs=AOn4CLBTXsgpPfs-EOt8q0nxc6jmcYWiSQ)](https://www.youtube.com/watch?v=ip0wGeLl-7s)
 
+- screenshots<br>
 ![](https://raw.githubusercontent.com/bugsounet/MMM-UpdateNotification/dev/shoot/shot1.png)
 ![](https://raw.githubusercontent.com/bugsounet/MMM-UpdateNotification/dev/shoot/shot2.png)
