@@ -53,11 +53,13 @@ Module.register("MMM-UpdateNotification", {
 
   start: function () {
     console.log("[UN] Start MMM-UpdateNotification")
-    this.config = configMerge({}, this.defaults, this.config)
+    this.config = configMerged({}, this.defaults, this.config)
     this.suspended = !this.config.notification.useScreen
     this.init= false
     this.updating= false
     this.modulesName= []
+    this.commandsError = []
+    this.error = this.updateCommandsChk(this.config.updateCommands)
     this.modulesInfo( cb => console.log("[UN] Modules find:", this.modulesName.length))
     setInterval(() => {
       /** reset all and restart **/
@@ -69,12 +71,53 @@ Module.register("MMM-UpdateNotification", {
     }, this.config.refreshInterval)
   },
 
+  updateCommandsChk: function(str) {
+    this.commandsError = []
+    error = 0
+    modules =[]
+    str.forEach(x => {
+      var err = {}
+      if (!x.module) {
+        error += 1
+        err = {
+          type: "module",
+          module: "unknow"
+        }
+        this.commandsError.push(err)
+      }
+      if (!x.command) {
+        error += 1
+        err = {
+          type: "command",
+          module: x.module
+        }
+        this.commandsError.push(err)
+      }
+      if (x.module && modules.indexOf(x.module) >= 0) {
+        error += 1
+        err = {
+          type: "double",
+          module: x.module
+        }
+        this.commandsError.push(err)
+      }
+      else if (x.module) modules.push(x.module)
+    })
+    if (error) console.log("[UN] " + error + " errors in updateCommands !!!",  this.commandsError)
+    return error
+  },
+
   notificationReceived: function (notification, payload, sender) {
     switch (notification) {
       case "DOM_OBJECTS_CREATED":
         this.sendSocketNotification("CONFIG", this.config)
         /** wait a little time ... every one is loading ! it's just an RPI !!! **/
-        setTimeout(() => this.sendSocketNotification("MODULES", this.modulesName), this.config.startDelay)
+        if (this.error && this.config.notification.useTelegramBot) {
+          this.sendNotification("TELBOT_TELL_ADMIN", "You have " + error +
+          " error(s) in updateCommands !\nPlease solve it.\nMMM-UpdateNotification is not activated\n\nTry /updateCommands for more informations\n",
+          {parse_mode:'Markdown'})
+        }
+        else setTimeout(() => this.sendSocketNotification("MODULES", this.modulesName), this.config.startDelay)
         break
       case "NPM_UPDATE":
         //console.log("npm", payload)
@@ -90,9 +133,11 @@ Module.register("MMM-UpdateNotification", {
         this.updateUI(payload)
         break
       case "INITIALIZED":
-        this.init=true
-        if (this.config.notification.useTelegramBot && this.config.notification.sendReady) {
-          this.sendNotification("TELBOT_TELL_ADMIN", this.translate("INITIALIZED", { VERSION: payload }))
+        if (!this.error) {
+          this.init=true
+          if (this.config.notification.useTelegramBot && this.config.notification.sendReady) {
+            this.sendNotification("TELBOT_TELL_ADMIN", this.translate("INITIALIZED", { VERSION: payload }))
+          }
         }
         break
       case "WELCOME":
@@ -311,6 +356,11 @@ Module.register("MMM-UpdateNotification", {
       description: this.translate("HELP_UN"),
       callback: "UNCommands"
     })
+    commander.add({
+      command: "updateCommands",
+      description: "updateCommands List",
+      callback: "updateCommands"
+    })
   },
 
   getTranslations: function() {
@@ -324,7 +374,7 @@ Module.register("MMM-UpdateNotification", {
 
   getScripts: function () {
     return [
-     "configMerge.min.js"
+     "configMerged.js"
     ]
   },
 
@@ -357,8 +407,27 @@ Module.register("MMM-UpdateNotification", {
     }, 2000)
   },
 
+  updateCommands: function(command, handler) {
+    var text = ""
+    var nb = 0
+    this.config.updateCommands.forEach(update => {
+      text += "*"+ update.module + ":* `" + update.command + "`\n"
+    })
+    if (this.error) {
+      text += "\nSome error ("+ this.error +") have been detected:\n\n"
+      this.commandsError.forEach(error => {
+        nb += 1
+        if (error.type == "double") text+= "*"+nb+"*: Double of " + error.module +" (Already defined)\n"
+        if (error.type == "command") text += "*"+nb+"*: Command not found in " + error.module + "\n"
+        if (error.type == "module") text += "*"+nb+"*: Module name not found\n"
+      })
+      text += "\nMMM-UpdateNotification is not activated\nPlease solve this!\n"
+    }
+    handler.reply("TEXT", text + "\n", {parse_mode:'Markdown'})
+  },
+
   UNCommands: function(command, handler) {
-    var helping = this.translate("HELP_UN") + "\n/update\n/scan\n/stopMM\n/restartMM\n"
+    var helping = this.translate("HELP_UN") + "\n/update\n/scan\n/stopMM\n/restartMM\n/updateCommands\n"
     helping += this.translate("HELP_COMMAND")
     handler.reply("TEXT", helping + "\n")
   },
@@ -430,6 +499,7 @@ Module.register("MMM-UpdateNotification", {
   },
 
   updateProcess(module) {
+    if (this.error) return
     this.sendNotification("WAKEUP")
     this.sendSocketNotification("UPDATE", module)
   }
