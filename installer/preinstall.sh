@@ -38,7 +38,7 @@ fi
 
 # switch branch
 Installer_info "Installing Beta2 Sources..."
-git checkout -f beta2 2>/dev/null || Installer_error "Installing Error !"
+git checkout -f beta3 2>/dev/null || Installer_error "Installing Error !"
 git pull 2>/dev/null
 
 echo
