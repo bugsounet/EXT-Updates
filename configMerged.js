@@ -42,7 +42,6 @@ var configMerged= function (result) {
               }
             }
             result[key]= merge
-
           } else {
            result[key] = item[key]
           }

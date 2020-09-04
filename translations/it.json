@@ -18,5 +18,15 @@
   "WELCOMEPID": "Benvenuto in MMM-UpdateNotification,\nMagicMirror è avvio in PID {PID}\n\nPer aiuto sui comandi invia\n/UN\n",
   "HELP_UN" : "Lista dei comandi di UpdateNotification",
   "HELP_COMMAND": "Per maggiori informazioni sui comandi: invia `/help <command>`",
-  "NEEDRESTART": "Non dimenticare di riavviare il tuo MagicMirror!"
+  "NEEDRESTART": "Non dimenticare di riavviare il tuo MagicMirror!",
+  "DEFAULTCONFIG": "*Internal Configuration:*\n",
+  "PERSONALCONFIG": "\n*Personnal Configuration:*\n",
+  "ERRORCONFIG": "\n*Detected Error:*\n",
+  "ERRORCONFIGNOTACTIVATED": "\nMMM-UpdateNotification is not activated\nPlease solve this!\n",
+  "UNKNOWCONFIG": "Unknow configuration",
+  "DOUBLECONFIG": "Double configuration of {MODULE_NAME} (Already defined)",
+  "COMMANDCONFIG": "Command not found in {MODULE_NAME}",
+  "MODULECONFIG": "Module name not found",
+  "HELP_UPDATECOMMAND": "Automated updateCommands List",
+  "WELCOMEERROR": "You have {ERROR} error(s) in updateCommands !\nPlease solve it.\nMMM-UpdateNotification is not activated\n\nTry /updateCommands for more informations\n"
 }

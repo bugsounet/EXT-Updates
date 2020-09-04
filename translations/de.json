@@ -18,5 +18,15 @@
   "WELCOMEPID": "Willkommen.\nMagicMirror is running on PID {PID}\n\nVerfügbare UpdateNotification-Befehle mit `/UN` anzeigen.",
   "HELP_UN": "Verfügbare UpdateNotification-Befehle anzeigen.",
   "HELP_COMMAND": "Weitere Informationen mit `/help <command>` anzeigen.",
-  "NEEDRESTART": "Bitte MagicMirror neu starten!"
+  "NEEDRESTART": "Bitte MagicMirror neu starten!",
+  "DEFAULTCONFIG": "*Internal Configuration:*\n",
+  "PERSONALCONFIG": "\n*Personnal Configuration:*\n",
+  "ERRORCONFIG": "\n*Detected Error:*\n",
+  "ERRORCONFIGNOTACTIVATED": "\nMMM-UpdateNotification is not activated\nPlease solve this!\n",
+  "UNKNOWCONFIG": "Unknow configuration",
+  "DOUBLECONFIG": "Double configuration of {MODULE_NAME} (Already defined)",
+  "COMMANDCONFIG": "Command not found in {MODULE_NAME}",
+  "MODULECONFIG": "Module name not found",
+  "HELP_UPDATECOMMAND": "Automated updateCommands List",
+  "WELCOMEERROR": "You have {ERROR} error(s) in updateCommands !\nPlease solve it.\nMMM-UpdateNotification is not activated\n\nTry /updateCommands for more informations\n"
 }

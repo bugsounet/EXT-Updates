@@ -75,21 +75,33 @@ Module.register("MMM-UpdateNotification", {
     this.commandsError = []
     error = 0
     modules =[]
+    nb = 0
     str.forEach(x => {
       var err = {}
-      if (!x.module) {
-        error += 1
+      if (!x.module && !x.command) {
+        error +=1
         err = {
-          type: "module",
-          module: "unknow"
+          type: "unknow",
+          module: "unknow",
+          place: nb-2
         }
         this.commandsError.push(err)
       }
-      if (!x.command) {
+      if (!x.module && x.command) {
+        error += 1
+        err = {
+          type: "module",
+          module: "unknow",
+          place: nb-2
+        }
+        this.commandsError.push(err)
+      }
+      if (!x.command && x.module) {
         error += 1
         err = {
           type: "command",
-          module: x.module
+          module: x.module,
+          place: nb-2
         }
         this.commandsError.push(err)
       }
@@ -97,11 +109,13 @@ Module.register("MMM-UpdateNotification", {
         error += 1
         err = {
           type: "double",
-          module: x.module
+          module: x.module,
+          place: nb-2
         }
         this.commandsError.push(err)
       }
       else if (x.module) modules.push(x.module)
+      nb += 1
     })
     if (error) console.log("[UN] " + error + " errors in updateCommands !!!",  this.commandsError)
     return error
@@ -113,9 +127,7 @@ Module.register("MMM-UpdateNotification", {
         this.sendSocketNotification("CONFIG", this.config)
         /** wait a little time ... every one is loading ! it's just an RPI !!! **/
         if (this.error && this.config.notification.useTelegramBot) {
-          this.sendNotification("TELBOT_TELL_ADMIN", "You have " + error +
-          " error(s) in updateCommands !\nPlease solve it.\nMMM-UpdateNotification is not activated\n\nTry /updateCommands for more informations\n",
-          {parse_mode:'Markdown'})
+          this.sendNotification("TELBOT_TELL_ADMIN", this.translate("WELCOMEERROR", { ERROR: error }), {parse_mode:'Markdown'})
         }
         else setTimeout(() => this.sendSocketNotification("MODULES", this.modulesName), this.config.startDelay)
         break
@@ -358,7 +370,7 @@ Module.register("MMM-UpdateNotification", {
     })
     commander.add({
       command: "updateCommands",
-      description: "updateCommands List",
+      description: this.translate("HELP_UPDATECOMMAND"),
       callback: "updateCommands"
     })
   },
@@ -408,20 +420,47 @@ Module.register("MMM-UpdateNotification", {
   },
 
   updateCommands: function(command, handler) {
-    var text = ""
+    var text = this.translate("DEFAULTCONFIG")
     var nb = 0
+    var err= 0
+    /** display default updateCommands **/
     this.config.updateCommands.forEach(update => {
-      text += "*"+ update.module + ":* `" + update.command + "`\n"
+      if (nb >=0 && nb <= 2) text += "*"+ update.module + ":* `" + update.command + "`\n"
+      nb += 1
     })
-    if (this.error) {
-      text += "\nSome error ("+ this.error +") have been detected:\n\n"
-      this.commandsError.forEach(error => {
+
+    if (this.config.updateCommands.length > 3) {
+      nb = 0
+      text += this.translate("PERSONALCONFIG")
+      this.config.updateCommands.forEach(update => {
+        err = 0
+        if (!this.error) {
+          if (nb > 2) text += "*"+ (nb-2) +". " + update.module + ":* `" + update.command + "` ✅\n"
+        }
+        else {
+          this.commandsError.forEach(error => {
+            if (error.place === nb-2) {
+              text += "*"+error.place+". " + update.module + ":* `" + update.command + "` ⁉️\n"
+              err = 1
+            }
+          })
+          if (!err) {
+            if (nb > 2) text += "*"+(nb-2)+". " + update.module + ":* `" + update.command + "` ✅\n"
+          }
+        }
         nb += 1
-        if (error.type == "double") text+= "*"+nb+"*: Double of " + error.module +" (Already defined)\n"
-        if (error.type == "command") text += "*"+nb+"*: Command not found in " + error.module + "\n"
-        if (error.type == "module") text += "*"+nb+"*: Module name not found\n"
       })
-      text += "\nMMM-UpdateNotification is not activated\nPlease solve this!\n"
+
+      if (this.error) {
+        text += this.translate("ERRORCONFIG")
+        this.commandsError.forEach(error => {
+          if (error.type == "unknow") text+= "*"+error.place+ "*: " + this.translate("UNKNOWCONFIG") + "\n"
+          if (error.type == "double") text+= "*"+error.place+ "*: " + this.translate("DOUBLECONFIG", { MODULE_NAME: this.ExtraChars(error.module)}) + "\n"
+          if (error.type == "command") text += "*"+error.place+"*: " + this.translate("COMMANDCONFIG", { MODULE_NAME: this.ExtraChars(error.module)}) + "\n"
+          if (error.type == "module") text += "*"+error.place+"*: " + this.translate("MODULECONFIG") + "\n"
+        })
+        text += this.translate("ERRORCONFIGNOTACTIVATED")
+      }
     }
     handler.reply("TEXT", text + "\n", {parse_mode:'Markdown'})
   },
@@ -502,5 +541,18 @@ Module.register("MMM-UpdateNotification", {
     if (this.error) return
     this.sendNotification("WAKEUP")
     this.sendSocketNotification("UPDATE", module)
+  },
+
+  ExtraChars: function(str) {
+    /** special markdown for Telegram **/
+    /** needed only if no markdown active **/
+    if (!str) return str
+    try {
+      str = TelegramBotExtraChars(str)
+    } catch (e) {
+      // don't transform it :'(
+      // TelegramBot can crash !
+    }
+    return str
   }
 });
