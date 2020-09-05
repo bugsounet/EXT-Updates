@@ -66,6 +66,9 @@ module.exports = NodeHelper.create({
         this.simpleGits = []
         this.configureModules(payload).then(() => this.performFetch())
         break
+      case "DISPLAY_ERROR":
+        console.log("[UN] Callbacks errors:\n\n" + payload)
+        break
       case "UPDATE":
         this.updateProcess(payload)
         break

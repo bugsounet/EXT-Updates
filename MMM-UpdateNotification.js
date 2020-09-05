@@ -126,14 +126,25 @@ Module.register("MMM-UpdateNotification", {
       case "DOM_OBJECTS_CREATED":
         this.sendSocketNotification("CONFIG", this.config)
         /** wait a little time ... every one is loading ! it's just an RPI !!! **/
-        if (this.error && this.config.notification.useTelegramBot) {
-          this.sendNotification("TELBOT_TELL_ADMIN", this.translate("WELCOMEERROR", { ERROR: error }), {parse_mode:'Markdown'})
+        if (this.error) {
+          if (this.config.notification.useTelegramBot) {
+            this.sendNotification("TELBOT_TELL_ADMIN", this.translate("WELCOMEERROR", { ERROR: this.error }), {parse_mode:'Markdown'})
+          }
+          else {
+            this.sendNotification("SHOW_ALERT", {
+              type: "notification" ,
+              message: this.translate("WELCOMEERROR_NOTB", { ERROR: this.error }),
+              title: "MMM-UpdateNotification",
+              timer: 0
+            })
+            this.updateCommands(null, null, null, true)
+          }
         }
         else setTimeout(() => this.sendSocketNotification("MODULES", this.modulesName), this.config.startDelay)
         break
       case "NPM_UPDATE":
         //console.log("npm", payload)
-        this.updateUI(payload)
+        if (!this.error) this.updateUI(payload)
         break
     }
   },
@@ -419,7 +430,7 @@ Module.register("MMM-UpdateNotification", {
     }, 2000)
   },
 
-  updateCommands: function(command, handler) {
+  updateCommands: function(command, handler, moduleClass, style = false) {
     var text = this.translate("DEFAULTCONFIG")
     var nb = 0
     var err= 0
@@ -462,7 +473,8 @@ Module.register("MMM-UpdateNotification", {
         text += this.translate("ERRORCONFIGNOTACTIVATED")
       }
     }
-    handler.reply("TEXT", text + "\n", {parse_mode:'Markdown'})
+    if (!style) handler.reply("TEXT", text + "\n", {parse_mode:'Markdown'})
+    else this.sendSocketNotification("DISPLAY_ERROR", text)
   },
 
   UNCommands: function(command, handler) {
