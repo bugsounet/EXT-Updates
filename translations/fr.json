@@ -29,5 +29,6 @@
   "MODULECONFIG": "Le nom du module n'est pas défini",
   "HELP_UPDATECOMMAND": "Liste des commandes de mise à jour automatisée des modules",
   "WELCOMEERROR": "Vous avez {ERROR} erreur(s) dans updateCommands !\nMerci de résoudre ce conflit.\nMMM-UpdateNotification n'est pas activé\n\nEssayez /updateCommands pour plus d'informations\n",
-  "WELCOMEERROR_NOTB": "Vous avez {ERROR} erreur(s) dans updateCommands !<br>Merci de résoudre ce conflit.<br>MMM-UpdateNotification n'est pas activé.<br><br>Consultez les logs de votre terminal pour plus d'informations."
+  "WELCOMEERROR_NOTB": "Vous avez {ERROR} erreur(s) dans updateCommands !<br>Merci de résoudre ce conflit.<br>MMM-UpdateNotification n'est pas activé.<br><br>Consultez les logs de votre terminal pour plus d'informations.",
+  "HELP_CONFIG": "Affiche la configuration de MMM-UpdateNotification"
 }

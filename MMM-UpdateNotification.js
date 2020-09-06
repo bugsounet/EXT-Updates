@@ -384,6 +384,11 @@ Module.register("MMM-UpdateNotification", {
       description: this.translate("HELP_UPDATECOMMAND"),
       callback: "updateCommands"
     })
+    commander.add({
+      command: "UNConfig",
+      description: this.translate("HELP_CONFIG"),
+      callback: "UNConfig"
+    })
   },
 
   getTranslations: function() {
@@ -478,9 +483,51 @@ Module.register("MMM-UpdateNotification", {
   },
 
   UNCommands: function(command, handler) {
-    var helping = this.translate("HELP_UN") + "\n/update\n/scan\n/stopMM\n/restartMM\n/updateCommands\n"
+    var helping = this.translate("HELP_UN") + "\n/update\n/scan\n/stopMM\n/restartMM\n/updateCommands\n/UNConfig\n"
     helping += this.translate("HELP_COMMAND")
     handler.reply("TEXT", helping + "\n")
+  },
+
+  UNConfig: function(command, handler) {
+    var text = "{\n"
+    text += "  debug: " + this.config.debug + ",\n"
+    text += "  updateInterval: " + this.config.updateInterval + ",\n"
+    text += "  refreshInterval: " + this.config.refreshInterval + ",\n"
+    text += "  startDelay: " + this.config.startDelay + "\n"
+    text += "  ignoreModules: ["
+    if (this.config.ignoreModules.length > 0) {
+      text += " "
+      this.config.ignoreModules.forEach( (moduleName,nb) => {
+        text += "\"" + moduleName
+        if (nb != this.config.ignoreModules.length-1) text += "\", "
+        else text += "\" "
+      })
+      text += "],\n"
+    }
+    else text += " ],\n"
+    text += "  updateCommands: [\n"
+    this.config.updateCommands.forEach((update,nb) => {
+      text += "    " + update.module + ": \"" + update.command
+      if (nb != this.config.updateCommands.length-1) text += "\",\n"
+      else text += "\"\n"
+    })
+    text += "  ],\n"
+    text += "  notification: {\n"
+    text += "    useTelegramBot: " + this.config.notification.useTelegramBot + ",\n"
+    text += "    sendReady: " + this.config.notification.sendReady + ",\n"
+    text += "    useScreen: " + this.config.notification.useScreen + ",\n"
+    text += "    useCallback: " + this.config.notification.useCallback + "\n"
+    text += "  },\n"
+    text += "  update: {\n"
+    text += "    autoUpdate: "+ this.config.update.autoUpdate + ",\n"
+    text += "    autoRestart: "+ this.config.update.autoRestart + ",\n"
+    text += "    usePM2: "+ this.config.update.usePM2 + ",\n"
+    text += "    PM2Name: \"" + this.config.update.PM2Name + "\",\n"
+    text += "    defaultCommand: \"" +this.config.update.defaultCommand + "\",\n"
+    text += "    updateMagicMirror: " + this.config.update.updateMagicMirror + ",\n"
+    text += "    logToConsole: " + this.config.update.logToConsole + "\n"
+    text += "  }\n}"
+    handler.reply("TEXT", text + "\n")
   },
 
   Scan: function(command, handler) {

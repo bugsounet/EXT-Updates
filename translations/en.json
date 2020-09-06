@@ -29,5 +29,6 @@
   "MODULECONFIG": "Module name not found",
   "HELP_UPDATECOMMAND": "List of automated updateCommands commands.",
   "WELCOMEERROR": "You have {ERROR} error(s) in updateCommands !\nPlease resolve conflicts.\nMMM-UpdateNotification is not activated\n\nTry /updateCommands for more informations\n",
-  "WELCOMEERROR_NOTB": "You have {ERROR} error(s) in updateCommands !<br>Please resolve conflicts.<br>MMM-UpdateNotification is not activated<br><br>See terminal logs for more informations"
+  "WELCOMEERROR_NOTB": "You have {ERROR} error(s) in updateCommands !<br>Please resolve conflicts.<br>MMM-UpdateNotification is not activated<br><br>See terminal logs for more informations",
+  "HELP_CONFIG": "Show configuration of MMM-UpdateNotification"
 }
