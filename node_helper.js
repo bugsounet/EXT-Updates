@@ -200,7 +200,7 @@ module.exports = NodeHelper.create({
           var res = {'results': stdout.split('\n')}
           var final = "Update logs of " + module + "\n"
           res.results.forEach(value => {
-            if (value) final += this.ExtraChars(value) + "\n"
+            if (value) final += this.ExtraChars(this.StripColor(value)) + "\n"
           })
           //log("[UN] Final for telegramBot:", final)
           final += "\n" + this.ExtraChars("[UN] Process update done, i do it... because you are so too lazy :)))") + "\n"
@@ -267,5 +267,12 @@ module.exports = NodeHelper.create({
     str = str.replace(new RegExp("\\[", "g"), "\\[")
     str = str.replace(new RegExp("`", "g"), "\\`")
     return str
+  },
+
+  /** remove only color **/
+  StripColor: function(str) {
+    str = str.replace(/\[(\[H\033\[2J|\d+;\d+H|\d+(;\d+;\d+(;\d+;\d+)?m|[m])|1K)|\[m/g, '')
+    return str
   }
+
 });
