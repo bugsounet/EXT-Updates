@@ -140,7 +140,7 @@ module.exports = NodeHelper.create({
       }
       else {
         this.init = true
-        this.sendSocketNotification("INITIALIZED", require('./package.json').version + " -- Beta3")
+        this.sendSocketNotification("INITIALIZED", require('./package.json').version + " -- Pre-Release")
       }
     }
   },
