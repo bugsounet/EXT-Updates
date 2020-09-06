@@ -5,3 +5,6 @@ Coding in Progress ...
 ![](https://media.giphy.com/media/xT9IgzoKnwFNmISR8I/giphy.gif)
 
 Thanks to all Translater !!!
+
+
+@bugsounet Thanks to your philosophy!! [Saljoke]
