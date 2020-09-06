@@ -516,21 +516,25 @@ Module.register("MMM-UpdateNotification", {
     /** maybe not the best method... **/
     /** if someone can do better make PR :)) **/
     /** because i'm not so strong with regex ! **/
-    text += "    updateCommands: [\n"
-    this.data.config.updateCommands.forEach((data,nb) => { // loop on each array value, nb is the number of the value
-      text += "      {\n" // add spaces and open {
-      /** prepare formating **/
-      var field = JSON.stringify(data) // stringify array values
-      field = field.replace(new RegExp(":", "g"), ": ") // add space between 2 values
-      field = field.replace("{","") // delete {
-      field = field.replace("}","") // delete }
-      field = field.replace(",",",\n        ") // to go the line (separate value) and add spaces
-      /** prepare done ! **/
-      text += "        " + field + "\n" // add spaces and send result :)
-      if (nb != this.data.config.updateCommands.length-1) text += "      },\n" // it's not the last array value so it's `},`
-      else text += "      }\n" // it's the last array value so just close `}`
-    })
-    text += "    ],\n"
+    text += "    updateCommands: ["
+    if (this.data.config && this.data.config.updateCommands) {
+      text += "\n"
+      this.data.config.updateCommands.forEach((data,nb) => { // loop on each array value, nb is the number of the value
+        text += "      {\n" // add spaces and open {
+        /** prepare formating **/
+        var field = JSON.stringify(data) // stringify array values
+        field = field.replace(new RegExp(":", "g"), ": ") // add space between 2 values
+        field = field.replace("{","") // delete {
+        field = field.replace("}","") // delete }
+        field = field.replace(",",",\n        ") // to go the line (separate value) and add spaces
+        /** prepare done ! **/
+        text += "        " + field + "\n" // add spaces and send result :)
+        if (nb != this.data.config.updateCommands.length-1) text += "      },\n" // it's not the last array value so it's `},`
+        else text += "      }\n" // it's the last array value so just close `}`
+      })
+      text += "    ],\n"
+    }
+    else text += " ],\n"
     /** updateCommands process done **/
 
     text += "    notification: {\n"
