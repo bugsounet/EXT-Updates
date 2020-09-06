@@ -30,5 +30,5 @@
   "HELP_UPDATECOMMAND": "Lista di comandi automatici di updateCommands.",
   "WELCOMEERROR": "Tu hai {ERROR} errori in updateCommands !\nRisolvi il problema.\nMMM-UpdateNotification non è ancora attivo\n\nProva /updateCommands per maggiori informazioni\n",
   "WELCOMEERROR_NOTB": "tu hai {ERROR} errori in updateCommands !<br>Risolvi il problema.<br>MMM-UpdateNotification non è ancora attivo<br><br>Leggi il logs su terminale per maggiori informazioni",
-  "HELP_CONFIG": "Show configuration of MMM-UpdateNotification"
+  "HELP_CONFIG": "Show MMM-UpdateNotification configuration"
 }

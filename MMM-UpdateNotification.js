@@ -489,15 +489,19 @@ Module.register("MMM-UpdateNotification", {
   },
 
   UNConfig: function(command, handler) {
+    /** show the config like in config.js file with ALL value **/
     var text = "{\n"
-    text += "  debug: " + this.config.debug + ",\n"
-    text += "  updateInterval: " + this.config.updateInterval + ",\n"
-    text += "  refreshInterval: " + this.config.refreshInterval + ",\n"
-    text += "  startDelay: " + this.config.startDelay + "\n"
-    text += "  ignoreModules: ["
+    text += "  module: \"MMM-UpdateNotification\",\n",
+    text += "  position: \"" + this.data.position + "\",\n"
+    text += "  config: {\n"
+    text += "    debug: " + this.config.debug + ",\n"
+    text += "    updateInterval: " + this.config.updateInterval + ",\n"
+    text += "    refreshInterval: " + this.config.refreshInterval + ",\n"
+    text += "    startDelay: " + this.config.startDelay + "\n"
+    text += "    ignoreModules: ["
     if (this.config.ignoreModules.length > 0) {
       text += " "
-      this.config.ignoreModules.forEach( (moduleName,nb) => {
+      this.config.ignoreModules.forEach((moduleName,nb) => {
         text += "\"" + moduleName
         if (nb != this.config.ignoreModules.length-1) text += "\", "
         else text += "\" "
@@ -505,29 +509,47 @@ Module.register("MMM-UpdateNotification", {
       text += "],\n"
     }
     else text += " ],\n"
-    text += "  updateCommands: [\n"
-    this.config.updateCommands.forEach((update,nb) => {
-      text += "    " + update.module + ": \"" + update.command
-      if (nb != this.config.updateCommands.length-1) text += "\",\n"
-      else text += "\"\n"
+
+    /** display updateCommands : [] **/
+    /** use this.data.config.updateCommands for fetch real config in config.js **/
+    /** method @bugsounet **/
+    /** maybe not the best method... **/
+    /** if someone can do better make PR :)) **/
+    /** because i'm not so strong with regex ! **/
+    text += "    updateCommands: [\n"
+    this.data.config.updateCommands.forEach((data,nb) => { // loop on each array value, nb is the number of the value
+      text += "      {\n" // add spaces and open {
+      /** prepare formating **/
+      var field = JSON.stringify(data) // stringify array values
+      field = field.replace(new RegExp(":", "g"), ": ") // add space between 2 values
+      field = field.replace("{","") // delete {
+      field = field.replace("}","") // delete }
+      field = field.replace(",",",\n        ") // to go the line (separate value) and add spaces
+      /** prepare done ! **/
+      text += "        " + field + "\n" // add spaces and send result :)
+      if (nb != this.data.config.updateCommands.length-1) text += "      },\n" // it's not the last array value so it's `},`
+      else text += "      }\n" // it's the last array value so just close `}`
     })
-    text += "  ],\n"
-    text += "  notification: {\n"
-    text += "    useTelegramBot: " + this.config.notification.useTelegramBot + ",\n"
-    text += "    sendReady: " + this.config.notification.sendReady + ",\n"
-    text += "    useScreen: " + this.config.notification.useScreen + ",\n"
-    text += "    useCallback: " + this.config.notification.useCallback + "\n"
-    text += "  },\n"
-    text += "  update: {\n"
-    text += "    autoUpdate: "+ this.config.update.autoUpdate + ",\n"
-    text += "    autoRestart: "+ this.config.update.autoRestart + ",\n"
-    text += "    usePM2: "+ this.config.update.usePM2 + ",\n"
-    text += "    PM2Name: \"" + this.config.update.PM2Name + "\",\n"
-    text += "    defaultCommand: \"" +this.config.update.defaultCommand + "\",\n"
-    text += "    updateMagicMirror: " + this.config.update.updateMagicMirror + ",\n"
-    text += "    logToConsole: " + this.config.update.logToConsole + "\n"
-    text += "  }\n}"
+    text += "    ],\n"
+    /** updateCommands process done **/
+
+    text += "    notification: {\n"
+    text += "      useTelegramBot: " + this.config.notification.useTelegramBot + ",\n"
+    text += "      sendReady: " + this.config.notification.sendReady + ",\n"
+    text += "      useScreen: " + this.config.notification.useScreen + ",\n"
+    text += "      useCallback: " + this.config.notification.useCallback + "\n"
+    text += "    },\n"
+    text += "    update: {\n"
+    text += "      autoUpdate: "+ this.config.update.autoUpdate + ",\n"
+    text += "      autoRestart: "+ this.config.update.autoRestart + ",\n"
+    text += "      usePM2: "+ this.config.update.usePM2 + ",\n"
+    text += "      PM2Name: \"" + this.config.update.PM2Name + "\",\n"
+    text += "      defaultCommand: \"" +this.config.update.defaultCommand + "\",\n"
+    text += "      updateMagicMirror: " + this.config.update.updateMagicMirror + ",\n"
+    text += "      logToConsole: " + this.config.update.logToConsole + "\n"
+    text += "    }\n  }\n},"
     handler.reply("TEXT", text + "\n")
+    if (this.error) this.updateCommands(command, handler)
   },
 
   Scan: function(command, handler) {
