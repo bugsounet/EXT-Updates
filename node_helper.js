@@ -188,13 +188,12 @@ module.exports = NodeHelper.create({
       if (error) {
         console.error(`[UN] exec error: ${error}`)
         if (this.config.notification.useTelegramBot) {
-          this.sendSocketNotification("SendResult", error.toString())
+          this.sendSocketNotification("SendResult", this.ExtraChars(error.toString()))
           this.sendSocketNotification("ERROR_UPDATE" , module)
         }
         return
-      }
-      log(`Update logs of ${module}: ${stdout}`)
-      if (!error) {
+      } else {
+        console.log(`[UN] Update logs of ${module}: ${stdout}`)
         if (this.config.notification.useTelegramBot) {
           /** trying to parse stdout to Telegram without errors ... it's horrible ! **/
           var res = {'results': stdout.split('\n')}
