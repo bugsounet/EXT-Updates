@@ -1,4 +1,4 @@
-# MMM-UpdateNotification beta3
+# MMM-UpdateNotification (Pre-Release)
 
 The `updatenotification` module is one of the default modules of the MagicMirror.<br>
 This will display a message whenever a new version of the MagicMirror application is available.
@@ -20,8 +20,9 @@ Read the docs in [wiki](https://github.com/bugsounet/MMM-UpdateNotification/wiki
 ---
 # Demo and screenshots:
 
-- [demo](https://www.youtube.com/watch?v=ip0wGeLl-7s)<br>
+- Demo<br>
+[![](https://github.com/bugsounet/MMM-UpdateNotification/blob/master/installer/video.jpg)](https://www.youtube.com/watch?v=ip0wGeLl-7s)
 
-- screenshots<br>
+- Screenshots<br>
 ![](https://raw.githubusercontent.com/bugsounet/MMM-UpdateNotification/dev/shoot/shot1.png)
 ![](https://raw.githubusercontent.com/bugsounet/MMM-UpdateNotification/dev/shoot/shot2.png)
