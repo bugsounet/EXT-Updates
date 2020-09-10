@@ -5,7 +5,7 @@
   "SOMEUPDATE_TB": "There is {update} new updates available",
   "UPDATE_HELPTB": "Puoi aggiornare i moduli con `/update <nome_del_modulo>`",
   "UPDATE_DONE": "Aggiornamento eseguito con successo: {MODULE_NAME}",
-  "UPDATE_ERROR": "Errore di aggiornamento: {ERROR}",
+  "UPDATE_ERROR": "Errore di aggiornamento: {ERROR}\nPlease solve it manually.",
   "UPDATE_INPROGRESS": "Attendi, aggiornamento in corso!",
   "UPDATING" : "Aggiornamento: {MODULE_NAME}",
   "MODULENOTFOUND": "Modulo non trovato: {MODULE_NAME}",

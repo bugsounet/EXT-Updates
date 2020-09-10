@@ -163,6 +163,7 @@ module.exports = NodeHelper.create({
       var data = []
       data = await this.performFetch()
       this.sendStatus(data)
+      this.scheduleNextFetch(this.config.updateInterval)
     }, delay)
   },
 

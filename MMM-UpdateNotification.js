@@ -177,11 +177,9 @@ Module.register("MMM-UpdateNotification", {
         this.sendNotification("TELBOT_TELL_ADMIN",  this.translate("NEEDRESTART"))
         break
       case "ERROR_UPDATE":
-        this.updating = false
         this.sendNotification("TELBOT_TELL_ADMIN",  this.translate("UPDATE_ERROR", { ERROR: payload }))
         break
       case "SendResult":
-        this.updating = false
         this.sendNotification("TELBOT_TELL_ADMIN", payload, {parse_mode:'Markdown'})
         break
       case "SCAN_COMPLETE":
