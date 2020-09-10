@@ -1,6 +1,6 @@
 {
   "UPDATE_TB": "Mise(s) à jour disponible:",
-  "NOUPDATE_TB": "Pas nouvelles mises à jour disponible.",
+  "NOUPDATE_TB": "Pas de nouvelles mises à jour disponible.",
   "ONEUPDATE_TB": "Il y a une nouvelle mise à jour",
   "SOMEUPDATE_TB": "Il y a {update} nouvelles mises à jour",
   "UPDATE_HELPTB": "Vous pouvez mettre à jour les modules avec la commande `/update <nom_du_module>`",
@@ -10,7 +10,7 @@
   "UPDATING" : "Mise à jour de: {MODULE_NAME}",
   "MODULENOTFOUND": "Module non trouvé: {MODULE_NAME}",
   "INIT_INPROGRESS" : "MMM-UpdateNotification n'est pas encore initialisé !",
-  "UPDATE_SCAN": "Recherche de nouvelles mises à jour (Force)...",
+  "UPDATE_SCAN": "Recherche de nouvelles mises à jour...",
   "HELP_UPDATE": "Gestionnaire de mises à jour",
   "HELP_SCAN": "Force la recherche de mises à jour",
   "HELP_STOP": "Force l'arrêt de MagicMirror",
