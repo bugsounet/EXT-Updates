@@ -64,7 +64,13 @@ module.exports = NodeHelper.create({
         clearTimeout(this.updateTimer)
         this.updateTimer = null
         this.simpleGits = []
-        this.configureModules(payload).then(() => this.performFetch())
+        var data = []
+        this.configureModules(payload).then(async () => {
+          data = await this.performFetch()
+          this.sendSocketNotification("INITIALIZED", require('./package.json').version + " -- Pre-Release")
+          this.sendStatus(data)
+          this.scheduleNextFetch(this.config.updateInterval)
+        })
         break
       case "DISPLAY_ERROR":
         console.log("[UN] Callbacks errors:\n\n" + payload)
@@ -74,7 +80,7 @@ module.exports = NodeHelper.create({
         break
       case "FORCE_CHECK":
         this.ForceCheck = true
-        this.performFetch()
+        this.updateForce(payload)
         break
       case "CLOSEMM":
         this.doClose()
@@ -100,10 +106,8 @@ module.exports = NodeHelper.create({
     })
   },
 
-  performFetch: function () {
-    var moduleGitInfo = {}
-    if (this.ForceCheck) log("Force Scan Start")
-    this.simpleGits.forEach((sg,nb) => {
+  dataFetch: function (sg,nb) {
+    return new Promise((resolve, reject) => {
       sg.git.fetch().status((err, data) => {
         data.module = sg.module
         log("[" + (nb+1) + "/" + this.simpleGits.length +"] Scan:" , data.module)
@@ -116,44 +120,50 @@ module.exports = NodeHelper.create({
             tracking: data.tracking
           }
           if (!moduleGitInfo.current || !moduleGitInfo.tracking) {
-            return log("Scan Infos not complete:", data.module)
+            log("Scan Infos not complete:", data.module)
           } else {
             log("Scan Infos:", moduleGitInfo)
-            this.sendSocketNotification("STATUS", moduleGitInfo)
-            if (this.ForceCheck || !this.init) this.scanChk(nb,this.simpleGits.length-1, this.init)
           }
+          resolve(moduleGitInfo)
         } else {
           log("Scan Error: " + data.module, err)
-          if (this.ForceCheck || !this.init) this.scanChk(nb,this.simpleGits.length-1, this.init)
+          resolve()
         }
       })
     })
-    this.scheduleNextFetch(this.config.updateInterval);
   },
 
-  scanChk: function(nb,length, init) {
-    if (nb == length) {
-      if (this.init) {
-        this.ForceCheck = false
-        log("Force Scan Complete")
-        this.sendSocketNotification("SCAN_COMPLETE")
-      }
-      else {
-        this.init = true
-        this.sendSocketNotification("INITIALIZED", require('./package.json').version + " -- Pre-Release")
-      }
-    }
+  performFetch: function () {
+    var moduleGitInfo = []
+    var data = []
+    if (this.ForceCheck) log("Force Scan Start")
+    this.simpleGits.forEach((sg,nb) => { data.push(this.dataFetch(sg,nb)) })
+    return Promise.all(data)
   },
+
+  updateForce: async function (handler) {
+    clearTimeout(this.updateTimer)
+    var info = []
+    info = await this.performFetch()
+    if (this.ForceCheck) log("Force Scan End.")
+    this.sendStatus(info)
+    this.sendSocketNotification("SCAN_COMPLETE", handler)
+    this.ForceCheck = false
+    this.scheduleNextFetch(this.config.updateInterval)
+  },
+  /************************************************/
 
   scheduleNextFetch: function (delay) {
     if (delay < 60 * 1000) {
-      delay = 60 * 1000;
+      delay = 60 * 1000
     }
 
-    clearTimeout(this.updateTimer);
-    this.updateTimer = setTimeout(()=> {
-      this.performFetch();
-    }, delay);
+    clearTimeout(this.updateTimer)
+    this.updateTimer = setTimeout(async ()=> {
+      var data = []
+      data = await this.performFetch()
+      this.sendStatus(data)
+    }, delay)
   },
 
   ignoreUpdateChecking: function (moduleName) {
@@ -169,6 +179,11 @@ module.exports = NodeHelper.create({
 
     // The rest of the modules that passes should check for updates
     return false
+  },
+
+  sendStatus: function (data) {
+    if (!data) return
+    this.sendSocketNotification("STATUS", data)
   },
 
   /** update **/
@@ -212,7 +227,7 @@ module.exports = NodeHelper.create({
           setTimeout(() => this.restartMM(), 3000)
         } else log("Process update done, don't forget to restart MagicMirror!")
       }
-    });
+    })
   },
 
   /** MagicMirror restart and stop **/

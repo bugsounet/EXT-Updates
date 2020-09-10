@@ -1,6 +1,8 @@
 {
   "UPDATE_TB": "Update available:",
-  "NOUPDATE_TB": "No update available.",
+  "NOUPDATE_TB": "No new update available.",
+  "ONEUPDATE_TB": "There is one new update available",
+  "SOMEUPDATE_TB": "There is {update} new updates available",
   "UPDATE_HELPTB": "You can update modules with `/update <module_name>`",
   "UPDATE_DONE": "Update successful: {MODULE_NAME}",
   "UPDATE_ERROR": "Update error: {ERROR}",

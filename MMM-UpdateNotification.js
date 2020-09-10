@@ -56,13 +56,16 @@ Module.register("MMM-UpdateNotification", {
     this.config = configMerged({}, this.defaults, this.config)
     this.suspended = !this.config.notification.useScreen
     this.init= false
+    this.update = {}
     this.updating= false
     this.modulesName= []
     this.commandsError = []
     this.error = this.updateCommandsChk(this.config.updateCommands)
     this.modulesInfo( cb => console.log("[UN] Modules find:", this.modulesName.length))
+    this.session= {}
     setInterval(() => {
       /** reset all and restart **/
+      this.update = {}
       this.modulesName= []
       this.moduleList = {}
       this.npmList = {}
@@ -145,6 +148,7 @@ Module.register("MMM-UpdateNotification", {
       case "NPM_UPDATE":
         //console.log("npm", payload)
         if (!this.error) this.updateUI(payload)
+        }
         break
     }
   },
@@ -182,37 +186,39 @@ Module.register("MMM-UpdateNotification", {
         this.sendNotification("TELBOT_TELL_ADMIN", payload, {parse_mode:'Markdown'})
         break
       case "SCAN_COMPLETE":
-        this.checkCallback()
+        this.checkCallback(payload)
         break
     }
   },
 
-  updateUI: function (payload) {
-    if (payload) {
-      if (payload.installed && payload.latest && payload.library) {
-        this.npmList[payload.library + " [" + payload.module +"]"] = payload
-        this.updateDom(2);
+  updateUI: function (modules) {
+    modules.forEach((dataValue) => {
+      if (dataValue) {
+        if (dataValue.installed && dataValue.latest && dataValue.library) {
+          this.npmList[dataValue.library + " [" + dataValue.module +"]"] = dataValue
+          this.updateDom(2)
+        }
+        else if (dataValue.behind > 0) {
+          // if we haven't seen info for this module
+          if (this.moduleList[dataValue.module] === undefined) {
+            // save it
+            this.moduleList[dataValue.module] = dataValue
+            this.updateDom(2)
+          }
+        } else if (dataValue.behind === 0) {
+          // if the module WAS in the list, but shouldn't be
+          if (this.notiTB[dataValue.module] !== undefined) {
+            // remove from TelegramBot
+            delete this.notiTB[dataValue.module]
+          }
+          if (this.moduleList[dataValue.module] !== undefined) {
+            // remove it
+            delete this.moduleList[dataValue.module]
+            this.updateDom(2)
+          }
+        }
       }
-      else if (payload.behind > 0) {
-        // if we haven't seen info for this module
-        if (this.moduleList[payload.module] === undefined) {
-          // save it
-          this.moduleList[payload.module] = payload
-          this.updateDom(2);
-        }
-      } else if (payload.behind === 0) {
-        // if the module WAS in the list, but shouldn't be
-        if (this.notiTB[payload.module] !== undefined) {
-          // remove from TelegramBot
-          delete this.notiTB[payload.module]
-        }
-        if (this.moduleList[payload.module] !== undefined) {
-          // remove it
-          delete this.moduleList[payload.module]
-          this.updateDom(2);
-        }
-      }
-    }
+    })
   },
 
   // Override dom generator.
@@ -295,7 +301,6 @@ Module.register("MMM-UpdateNotification", {
 
       /** NPM: if module is on ignoreModules array ... delete it **/
       if (this.config.ignoreModules.indexOf(npm.module) >= 0) {
-        console.log(this.npmList, this.notiTB)
         delete this.notiTB[key]
         delete this.npmList[key]
         continue
@@ -558,8 +563,19 @@ Module.register("MMM-UpdateNotification", {
 
   Scan: function(command, handler) {
     if (!this.init) return handler.reply("TEXT", this.translate("INIT_INPROGRESS"))
+    var found = 0
+    for (let [name, value] of Object.entries(this.notiTB)) {
+      if (this.npmList[name] || this.moduleList[name]) found += 1
+    }
+    this.update.old = found
     handler.reply("TEXT", this.translate("UPDATE_SCAN"))
-    this.sendSocketNotification("FORCE_CHECK")
+    /** try to manage session ... **/
+    var chatId = handler.message.chat.id
+    var userId = handler.message.from.id
+    var messageId = handler.message.message_id
+    var sessionId = messageId + ":" + userId + ":" + chatId
+    this.session[sessionId] = handler
+    this.sendSocketNotification("FORCE_CHECK", sessionId)
   },
 
   Update: function(command, handler) {
@@ -613,16 +629,28 @@ Module.register("MMM-UpdateNotification", {
     }
   },
 
-  checkCallback() {
-    /** callback for no module found **/
+  checkCallback: function (session) {
+    /** callback for update found **/
     var found = 0
     for (let [name, value] of Object.entries(this.notiTB)) {
-      if (this.npmList[name] || this.moduleList[name]) found = 1
+      if (this.npmList[name] || this.moduleList[name]) found += 1
     }
-    if (!found) this.sendNotification("TELBOT_TELL_ADMIN", this.translate("NOUPDATE_TB"))
+    this.update.new = found
+
+    let result = parseInt(this.update.new-this.update.old)
+    if (!result || result <= 0) this.Reply("scan", this.session[session], this.translate("NOUPDATE_TB"), session)
+    else if (result == 1) this.Reply("scan", this.session[session], this.translate("ONEUPDATE_TB"), session)
+    else this.Reply("scan", this.session[session], this.translate("SOMEUPDATE_TB", { update: result }), session)
   },
 
-  updateProcess(module) {
+  /** send a reply after all info received **/
+  Reply: function(command, handler, message, session, markdown = false) {
+    if (!message || !session) return console.log("wrong Format!", message, session)
+    handler.reply("TEXT", message, markdown )
+    delete this.session[session]
+  },
+
+  updateProcess: function (module) {
     if (this.error) return
     this.sendNotification("WAKEUP")
     this.sendSocketNotification("UPDATE", module)
