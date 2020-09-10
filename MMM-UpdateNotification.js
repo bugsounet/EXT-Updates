@@ -148,7 +148,6 @@ Module.register("MMM-UpdateNotification", {
       case "NPM_UPDATE":
         //console.log("npm", payload)
         if (!this.error) this.updateUI(payload)
-        }
         break
     }
   },
