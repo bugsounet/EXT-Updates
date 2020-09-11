@@ -489,7 +489,6 @@ Module.register("MMM-UpdateNotification", {
     text += "  config: {\n"
     text += "    debug: " + this.config.debug + ",\n"
     text += "    updateInterval: " + this.config.updateInterval + ",\n"
-    text += "    refreshInterval: " + this.config.refreshInterval + ",\n"
     text += "    startDelay: " + this.config.startDelay + "\n"
     text += "    ignoreModules: ["
     if (this.config.ignoreModules.length > 0) {
@@ -544,6 +543,7 @@ Module.register("MMM-UpdateNotification", {
     text += "      defaultCommand: \"" +this.config.update.defaultCommand + "\",\n"
     text += "      updateMagicMirror: " + this.config.update.updateMagicMirror + ",\n"
     text += "      logToConsole: " + this.config.update.logToConsole + "\n"
+    text += "      timeout: " + this.config.update.timeout + "\n"
     text += "    }\n  }\n},"
     handler.reply("TEXT", text + "\n")
     if (this.error) this.updateCommands(command, handler)
