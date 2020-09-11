@@ -12,7 +12,6 @@ Module.register("MMM-UpdateNotification", {
   defaults: {
     debug: false,
     updateInterval: 10 * 60 * 1000, // every 10 minutes
-    refreshInterval: 24 * 60 * 60 * 1000, // restart time : 24 hours
     startDelay: 60 * 1000, // delay before 1st scan
     ignoreModules: [],
     updateCommands: [
@@ -63,15 +62,6 @@ Module.register("MMM-UpdateNotification", {
     this.error = this.updateCommandsChk(this.config.updateCommands)
     this.modulesInfo( cb => console.log("[UN] Modules find:", this.modulesName.length))
     this.session= {}
-    setInterval(() => {
-      /** reset all and restart **/
-      this.update = {}
-      this.modulesName= []
-      this.moduleList = {}
-      this.npmList = {}
-      this.modulesInfo(cb => this.sendSocketNotification("MODULES", this.modulesName))
-      this.updateDom(2)
-    }, this.config.refreshInterval)
   },
 
   updateCommandsChk: function(str) {
