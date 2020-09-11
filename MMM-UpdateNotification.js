@@ -41,7 +41,8 @@ Module.register("MMM-UpdateNotification", {
       PM2Name: "0",
       defaultCommand: "git pull && npm install",
       updateMagicMirror: false,
-      logToConsole: false
+      logToConsole: false,
+      timeout: 2*60*1000
     }
   },
 

@@ -200,7 +200,7 @@ module.exports = NodeHelper.create({
       if (updateCommand.module == module) Command = updateCommand.command
     })
 
-    exec(Command, {cwd : modulePath } , (error, stdout, stderr) => {
+    exec(Command, {cwd : modulePath, timeout: this.config.update.timeout } , (error, stdout, stderr) => {
       if (error) {
         console.error(`[UN] exec error: ${error}`)
         if (this.config.notification.useTelegramBot) {
