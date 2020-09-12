@@ -67,7 +67,7 @@ module.exports = NodeHelper.create({
         var data = []
         this.configureModules(payload).then(async () => {
           data = await this.performFetch()
-          this.sendSocketNotification("INITIALIZED", require('./package.json').version + " -- Pre-Release")
+          this.sendSocketNotification("INITIALIZED", require('./package.json').version + " -- Release [PRE-FINAL]")
           this.sendStatus(data)
           this.scheduleNextFetch(this.config.updateInterval)
         })
