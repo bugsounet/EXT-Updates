@@ -27,3 +27,16 @@ Read the docs in [wiki](https://github.com/bugsounet/MMM-UpdateNotification/wiki
 ![](https://raw.githubusercontent.com/bugsounet/MMM-UpdateNotification/dev/shoot/shot3.png)
 ![](https://raw.githubusercontent.com/bugsounet/MMM-UpdateNotification/dev/shoot/shot1.png)
 ![](https://raw.githubusercontent.com/bugsounet/MMM-UpdateNotification/dev/shoot/shot2.png)
+
+# Credits:
+  - Authors:
+    - @MichMich (original updatenotification)
+    - @bugsounet
+    
+  - Translators:
+    - @Saljoke
+    - @lxne
+    
+ # Special Thanks to
+  - ALL beta testers !
+  - MagicMirror Italia🇮🇹🇮🇹 Telegram Group !
