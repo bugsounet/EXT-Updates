@@ -21,8 +21,9 @@ Read the docs in [wiki](https://github.com/bugsounet/MMM-UpdateNotification/wiki
 # Demo and screenshots:
 
 - Demo<br>
-[![](https://github.com/bugsounet/MMM-UpdateNotification/blob/master/installer/video.jpg)](https://www.youtube.com/watch?v=ip0wGeLl-7s)
+[![](https://raw.githubusercontent.com/bugsounet/MMM-UpdateNotification/dev/shoot/video.jpg)](https://www.youtube.com/watch?v=ip0wGeLl-7s)
 
 - Screenshots<br>
+![](https://raw.githubusercontent.com/bugsounet/MMM-UpdateNotification/dev/shoot/shot3.png)
 ![](https://raw.githubusercontent.com/bugsounet/MMM-UpdateNotification/dev/shoot/shot1.png)
 ![](https://raw.githubusercontent.com/bugsounet/MMM-UpdateNotification/dev/shoot/shot2.png)
