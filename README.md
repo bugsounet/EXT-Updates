@@ -36,7 +36,10 @@ Read the docs in [wiki](https://github.com/bugsounet/MMM-UpdateNotification/wiki
   - Translators:
     - @Saljoke
     - @lxne
-    
+ 
+ ## Donate
+ [Donate](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=TTHRH94Y4KL36&source=url), if you love this module !
+ 
  # Special Thanks to
   - ALL beta testers !
   - MagicMirror Italia🇮🇹🇮🇹 Telegram Group !
