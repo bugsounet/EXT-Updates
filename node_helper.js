@@ -106,28 +106,35 @@ module.exports = NodeHelper.create({
 
   dataFetch: function (sg,nb) {
     return new Promise((resolve, reject) => {
-      sg.git.fetch().status((err, data) => {
-        data.module = sg.module
-        log("[" + (nb+1) + "/" + this.simpleGits.length +"] Scan:" , data.module)
-        if (!err) {
-          /** send ONLY needed info **/
-          moduleGitInfo = {
-            module: data.module,
-            behind: data.behind,
-            current: data.current,
-            tracking: data.tracking
-          }
-          if (!moduleGitInfo.current || !moduleGitInfo.tracking) {
-            log("Scan Infos not complete:", data.module)
+      try {
+        sg.git.fetch().status((err, data) => {
+          data.module = sg.module
+          log("[" + (nb+1) + "/" + this.simpleGits.length +"] Scan:" , data.module)
+          if (!err) {
+            /** send ONLY needed info **/
+            moduleGitInfo = {
+              module: data.module,
+              behind: data.behind,
+              current: data.current,
+              tracking: data.tracking
+            }
+            if (!moduleGitInfo.current || !moduleGitInfo.tracking) {
+              log("Scan Infos not complete:", data.module)
+            } else {
+              log("Scan Infos:", moduleGitInfo)
+            }
+            resolve(moduleGitInfo)
           } else {
-            log("Scan Infos:", moduleGitInfo)
+            log("Scan Error: " + data.module, err)
+            resolve()
           }
-          resolve(moduleGitInfo)
-        } else {
-          log("Scan Error: " + data.module, err)
-          resolve()
-        }
-      })
+        })
+      } catch (e) {
+        console.log("-- Testing UN -- fetch Error Detected:", e)
+        console.log("sg:", sg, nb)
+        resolve()
+        console.log("-- Testing UN -- resolve()")
+      }
     })
   },
 
