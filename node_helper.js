@@ -130,10 +130,10 @@ module.exports = NodeHelper.create({
           }
         })
       } catch (e) {
-        console.log("-- Testing UN -- fetch Error Detected:", e)
-        console.log("sg:", sg, nb)
+        console.error("-- Testing UN -- fetch Error Detected:", e)
+        console.error("sg:", sg, nb)
         resolve()
-        console.log("-- Testing UN -- resolve()")
+        console.error("-- Testing UN -- resolve()")
       }
     })
   },
