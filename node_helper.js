@@ -91,33 +91,35 @@ module.exports = NodeHelper.create({
 
   resolveRemote: function (moduleName, moduleFolder) {
     return new Promise((resolve, reject) => {
-      try {
-        var git = SimpleGit(moduleFolder)
-        git.getRemotes(true, (err, remotes) => {
-          if (remotes.length < 1 || remotes[0].name.length < 1) {
-            // No valid remote for folder, skip
-            return resolve()
-          }
-          // Folder has .git and has at least one git remote, watch this folder
-          this.simpleGits.unshift({ module: moduleName, git: git })
-          resolve()
-        })
-      } catch (e) {
-        console.error("-- Testing UN -- resolve remote Error Detected:", e)
-        console.error("moduleName:", moduleName)
+      var git = SimpleGit(moduleFolder)
+      git.getRemotes(true, (err, remotes) => {
+        if (remotes.length < 1 || remotes[0].name.length < 1) {
+          // No valid remote for folder, skip
+          return resolve()
+        }
+        // Folder has .git and has at least one git remote, watch this folder
+        this.simpleGits.unshift({ module: moduleName, git: git })
         resolve()
-        console.error("-- Testing UN -- resolve()")
-      }
+      })
     })
   },
 
   dataFetch: function (sg,nb) {
     return new Promise((resolve, reject) => {
-      try {
-        sg.git.fetch().status((err, data) => {
+      sg.git
+        .fetch(err => {
+          if (err) {
+            log("Error: " + sg.module, err)
+            resolve()
+          }
+        })
+        .status((err, data) => {
           data.module = sg.module
           log("[" + (nb+1) + "/" + this.simpleGits.length +"] Scan:" , data.module)
-          if (!err) {
+          if (err) {
+            log("Scan Error: " + data.module, err)
+            resolve()
+          } else {
             /** send ONLY needed info **/
             moduleGitInfo = {
               module: data.module,
@@ -131,17 +133,8 @@ module.exports = NodeHelper.create({
               log("Scan Infos:", moduleGitInfo)
             }
             resolve(moduleGitInfo)
-          } else {
-            log("Scan Error: " + data.module, err)
-            resolve()
           }
         })
-      } catch (e) {
-        console.error("-- Testing UN -- fetch Error Detected:", e)
-        console.error("sg:", sg, nb)
-        resolve()
-        console.error("-- Testing UN -- resolve()")
-      }
     })
   },
 
