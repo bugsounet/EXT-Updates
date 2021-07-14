@@ -15,7 +15,7 @@ All credit to `Michael Teeuw https://michaelteeuw.nl` for scanning Git modules a
 
 ---
 # Installation, update & Guides
-Read the docs in [wiki](https://github.com/bugsounet/MMM-UpdateNotification/wiki)<br>
+Read the docs in [wiki](http://wiki.bugsounet.fr/MMM-UpdateNotification)<br>
 
 ---
 # Demo and screenshots:
