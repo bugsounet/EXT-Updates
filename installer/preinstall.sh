@@ -36,6 +36,9 @@ if [ "$EUID" -eq 0 ]; then
   exit 1
 fi
 
+# Go to root of module
+cd ..
+
 # switch branch
 Installer_info "Installing Sources..."
 git checkout -f prod 2>/dev/null || Installer_error "Installing Error !"
