@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/bugsounet/MMM-UpdateNotification",
   "dependencies": {
-    "pm2": "^4.4.1"
+    "pm2": "^4.4.1",
+    "simple-git": "^2.46.0"
   }
 }
