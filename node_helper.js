@@ -6,22 +6,72 @@ const SimpleGit = require("simple-git")
 const fs = require("fs")
 const path = require("path")
 const defaultModules = require(__dirname + "/../default/defaultmodules.js")
-const Log = require(__dirname + "/../../js/logger.js")
 const NodeHelper = require("node_helper")
 var exec = require('child_process').exec
 var spawn = require('child_process').spawn
 const pm2 = require('pm2')
 var log = (...args) => { /* do nothing */ }
 const express = require("express");
+const npmCheck = require ("@bugsounet/npmcheck")
 
 module.exports = NodeHelper.create({
   start: function () {
     this.simpleGits = []
+    this.Checker= []
     this.config= {}
     this.updateTimer= null
     this.ForceCheck = false
     this.init = false
-    console.log("[UN] MMM-UpdateNotification Version:", require('./package.json').version)
+    this.DB = [
+      /** normal modules **/
+      //"MMM-AirParif",
+      //"MMM-Alexa",
+      "MMM-Detector",
+      //"MMM-FranceInfo",
+      "MMM-Freebox",
+      "MMM-FreeBox4G",
+      "MMM-FreeboxTV",
+      //"MMM-FTV",
+      "MMM-GoogleAssistant",
+      //"MMM-Netatmo-Thermostat",
+      //"MMM-NewsFeed",
+      //"MMM-NotificationReceived",
+      "MMM-Pronote",
+      //"MMM-Saint",
+      "MMM-ScreenManager",
+      //"MMM-Shom",
+      //"MMM-SpeedTest",
+      //"MMM-TelegramBot",
+      //"MMM-Timetable",
+      //"MMM-Tools",
+      //"MMM-Weather",
+      //"MMM-Xbox",
+      /** all EXT modules **/
+      //"EXT-Alert",
+      //"EXT-Background",
+      //"EXT-Browser",
+      //"EXT-Deezer",
+      "EXT-FreeboxTV",
+      "EXT-GooglePhotos",
+      "EXT-Governor",
+      "EXT-Internet",
+      //"EXT-Led",
+      "EXT-MusicPlayer",
+      //"EXT-Photos",
+      "EXT-Pir",
+      "EXT-RadioPlayer",
+      //"EXT-Setup",
+      "EXT-Screen",
+      "EXT-ScreenManager",
+      "EXT-Spotify",
+      //"EXT-UpdateNotification",
+      //"EXT-Volume",
+      //"EXT-Welcome",
+      "EXT-YouTube",
+      "EXT-YouTubeCast",
+      "EXT-YouTubeVLC"
+    ]
+    console.log("[UN] EXT-UpdateNotification Version:", require('./package.json').version)
     console.log("[UN] MagicMirror is running on pid:", process.pid)
   },
 
@@ -70,6 +120,7 @@ module.exports = NodeHelper.create({
           this.sendStatus(data)
           this.createRoutes()
           this.scheduleNextFetch(this.config.updateInterval)
+          this.performNPMCheck(payload)
         })
         break
       case "DISPLAY_ERROR":
@@ -307,6 +358,25 @@ module.exports = NodeHelper.create({
     this.expressApp.get("/UNRestart", (req, res) => {
       res.send("Restarting MagicMirror...")
       this.restartMM()
+    })
+  },
+
+  performNPMCheck: function(modules) {
+    if (!modules) return // should never happen ...
+    var modulesToCheck = this.DB.filter(DB => { return modules.indexOf(DB) > -1})
+    this.Checker= []
+    modulesToCheck.forEach(module => {
+      if (this.config.ignoreModules.indexOf(module) >= 0) {
+        log("Ignore npmCheck module:", module)
+        return
+      }
+      var cfg = {
+        dirName: path.resolve(__dirname + "/../" + module),
+        moduleName: module,
+        timer: this.config.updateInterval,
+        debug: this.config.debug
+      }
+      this.Checker[module] = new npmCheck(cfg, update => { this.sendSocketNotification("NPM_UPDATE", update)} )
     })
   }
 });

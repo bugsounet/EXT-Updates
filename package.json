@@ -1,11 +1,11 @@
 {
-  "name": "MMM-UpdateNotification",
-  "version": "1.2.6",
+  "name": "EXT-UpdateNotification",
+  "version": "1.0.0",
   "description": "Update notification",
-  "main": "MMM-UpdateNotification.js",
+  "main": "EXT-UpdateNotification.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/bugsounet/MMM-UpdateNotification"
+    "url": "https://github.com/bugsounet/EXT-UpdateNotification"
   },
   "author": [
     "Michael Teeuw",
@@ -13,11 +13,12 @@
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/bugsounet/MMM-UpdateNotification/issues"
+    "url": "https://forum.bugsounet.fr"
   },
-  "homepage": "https://github.com/bugsounet/MMM-UpdateNotification",
+  "homepage": "https://wiki.bugsounet.fr/EXT-UpdateNotification",
   "dependencies": {
-    "pm2": "^4.4.1",
-    "simple-git": "^2.46.0"
+    "@bugsounet/npmcheck": "^0.9.96",
+    "pm2": "^5.2.0",
+    "simple-git": "^3.2.6"
   }
 }

@@ -1,14 +1,12 @@
 /* Magic Mirror
- * Module: UpdateNotification
- *
- * By Michael Teeuw https://michaelteeuw.nl
+ * Module: EXT-UpdateNotification
+ * @bugsounet ©2022/02
  * MIT Licensed.
  */
 
-/** All credit to Michael Teeuw https://michaelteeuw.nl **/
-/** modified by @bugsounet for TelegramBot and NPM_UPDATE checker support **/
+/** @todo see updateCommands:[] and create other array in start() for merging after **/
 
-Module.register("MMM-UpdateNotification", {
+Module.register("EXT-UpdateNotification", {
   defaults: {
     debug: false,
     updateInterval: 10 * 60 * 1000, // every 10 minutes
@@ -17,30 +15,18 @@ Module.register("MMM-UpdateNotification", {
     updateCommands: [
       {
         module: "MagicMirror",
-        command: "rm package-lock.json && git pull && npm install"
+        command: "rm package-lock.json && git --reset hard && git pull && npm install"
       },
       {
         module: "MMM-GoogleAssistant",
-        command: "npm run update -- without-prompt"
+        command: "npm run update"
       },
       {
         module: "MMM-Pronote",
         command: "npm run update"
       },
       {
-        module: "MMM-NewPIR",
-        command: "npm run update"
-      },
-      {
         module: "MMM-Freebox",
-        command: "npm run update"
-      },
-      {
-        module: "MMM-FreeboxTV",
-        command: "npm run update"
-      },
-      {
-        module: "MMM-Snowboy",
         command: "npm run update"
       },
       {
@@ -72,7 +58,7 @@ Module.register("MMM-UpdateNotification", {
   notiTB: {},
 
   start: function () {
-    console.log("[UN] Start MMM-UpdateNotification")
+    console.log("[UN] Start EXT-UpdateNotification")
     this.nbDefaultCommands= this.defaults.updateCommands.length
     this.config = configMerged({}, this.defaults, this.config)
     this.suspended = !this.config.notification.useScreen
@@ -149,9 +135,7 @@ Module.register("MMM-UpdateNotification", {
           }
         }
         else setTimeout(() => this.sendSocketNotification("MODULES", this.modulesName), this.config.startDelay)
-        break
-      case "NPM_UPDATE":
-        if (!this.error) this.updateUI(payload)
+        this.sendNotification("EXT_HELLO", this.name)
         break
     }
   },
@@ -193,6 +177,9 @@ Module.register("MMM-UpdateNotification", {
       case "SCAN_COMPLETE":
         this.checkCallback(payload)
         break
+      case "NPM_UPDATE":
+        if (!this.error) this.updateUI(payload)
+        break
     }
   },
 
@@ -205,7 +192,7 @@ Module.register("MMM-UpdateNotification", {
     this.sendNotification("SHOW_ALERT", {
       type: "notification" ,
       message: text,
-      title: "MMM-UpdateNotification",
+      title: "EXT-UpdateNotification",
       timer: timer
     })
   },
@@ -364,6 +351,10 @@ Module.register("MMM-UpdateNotification", {
     return wrapper
   },
 
+  getStyles: function() {
+    return [ "font-awesome.css" ]
+  },
+
   suspend: function () {
     this.suspended = true
   },
@@ -448,15 +439,10 @@ Module.register("MMM-UpdateNotification", {
   },
 
   Restart: function(command, handler) {
-    /** @Saljoke says: Saljoke [02.09.20 00:27] Cedric philosophy 😂 **/
-    /** So I make Joke ! **/
-    handler.reply("TEXT", "[UN] Daddy @bugsounet haven't found a pretty sentence for restarting!\n")
-    handler.reply("TEXT", "[@bugsounet] Ok... So restart now! You are lazy UpdateNotification ???")
-    handler.reply("TEXT", "[UN] Sorry, I will restart ! I'M NOT LAZY !!!")
+    handler.reply("TEXT", "Restarting MagicMirror...")
     setTimeout(() => {
-      handler.reply("TEXT", "[@Saljoke] Cedric philosophy 😂")
       this.sendSocketNotification("RESTARTMM")
-    }, 2000)
+    }, 1000)
   },
 
   updateCommands: function(command, handler, moduleClass, style = false) {
@@ -515,7 +501,7 @@ Module.register("MMM-UpdateNotification", {
   UNConfig: function(command, handler) {
     /** show the config like in config.js file with ALL value **/
     var text = "{\n"
-    text += "  module: \"MMM-UpdateNotification\",\n",
+    text += "  module: \"EXT-UpdateNotification\",\n",
     text += "  position: \"" + this.data.position + "\",\n"
     text += "  config: {\n"
     text += "    debug: " + this.config.debug + ",\n"
