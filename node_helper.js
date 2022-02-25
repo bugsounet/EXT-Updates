@@ -22,55 +22,6 @@ module.exports = NodeHelper.create({
     this.updateTimer= null
     this.ForceCheck = false
     this.init = false
-    this.DB = [
-      /** normal modules **/
-      //"MMM-AirParif",
-      //"MMM-Alexa",
-      "MMM-Detector",
-      //"MMM-FranceInfo",
-      "MMM-Freebox",
-      "MMM-FreeBox4G",
-      "MMM-FreeboxTV",
-      //"MMM-FTV",
-      "MMM-GoogleAssistant",
-      //"MMM-Netatmo-Thermostat",
-      //"MMM-NewsFeed",
-      //"MMM-NotificationReceived",
-      "MMM-Pronote",
-      //"MMM-Saint",
-      "MMM-ScreenManager",
-      //"MMM-Shom",
-      //"MMM-SpeedTest",
-      //"MMM-TelegramBot",
-      //"MMM-Timetable",
-      //"MMM-Tools",
-      //"MMM-Weather",
-      //"MMM-Xbox",
-      /** all EXT modules **/
-      //"EXT-Alert",
-      //"EXT-Background",
-      //"EXT-Browser",
-      //"EXT-Deezer",
-      "EXT-FreeboxTV",
-      "EXT-GooglePhotos",
-      "EXT-Governor",
-      "EXT-Internet",
-      //"EXT-Led",
-      "EXT-MusicPlayer",
-      //"EXT-Photos",
-      "EXT-Pir",
-      "EXT-RadioPlayer",
-      //"EXT-Setup",
-      "EXT-Screen",
-      "EXT-ScreenManager",
-      "EXT-Spotify",
-      //"EXT-UpdateNotification",
-      //"EXT-Volume",
-      //"EXT-Welcome",
-      "EXT-YouTube",
-      "EXT-YouTubeCast",
-      "EXT-YouTubeVLC"
-    ]
     console.log("[UN] EXT-UpdateNotification Version:", require('./package.json').version)
     console.log("[UN] MagicMirror is running on pid:", process.pid)
   },
@@ -363,13 +314,17 @@ module.exports = NodeHelper.create({
 
   performNPMCheck: function(modules) {
     if (!modules) return // should never happen ...
-    var modulesToCheck = this.DB.filter(DB => { return modules.indexOf(DB) > -1})
     this.Checker= []
-    modulesToCheck.forEach(module => {
+    modules.forEach(module => {
+      if (defaultModules.indexOf(module) >= 0) {
+        return
+      }
+
       if (this.config.ignoreModules.indexOf(module) >= 0) {
         log("Ignore npmCheck module:", module)
         return
       }
+
       var cfg = {
         dirName: path.resolve(__dirname + "/../" + module),
         moduleName: module,
