@@ -3,6 +3,11 @@
   "version": "1.0.0",
   "description": "Update notification",
   "main": "EXT-UpdateNotification.js",
+  "scripts": {
+    "preinstall": "installer/preinstall.sh",
+    "postinstall": "installer/postinstall.sh",
+    "update": "installer/update.sh"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/bugsounet/EXT-UpdateNotification"
