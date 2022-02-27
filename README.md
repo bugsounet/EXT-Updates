@@ -1,13 +1,23 @@
-# MMM-UpdateNotification
+# EXT-UpdateNotification
 
 The `updatenotification` module is one of the default modules of the MagicMirror.<br>
 This will display a message whenever a new version of the MagicMirror application is available.
 
 ---
-This module is a Fork of `Update Notication` default module of MagicMirror
+This module is a Fork of `updatenotification` default module of MagicMirror and recoded for better using
+---
 
-All credit to `Michael Teeuw https://michaelteeuw.nl` for scanning Git modules and not to me :)
+ * This module allow to send a notification if an update is available,
+ * This module will auto-update automaticaly any modules
+ * this module will restart your mirror when process done!
 
+New Version start with this module:
+* Added: EXT plugins support
+* Deleted: auto update of MagicMirror (can have some trouble... manually is better)
+* Added: search NPMCheck result on each @bugsounet modules
+* Added: EXT-Alert Support
+
+Old version from: MMM-UpdateNotification
 * Added: TelegramBot notification and functions
 * Added: NPM Check result for my @bugsounet mpn libraries
 * Added: Auto-updater any module and MagicMirror
@@ -15,11 +25,11 @@ All credit to `Michael Teeuw https://michaelteeuw.nl` for scanning Git modules a
 
 ---
 # Installation, update & Guides
-Read the docs in [wiki](https://github.com/bugsounet/MMM-UpdateNotification/wiki)<br>
+Read the docs in [wiki](https://wiki.bugsounet.fr/EXT-UpdateNotification)<br>
 
 ---
 # Demo and screenshots:
-
+From old version (MMM-UpdateNotification)
 - Demo<br>
 [![](https://raw.githubusercontent.com/bugsounet/MMM-UpdateNotification/dev/shoot/video.jpg)](https://www.youtube.com/watch?v=ip0wGeLl-7s)
 
