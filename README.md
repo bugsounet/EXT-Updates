@@ -10,7 +10,7 @@ This module is a Fork of `updatenotification` default module of MagicMirror and 
 
  * This module allow to send a notification if an update is available,
  * This module will auto-update automaticaly any modules
- * this module will restart your mirror when process done!
+ * This module will restart your mirror when process done!
 
 New Version start with this module:
 * Added: EXT plugins support
