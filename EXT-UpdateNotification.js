@@ -4,19 +4,38 @@
  * MIT Licensed.
  */
 
-/** @todo see updateCommands:[] and create other array in start() for merging after **/
-
 Module.register("EXT-UpdateNotification", {
   defaults: {
     debug: false,
     updateInterval: 10 * 60 * 1000, // every 10 minutes
     startDelay: 60 * 1000, // delay before 1st scan
     ignoreModules: [],
-    updateCommands: [
-      {
-        module: "MagicMirror",
-        command: "rm package-lock.json && git --reset hard && git pull && npm install"
-      },
+    updateCommands: [],
+    notification: {
+      useTelegramBot: true,
+      sendReady: true,
+      useScreen: true,
+      useCallback: true
+    },
+    update: {
+      autoUpdate: true,
+      autoRestart: true,
+      usePM2: false,
+      PM2Name: "0",
+      defaultCommand: "git --reset hard && git pull && npm install",
+      logToConsole: true,
+      timeout: 2*60*1000
+    }
+  },
+
+  suspended: false,
+  moduleList: {},
+  npmList: {},
+  notiTB: {},
+
+  start: function () {
+    console.log("[UN] Start EXT-UpdateNotification")
+    this.internalCommands= [
       {
         module: "MMM-GoogleAssistant",
         command: "npm run update"
@@ -32,35 +51,105 @@ Module.register("EXT-UpdateNotification", {
       {
         module: "MMM-Detector",
         command: "npm run update"
+      },
+      /** all EXT **/
+      {
+        module: "EXT-Alert",
+        command: "npm run update"
+      },
+      {
+        module: "EXT-Background",
+        command: "npm run update"
+      },
+      {
+        module: "EXT-Browser",
+        command: "npm run update"
+      },
+      {
+        module: "EXT-Deezer",
+        command: "npm run update"
+      },
+      {
+        module: "EXT-FreeboxTV",
+        command: "npm run update"
+      },
+      {
+        module: "EXT-GooglePhotos",
+        command: "npm run update"
+      },
+      {
+        module: "EXT-Governor",
+        command: "npm run update"
+      },
+      {
+        module: "EXT-Internet",
+        command: "npm run update"
+      },
+      {
+        module: "EXT-Led",
+        command: "npm run update"
+      },
+      {
+        module: "EXT-MusicPlayer",
+        command: "npm run update"
+      },
+      {
+        module: "EXT-Photos",
+        command: "npm run update"
+      },
+      {
+        module: "EXT-Pir",
+        command: "npm run update"
+      },
+      {
+        module: "EXT-RadioPlayer",
+        command: "npm run update"
+      },
+      {
+        module: "EXT-Setup",
+        command: "npm run update"
+      },
+      {
+        module: "EXT-Screen",
+        command: "npm run update"
+      },
+      {
+        module: "EXT-ScreenManager",
+        command: "npm run update"
+      },
+      {
+        module: "EXT-Spotify",
+        command: "npm run update"
+      },
+      {
+        module: "EXT-UpdateNotification",
+        command: "npm run update"
+      },
+      {
+        module: "EXT-Volume",
+        command: "npm run update"
+      },
+      {
+        module: "EXT-Welcome",
+        command: "npm run update"
+      },
+      {
+        module: "EXT-YouTube",
+        command: "npm run update"
+      },
+      {
+        module: "EXT-YouTubeCast",
+        command: "npm run update"
+      },
+      {
+        module: "EXT-YouTubeVLC",
+        command: "npm run update"
       }
-    ],
-    notification: {
-      useTelegramBot: true,
-      sendReady: true,
-      useScreen: true,
-      useCallback: true
-    },
-    update: {
-      autoUpdate: true,
-      autoRestart: true,
-      usePM2: false,
-      PM2Name: "0",
-      defaultCommand: "git pull && npm install",
-      updateMagicMirror: false,
-      logToConsole: true,
-      timeout: 2*60*1000
-    }
-  },
-
-  suspended: false,
-  moduleList: {},
-  npmList: {},
-  notiTB: {},
-
-  start: function () {
-    console.log("[UN] Start EXT-UpdateNotification")
-    this.nbDefaultCommands= this.defaults.updateCommands.length
-    this.config = configMerged({}, this.defaults, this.config)
+    ]
+    this.nbDefaultCommands= this.internalCommands.length
+    console.warn("[UN] Wow! there is", this.nbDefaultCommands-1 , "@bugsounet modules in database")
+    // merge internal database to config
+    this.config.updateCommands = configMerged([], this.internalCommands, this.config.updateCommands)
     this.suspended = !this.config.notification.useScreen
     this.init= false
     this.update = {}
@@ -189,10 +278,9 @@ Module.register("EXT-UpdateNotification", {
   },
 
   sendAlert: function (text, timer = 0) {
-    this.sendNotification("SHOW_ALERT", {
-      type: "notification" ,
+    this.sendNotification("EXT_ALERT", {
+      type: "error" ,
       message: text,
-      title: "EXT-UpdateNotification",
       timer: timer
     })
   },
@@ -284,7 +372,7 @@ Module.register("EXT-UpdateNotification", {
           this.sendAdmin(TB)
         }
         if (this.config.update.autoUpdate && !this.updating) {
-          if (m.module == "MagicMirror" && !this.config.updateMagicMirror) {
+          if (m.module == "MagicMirror") {
             /** don't update MM **/
             this.notiTB[key] = false
             this.updating = false
@@ -558,7 +646,6 @@ Module.register("EXT-UpdateNotification", {
     text += "      usePM2: "+ this.config.update.usePM2 + ",\n"
     text += "      PM2Name: \"" + this.config.update.PM2Name + "\",\n"
     text += "      defaultCommand: \"" +this.config.update.defaultCommand + "\",\n"
-    text += "      updateMagicMirror: " + this.config.update.updateMagicMirror + ",\n"
     text += "      logToConsole: " + this.config.update.logToConsole + "\n"
     text += "      timeout: " + this.config.update.timeout + "\n"
     text += "    }\n  }\n},"
