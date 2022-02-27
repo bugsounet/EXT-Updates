@@ -4,6 +4,12 @@
  * MIT Licensed.
  */
 
+/** @todo:
+ *  make a real compatibility with EXT_Alert !
+ *  check configDeepMerge
+ *  review useScreen && TelegramBot ?
+ **/
+
 Module.register("EXT-UpdateNotification", {
   defaults: {
     debug: false,
@@ -147,7 +153,9 @@ Module.register("EXT-UpdateNotification", {
       }
     ]
     this.nbDefaultCommands= this.internalCommands.length
-    console.warn("[UN] Wow! there is", this.nbDefaultCommands-1 , "@bugsounet modules in database")
+    console.warn("[UN] Wow! there is", this.nbDefaultCommands, "@bugsounet modules in database")
+    this.nbPersonalCommands= this.config.updateCommands.length
+    this.personalCommands= this.config.updateCommands
     // merge internal database to config
     this.config.updateCommands = configMerged([], this.internalCommands, this.config.updateCommands)
     this.suspended = !this.config.notification.useScreen
@@ -156,7 +164,7 @@ Module.register("EXT-UpdateNotification", {
     this.updating= false
     this.modulesName= []
     this.commandsError = []
-    this.error = this.updateCommandsChk(this.config.updateCommands)
+    this.error = this.updateCommandsChk(this.personalCommands)
     this.modulesInfo( cb => console.log("[UN] Modules find:", this.modulesName.length))
     this.session= {}
   },
@@ -173,7 +181,7 @@ Module.register("EXT-UpdateNotification", {
         err = {
           type: "unknow",
           module: "unknow",
-          place: nb-this.nbDefaultCommands
+          place: nb
         }
         this.commandsError.push(err)
       }
@@ -182,7 +190,7 @@ Module.register("EXT-UpdateNotification", {
         err = {
           type: "module",
           module: "unknow",
-          place: nb-this.nbDefaultCommands
+          place: nb
         }
         this.commandsError.push(err)
       }
@@ -191,16 +199,16 @@ Module.register("EXT-UpdateNotification", {
         err = {
           type: "command",
           module: x.module,
-          place: nb-this.nbDefaultCommands
+          place: nb
         }
         this.commandsError.push(err)
       }
-      if (x.module && modules.indexOf(x.module) >= 0) {
+      if (x.module && this.internalCommands.find(module => module.module === x.module)) {
         error += 1
         err = {
           type: "double",
           module: x.module,
-          place: nb-this.nbDefaultCommands
+          place: nb
         }
         this.commandsError.push(err)
       }
@@ -535,31 +543,30 @@ Module.register("EXT-UpdateNotification", {
 
   updateCommands: function(command, handler, moduleClass, style = false) {
     var text = this.translate("DEFAULTCONFIG")
-    var nb = 1
-    var err= 0
+    var nb, err
+
     /** display default updateCommands **/
-    this.config.updateCommands.forEach(update => {
-      if (nb >=1 && nb <= this.nbDefaultCommands) text += "*"+ update.module + ":* `" + update.command + "`\n"
-      nb += 1
+    this.internalCommands.forEach(update => {
+      text += "*"+ update.module + ":* `" + update.command + "`\n"
     })
 
-    if (this.config.updateCommands.length > this.nbDefaultCommands) {
+    if (this.nbPersonalCommands) {
       nb = 1
       text += this.translate("PERSONALCONFIG")
-      this.config.updateCommands.forEach(update => {
+      this.personalCommands.forEach(update => {
         err = 0
         if (!this.error) {
-          if (nb > this.nbDefaultCommands) text += "*"+ (nb-this.nbDefaultCommands) +". " + update.module + ":* `" + update.command + "` ✅\n"
+          text += "*"+ nb +". " + update.module + ":* `" + update.command + "` ✅\n"
         }
         else {
           this.commandsError.forEach(error => {
-            if (error.place === nb-this.nbDefaultCommands) {
-              text += "*"+error.place+". " + update.module + ":* `" + update.command + "` ⁉️\n"
+            if (error.place === nb) {
+              text += "*"+error.place+". " + update.module + ":* `" + update.command + "` 🚫\n"
               err = 1
             }
           })
           if (!err) {
-            if (nb > this.nbDefaultCommands) text += "*"+(nb-this.nbDefaultCommands)+". " + update.module + ":* `" + update.command + "` ✅\n"
+            text += "*"+ nb +". " + update.module + ":* `" + update.command + "` ✅\n"
           }
         }
         nb += 1
