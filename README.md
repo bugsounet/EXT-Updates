@@ -5,6 +5,7 @@ This will display a message whenever a new version of the MagicMirror applicatio
 
 ---
 This module is a Fork of `updatenotification` default module of MagicMirror and recoded for better using
+
 ---
 
  * This module allow to send a notification if an update is available,
