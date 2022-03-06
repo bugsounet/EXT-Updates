@@ -54,10 +54,6 @@ Module.register("EXT-UpdateNotification", {
         module: "MMM-Freebox",
         command: "npm run update"
       },
-      {
-        module: "MMM-Detector",
-        command: "npm run update"
-      },
       /** all EXT **/
       {
         module: "EXT-Alert",
@@ -73,6 +69,10 @@ Module.register("EXT-UpdateNotification", {
       },
       {
         module: "EXT-Deezer",
+        command: "npm run update"
+      },
+      {
+        module: "EXT-Detector",
         command: "npm run update"
       },
       {
