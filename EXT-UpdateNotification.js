@@ -232,7 +232,9 @@ Module.register("EXT-UpdateNotification", {
           }
         }
         else setTimeout(() => this.sendSocketNotification("MODULES", this.modulesName), this.config.startDelay)
-        this.sendNotification("EXT_HELLO", this.name)
+        break
+      case "GAv4_READY":
+        if (sender.name == "MMM-GoogleAssistant") this.sendNotification("EXT_HELLO", this.name)
         break
     }
   },
