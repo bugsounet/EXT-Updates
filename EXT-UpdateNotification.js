@@ -299,7 +299,8 @@ Module.register("EXT-UpdateNotification", {
     this.sendNotification("EXT_ALERT", {
       type: type ,
       message: text,
-      timer: timer
+      timer: timer,
+      icon: "modules/EXT-UpdateNotification/resources/update.png"
     })
   },
 
