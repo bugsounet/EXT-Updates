@@ -54,7 +54,13 @@ Module.register("EXT-UpdateNotification", {
         module: "MMM-Freebox",
         command: "npm run update"
       },
-      /** all EXT **/
+      /** all EXT /!\ don't forget to add Gateway !!!'**/
+      /*
+      {
+        module: "Gateway",
+        command: "git reset --hard && git pull && npm install"
+      },
+      */
       {
         module: "EXT-Alert",
         command: "npm run update"
@@ -227,7 +233,7 @@ Module.register("EXT-UpdateNotification", {
         if (this.error) {
           if (this.config.notification.useTelegramBot) this.sendAdmin(this.translate("TB_WELCOMEERROR", { ERROR: this.error }), true)
           else {
-            this.sendAlert(this.translate("ALERT_WELCOMEERROR", { ERROR: this.error }))
+            this.sendAlert(this.translate("ALERT_WELCOMEERROR", { ERROR: this.error }), 5000, "error")
             this.updateCommands(null, null, null, true)
           }
         }
@@ -249,26 +255,28 @@ Module.register("EXT-UpdateNotification", {
           this.init=true
           if (this.config.notification.sendReady) {
             if (this.config.notification.useTelegramBot) this.sendAdmin(this.translate("INITIALIZED", { VERSION: payload }))
-            else this.sendAlert(this.translate("INITIALIZED", { VERSION: payload }), 5*1000)
+            else this.sendAlert(this.translate("INITIALIZED", { VERSION: payload }), 5*1000, "information")
           }
         }
         break
       case "WELCOME":
         if (this.config.notification.useTelegramBot) this.sendAdmin(this.translate(this.config.update.usePM2 ? "TB_WELCOME" : "TB_WELCOMEPID", this.config.update.usePM2 ? {} : { PID: payload }))
-        else this.sendAlert(this.translate(this.config.update.usePM2 ? "ALERT_WELCOME" : "ALERT_WELCOMEPID", this.config.update.usePM2 ? {} : { PID: payload }), 5*1000)
+        else if (!this.config.update.usePM2) {
+          this.sendAlert(this.translate("ALERT_WELCOMEPID", { PID: payload }), 5*1000, "information")
+        }
         break
       case "UPDATED":
         this.updating = false
         if (this.config.notification.useTelegramBot) this.sendAdmin(this.translate("UPDATE_DONE", { MODULE_NAME: payload }))
-        else this.sendAlert(this.translate("UPDATE_DONE", { MODULE_NAME: payload }))
+        else this.sendAlert(this.translate("UPDATE_DONE", { MODULE_NAME: payload }), 5*1000, "information")
         break
       case "NEEDRESTART":
         if (this.config.notification.useTelegramBot) this.sendAdmin(this.translate("NEEDRESTART"))
-        else this.sendAlert(this.translate("NEEDRESTART"))
+        else this.sendAlert(this.translate("NEEDRESTART"), 5*1000, "warning")
         break
       case "ERROR_UPDATE":
         if (this.config.notification.useTelegramBot) this.sendAdmin(this.translate("TB_UPDATE_ERROR", { MODULE_NAME: payload }))
-        else this.sendAlert(this.translate("ALERT_UPDATE_ERROR", { MODULE_NAME: payload }))
+        else this.sendAlert(this.translate("ALERT_UPDATE_ERROR", { MODULE_NAME: payload }), 5*1000, "error")
         break
       case "SendResult":
         this.sendAdmin(payload, true)
@@ -287,9 +295,9 @@ Module.register("EXT-UpdateNotification", {
     else this.sendNotification("TELBOT_TELL_ADMIN", text)
   },
 
-  sendAlert: function (text, timer = 0) {
+  sendAlert: function (text, timer = 0, type) {
     this.sendNotification("EXT_ALERT", {
-      type: "error" ,
+      type: type ,
       message: text,
       timer: timer
     })

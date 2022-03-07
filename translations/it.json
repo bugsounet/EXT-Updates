@@ -34,6 +34,6 @@
   "MODULECONFIG": "Nome del modulo non trovato",
   "HELP_UPDATECOMMAND": "Lista di comandi automatici di updateCommands.",
   "TB_WELCOMEERROR": "Tu hai {ERROR} errori in updateCommands !\nRisolvi il problema.\nEXT-UpdateNotification non è ancora attivo\n\nProva /updateCommands per maggiori informazioni\n",
-  "ALERT_WELCOMEERROR": "tu hai {ERROR} errori in updateCommands !<br>Risolvi il problema.<br>EXT-UpdateNotification non è ancora attivo<br><br>Leggi il logs su terminale per maggiori informazioni",
+  "ALERT_WELCOMEERROR": "tu hai {ERROR} errori in updateCommands !",
   "HELP_CONFIG": "Mostra configurazione EXT-UpdateNotification"
 }

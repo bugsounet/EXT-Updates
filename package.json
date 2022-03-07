@@ -22,7 +22,7 @@
   },
   "homepage": "https://wiki.bugsounet.fr/EXT-UpdateNotification",
   "dependencies": {
-    "@bugsounet/npmcheck": "^0.9.97",
+    "@bugsounet/npmcheck": "^0.9.98",
     "pm2": "^5.2.0",
     "simple-git": "^3.2.6"
   }

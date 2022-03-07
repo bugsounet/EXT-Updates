@@ -34,6 +34,6 @@
   "MODULECONFIG": "Der Modulname ist nicht definiert.",
   "HELP_UPDATECOMMAND": "Liste automatisierter updateCommands-Befehle.",
   "TB_WELCOMEERROR": "Es gibt {ERROR} Fehler in updateCommands !\nBitte die Konflikte lösen.\nEXT-UpdateNotification ist nicht aktiviert.\n\nVersuche /updateCommands für mehr Informationen.\n",
-  "ALERT_WELCOMEERROR": "Es gibt {ERROR} Fehler in updateCommands !<br>Bitte die Konflikte lösen.<br>EXT-UpdateNotification ist nicht aktiviert.<br><br>Weitere Informationen finden Sie in den Terminal-Protokollen.",
+  "ALERT_WELCOMEERROR": "Es gibt {ERROR} Fehler in updateCommands !",
   "HELP_CONFIG": "Die Konfiguration von EXT-UpdateNotification anzeigen."
 }

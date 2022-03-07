@@ -34,6 +34,6 @@
   "MODULECONFIG": "Module naam niet gevonden",
   "HELP_UPDATECOMMAND": "Lijst met geautomatiseerde updateCommands-opdrachten.",
   "TB_WELCOMEERROR": "U hebt {ERROR} fouten(s) in updateCommando's !\nGelieve conflicten op te lossen.\nEXT-UpdateNotification is niet geactiveerd\n\nProbeer /updateCommando's voor meer informatie\n",
-  "ALERT_WELCOMEERROR": "U hebt {ERROR} fouten(s) in updateCommando's !<br>Gelieve conflicten op te lossen.<br>EXT-UpdateNotification is niet geactiveerd<br><br>Zie terminallogboeken voor meer informatie",
+  "ALERT_WELCOMEERROR": "U hebt {ERROR} fouten(s) in updateCommando's !",
   "HELP_CONFIG": "EXT-UpdateNotification-configuratie weergeven"
 }
