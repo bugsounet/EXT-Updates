@@ -29,15 +29,6 @@ Old version from: MMM-UpdateNotification
 Read the docs in [wiki](https://wiki.bugsounet.fr/EXT-UpdateNotification)<br>
 
 ---
-# Demo and screenshots:
-From old version (MMM-UpdateNotification)
-- Demo<br>
-[![](https://raw.githubusercontent.com/bugsounet/MMM-UpdateNotification/dev/shoot/video.jpg)](https://www.youtube.com/watch?v=ip0wGeLl-7s)
-
-- Screenshots<br>
-![](https://raw.githubusercontent.com/bugsounet/MMM-UpdateNotification/dev/shoot/shot3.png)
-![](https://raw.githubusercontent.com/bugsounet/MMM-UpdateNotification/dev/shoot/shot1.png)
-![](https://raw.githubusercontent.com/bugsounet/MMM-UpdateNotification/dev/shoot/shot2.png)
 
 # Credits:
   - Authors:
