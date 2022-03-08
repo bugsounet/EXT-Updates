@@ -22,7 +22,7 @@ module.exports = NodeHelper.create({
     this.updateTimer= null
     this.ForceCheck = false
     this.init = false
-    console.log("[UN] EXT-UpdateNotification Version:", require('./package.json').version)
+    console.log("[UN] EXT-UpdateNotification Version:", require('./package.json').version, "rev:", require('./package.json').rev)
     console.log("[UN] MagicMirror is running on pid:", process.pid)
   },
 

@@ -4,12 +4,6 @@
  * MIT Licensed.
  */
 
-/** @todo:
- *  make a real compatibility with EXT_Alert !
- *  check configDeepMerge
- *  review useScreen && TelegramBot ?
- **/
-
 Module.register("EXT-UpdateNotification", {
   defaults: {
     debug: false,
@@ -26,9 +20,9 @@ Module.register("EXT-UpdateNotification", {
     update: {
       autoUpdate: true,
       autoRestart: true,
-      usePM2: false,
+      usePM2: true,
       PM2Name: "0",
-      defaultCommand: "git --reset hard && git pull && npm install",
+      defaultCommand: "git reset --hard && git pull && npm install",
       logToConsole: true,
       timeout: 2*60*1000
     }
@@ -54,13 +48,11 @@ Module.register("EXT-UpdateNotification", {
         module: "MMM-Freebox",
         command: "npm run update"
       },
-      /** all EXT /!\ don't forget to add Gateway !!!'**/
-      /*
+      /** all EXT **/
       {
         module: "Gateway",
-        command: "git reset --hard && git pull && npm install"
+        command: "npm run update"
       },
-      */
       {
         module: "EXT-Alert",
         command: "npm run update"
