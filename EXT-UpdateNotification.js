@@ -122,6 +122,10 @@ Module.register("EXT-UpdateNotification", {
         command: "npm run update"
       },
       {
+        module: "EXT-ScreenTouch",
+        command: "npm run update"
+      },
+      {
         module: "EXT-Spotify",
         command: "npm run update"
       },
