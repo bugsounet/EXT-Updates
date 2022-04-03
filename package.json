@@ -1,7 +1,7 @@
 {
   "name": "EXT-UpdateNotification",
-  "version": "1.0.0",
-  "rev": "220313",
+  "version": "1.0.1",
+  "rev": "220403",
   "description": "Update notification",
   "main": "EXT-UpdateNotification.js",
   "scripts": {
@@ -23,7 +23,7 @@
   },
   "homepage": "https://wiki.bugsounet.fr/EXT-UpdateNotification",
   "dependencies": {
-    "@bugsounet/npmcheck": "^0.9.98",
+    "latest-version": "^5.1.0",
     "pm2": "^5.2.0",
     "simple-git": "^3.2.6"
   }

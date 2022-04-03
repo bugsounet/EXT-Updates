@@ -11,8 +11,8 @@ var exec = require('child_process').exec
 var spawn = require('child_process').spawn
 const pm2 = require('pm2')
 var log = (...args) => { /* do nothing */ }
-const express = require("express");
-const npmCheck = require ("@bugsounet/npmcheck")
+const express = require("express")
+const npmCheck = require ("./lib/npmCheck.js")
 
 module.exports = NodeHelper.create({
   start: function () {
