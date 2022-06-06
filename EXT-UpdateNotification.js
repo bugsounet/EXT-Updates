@@ -238,6 +238,9 @@ Module.register("EXT-UpdateNotification", {
       case "GAv4_READY":
         if (sender.name == "MMM-GoogleAssistant") this.sendNotification("EXT_HELLO", this.name)
         break
+      case "EXT_UPDATENOTIFICATION-UPDATE":
+        if (!this.updating) this.updateFirstOnly()
+        break
     }
   },
 
@@ -451,6 +454,9 @@ Module.register("EXT-UpdateNotification", {
         this.notiTB[key] = false
       }
     }
+    // broadcast for Gateway v2
+    this.sendNotification("EXT_UN-MODULE_UPDATE", this.moduleList)
+    this.sendNotification("EXT_UN-NPM_UPDATE", this.npmList)
     return wrapper
   },
 
@@ -760,6 +766,21 @@ Module.register("EXT-UpdateNotification", {
     if (this.error) return
     this.sendNotification("WAKEUP")
     this.sendSocketNotification("UPDATE", module)
+  },
+
+  updateFirstOnly: function() {
+    if (!this.init || this.updating) return
+    var name = Object.keys(this.notiTB)[0]
+    if (!name) return
+    if (this.npmList[name]) {
+      this.updating = true
+      console.log("NPM Updating:", this.npmList[name].module)
+      this.updateProcess(this.npmList[name].module)
+    } else if (this.moduleList[name]) {
+      this.updating = true
+      console.log("Module Updating:", this.moduleList[name].module)
+      this.updateProcess(this.moduleList[name].module)
+    }
   },
 
   ExtraChars: function(str) {

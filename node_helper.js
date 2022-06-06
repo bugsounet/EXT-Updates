@@ -69,7 +69,6 @@ module.exports = NodeHelper.create({
           data = await this.performFetch()
           this.sendSocketNotification("INITIALIZED", require('./package.json').version)
           this.sendStatus(data)
-          this.createRoutes()
           this.scheduleNextFetch(this.config.updateInterval)
           this.performNPMCheck(payload)
         })
@@ -301,15 +300,6 @@ module.exports = NodeHelper.create({
   StripColor: function(str) {
     str = str.replace(/\[(\[H\033\[2J|\d+;\d+H|\d+(;\d+;\d+(;\d+;\d+)?m|[m])|1K)|\[m/g, '')
     return str
-  },
-
-  createRoutes: function() {
-    /** http remote for restart **/
-    log("Create http Route /UNRestart")
-    this.expressApp.get("/UNRestart", (req, res) => {
-      res.send("Restarting MagicMirror...")
-      this.restartMM()
-    })
   },
 
   performNPMCheck: function(modules) {
