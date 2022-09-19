@@ -130,6 +130,10 @@ Module.register("EXT-UpdateNotification", {
         command: "npm run update"
       },
       {
+        module: "EXT-SpotifyCanvasLyrics",
+        command: "npm run update"
+      },
+      {
         module: "EXT-UpdateNotification",
         command: "npm run update"
       },
