@@ -479,7 +479,7 @@ Module.register("EXT-UpdateNotification", {
   },
 
   /** Update from Telegram **/
-  getCommands: function(commander) {
+  EXT_TELBOTCommands: function(commander) {
     commander.add({
       command: "update",
       description: this.translate("HELP_UPDATE"),
