@@ -294,8 +294,8 @@ Module.register("EXT-UpdateNotification", {
   },
 
   sendAdmin: function (text, parse) {
-    if (parse) this.sendNotification("TELBOT_TELL_ADMIN", text, {parse_mode:'Markdown'})
-    else this.sendNotification("TELBOT_TELL_ADMIN", text)
+    if (parse) this.sendNotification("EXT_TELBOT-TELL_ADMIN", text, {parse_mode:'Markdown'})
+    else this.sendNotification("EXT_TELBOT-TELL_ADMIN", text)
   },
 
   sendAlert: function (text, timer = 0, type) {
