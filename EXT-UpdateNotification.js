@@ -40,14 +40,6 @@ Module.register("EXT-UpdateNotification", {
         module: "MMM-GoogleAssistant",
         command: "npm run update"
       },
-      {
-        module: "MMM-Pronote",
-        command: "npm run update"
-      },
-      {
-        module: "MMM-Freebox",
-        command: "npm run update"
-      },
       /** all EXT **/
       {
         module: "Gateway",
@@ -58,15 +50,15 @@ Module.register("EXT-UpdateNotification", {
         command: "npm run update"
       },
       {
+        module: "EXT-Bring",
+        command: "npm run update"
+      },
+      {
         module: "EXT-Background",
         command: "npm run update"
       },
       {
         module: "EXT-Browser",
-        command: "npm run update"
-      },
-      {
-        module: "EXT-Deezer",
         command: "npm run update"
       },
       {
@@ -90,11 +82,23 @@ Module.register("EXT-UpdateNotification", {
         command: "npm run update"
       },
       {
-        module: "EXT-Led",
+        module: "EXT-Librespot",
+        command: "npm run update"
+      },
+      {
+        module: "EXT-Keyboard",
+        command: "npm run update"
+      },
+      {
+        module: "EXT-Motion",
         command: "npm run update"
       },
       {
         module: "EXT-MusicPlayer",
+        command: "npm run update"
+      },
+      {
+        module: "EXT-Pages",
         command: "npm run update"
       },
       {
@@ -106,11 +110,11 @@ Module.register("EXT-UpdateNotification", {
         command: "npm run update"
       },
       {
-        module: "EXT-RadioPlayer",
+        module: "EXT-Raspotify",
         command: "npm run update"
       },
       {
-        module: "EXT-Setup",
+        module: "EXT-RadioPlayer",
         command: "npm run update"
       },
       {
@@ -126,11 +130,35 @@ Module.register("EXT-UpdateNotification", {
         command: "npm run update"
       },
       {
+        module: "EXT-Selfies",
+        command: "npm run update"
+      },
+      {
+        module: "EXT-SelfiesFlash",
+        command: "npm run update"
+      },
+      {
+        module: "EXT-SelfiesSender",
+        command: "npm run update"
+      },
+      {
+        module: "EXT-SelfiesViewer",
+        command: "npm run update"
+      },
+      {
         module: "EXT-Spotify",
         command: "npm run update"
       },
       {
         module: "EXT-SpotifyCanvasLyrics",
+        command: "npm run update"
+      },
+      {
+        module: "EXT-StreamDeck",
+        command: "npm run update"
+      },
+      {
+        module: "EXT-Telegrambot",
         command: "npm run update"
       },
       {
@@ -151,10 +179,6 @@ Module.register("EXT-UpdateNotification", {
       },
       {
         module: "EXT-YouTubeCast",
-        command: "npm run update"
-      },
-      {
-        module: "EXT-YouTubeVLC",
         command: "npm run update"
       }
     ]
