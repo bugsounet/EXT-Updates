@@ -263,7 +263,7 @@ Module.register("EXT-UpdateNotification", {
         }
         else setTimeout(() => this.sendSocketNotification("MODULES", this.modulesName), this.config.startDelay)
         break
-      case "GAv4_READY":
+      case "GAv5_READY":
         if (sender.name == "MMM-GoogleAssistant") this.sendNotification("EXT_HELLO", this.name)
         break
       case "EXT_UPDATENOTIFICATION-UPDATE":
