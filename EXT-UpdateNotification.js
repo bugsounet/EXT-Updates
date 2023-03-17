@@ -1,6 +1,6 @@
 /* Magic Mirror
- * Module: EXT-UpdateNotification
- * @bugsounet ©2022/02
+ * Module: EXT-UpdateNotification v2
+ * @bugsounet ©2023/03
  * MIT Licensed.
  */
 
@@ -10,7 +10,6 @@ Module.register("EXT-UpdateNotification", {
     updateInterval: 10 * 60 * 1000, // every 10 minutes
     startDelay: 60 * 1000, // delay before 1st scan
     ignoreModules: [],
-    updateCommands: [],
     notification: {
       useTelegramBot: true,
       sendReady: true,
@@ -22,7 +21,6 @@ Module.register("EXT-UpdateNotification", {
       autoRestart: true,
       usePM2: true,
       PM2Name: "0",
-      defaultCommand: "git reset --hard && git pull && npm install",
       logToConsole: true,
       timeout: 2*60*1000
     }
@@ -184,69 +182,14 @@ Module.register("EXT-UpdateNotification", {
     ]
     this.nbDefaultCommands= this.internalCommands.length
     console.warn("[UN] Wow! there is", this.nbDefaultCommands, "@bugsounet modules in database")
-    this.nbPersonalCommands= this.config.updateCommands.length
-    this.personalCommands= this.config.updateCommands
     // merge internal database to config
-    this.config.updateCommands = configMerged([], this.internalCommands, this.config.updateCommands)
     this.suspended = !this.config.notification.useScreen
     this.init= false
     this.update = {}
     this.updating= false
     this.modulesName= []
-    this.commandsError = []
-    this.error = this.updateCommandsChk(this.personalCommands)
     this.modulesInfo( cb => console.log("[UN] Modules find:", this.modulesName.length))
     this.session= {}
-  },
-
-  updateCommandsChk: function(str) {
-    this.commandsError = []
-    error = 0
-    modules =[]
-    nb = 1
-    str.forEach(x => {
-      var err = {}
-      if (!x.module && !x.command) {
-        error +=1
-        err = {
-          type: "unknow",
-          module: "unknow",
-          place: nb
-        }
-        this.commandsError.push(err)
-      }
-      if (!x.module && x.command) {
-        error += 1
-        err = {
-          type: "module",
-          module: "unknow",
-          place: nb
-        }
-        this.commandsError.push(err)
-      }
-      if (!x.command && x.module) {
-        error += 1
-        err = {
-          type: "command",
-          module: x.module,
-          place: nb
-        }
-        this.commandsError.push(err)
-      }
-      if (x.module && this.internalCommands.find(module => module.module === x.module)) {
-        error += 1
-        err = {
-          type: "double",
-          module: x.module,
-          place: nb
-        }
-        this.commandsError.push(err)
-      }
-      else if (x.module) modules.push(x.module)
-      nb += 1
-    })
-    if (error) console.log("[UN] " + error + " errors in updateCommands !!!",  this.commandsError)
-    return error
   },
 
   notificationReceived: function (notification, payload, sender) {
@@ -254,14 +197,7 @@ Module.register("EXT-UpdateNotification", {
       case "DOM_OBJECTS_CREATED":
         this.sendSocketNotification("CONFIG", this.config)
         /** wait a little time ... every one is loading ! it's just an RPI !!! **/
-        if (this.error) {
-          if (this.config.notification.useTelegramBot) this.sendAdmin(this.translate("TB_WELCOMEERROR", { ERROR: this.error }), true)
-          else {
-            this.sendAlert(this.translate("ALERT_WELCOMEERROR", { ERROR: this.error }), 5000, "error")
-            this.updateCommands(null, null, null, true)
-          }
-        }
-        else setTimeout(() => this.sendSocketNotification("MODULES", this.modulesName), this.config.startDelay)
+        setTimeout(() => this.sendSocketNotification("MODULES", this.modulesName), this.config.startDelay)
         break
       case "GAv5_READY":
         if (sender.name == "MMM-GoogleAssistant") this.sendNotification("EXT_HELLO", this.name)
@@ -278,12 +214,10 @@ Module.register("EXT-UpdateNotification", {
         this.updateUI(payload)
         break
       case "INITIALIZED":
-        if (!this.error) {
-          this.init=true
-          if (this.config.notification.sendReady) {
-            if (this.config.notification.useTelegramBot) this.sendAdmin(this.translate("INITIALIZED", { VERSION: payload }))
-            else this.sendAlert(this.translate("INITIALIZED", { VERSION: payload }), 5*1000, "information")
-          }
+        this.init=true
+        if (this.config.notification.sendReady) {
+          if (this.config.notification.useTelegramBot) this.sendAdmin(this.translate("INITIALIZED", { VERSION: payload }))
+          else this.sendAlert(this.translate("INITIALIZED", { VERSION: payload }), 5*1000, "information")
         }
         break
       case "WELCOME":
@@ -312,7 +246,7 @@ Module.register("EXT-UpdateNotification", {
         this.checkCallback(payload)
         break
       case "NPM_UPDATE":
-        if (!this.error) this.updateUI(payload)
+        this.updateUI(payload)
         break
     }
   },
@@ -431,6 +365,8 @@ Module.register("EXT-UpdateNotification", {
         this.notiTB[key] = false
       }
     }
+    if (Object.keys(this.moduleList).length) this.sendNotification("EXT_UN-MODULE_UPDATE", this.moduleList)
+
     /** display NPN module update **/
     for (var key of Object.keys(this.npmList)) {
       if (typeof this.notiTB[key] === "undefined") {
@@ -482,9 +418,8 @@ Module.register("EXT-UpdateNotification", {
         this.notiTB[key] = false
       }
     }
-    // broadcast for Gateway v2
-    this.sendNotification("EXT_UN-MODULE_UPDATE", this.moduleList)
-    this.sendNotification("EXT_UN-NPM_UPDATE", this.npmList)
+    if (Object.keys(this.npmList).length) this.sendNotification("EXT_UN-NPM_UPDATE", this.npmList)
+
     return wrapper
   },
 
@@ -534,11 +469,6 @@ Module.register("EXT-UpdateNotification", {
       description: this.translate("HELP_UPDATECOMMAND"),
       callback: "updateCommands"
     })
-    commander.add({
-      command: "UNConfig",
-      description: this.translate("HELP_CONFIG"),
-      callback: "UNConfig"
-    })
   },
 
   getTranslations: function() {
@@ -582,123 +512,10 @@ Module.register("EXT-UpdateNotification", {
     }, 1000)
   },
 
-  updateCommands: function(command, handler, moduleClass, style = false) {
-    var text = this.translate("DEFAULTCONFIG")
-    var nb, err
-
-    /** display default updateCommands **/
-    this.internalCommands.forEach(update => {
-      text += "*"+ update.module + ":* `" + update.command + "`\n"
-    })
-
-    if (this.nbPersonalCommands) {
-      nb = 1
-      text += this.translate("PERSONALCONFIG")
-      this.personalCommands.forEach(update => {
-        err = 0
-        if (!this.error) {
-          text += "*"+ nb +". " + update.module + ":* `" + update.command + "` ✅\n"
-        }
-        else {
-          this.commandsError.forEach(error => {
-            if (error.place === nb) {
-              text += "*"+error.place+". " + update.module + ":* `" + update.command + "` 🚫\n"
-              err = 1
-            }
-          })
-          if (!err) {
-            text += "*"+ nb +". " + update.module + ":* `" + update.command + "` ✅\n"
-          }
-        }
-        nb += 1
-      })
-
-      if (this.error) {
-        text += this.translate("ERRORCONFIG")
-        this.commandsError.forEach(error => {
-          if (error.type == "unknow") text+= "*"+error.place+ "*: " + this.translate("UNKNOWCONFIG") + "\n"
-          if (error.type == "double") text+= "*"+error.place+ "*: " + this.translate("DOUBLECONFIG", { MODULE_NAME: this.ExtraChars(error.module)}) + "\n"
-          if (error.type == "command") text += "*"+error.place+"*: " + this.translate("COMMANDCONFIG", { MODULE_NAME: this.ExtraChars(error.module)}) + "\n"
-          if (error.type == "module") text += "*"+error.place+"*: " + this.translate("MODULECONFIG") + "\n"
-        })
-        text += this.translate("ERRORCONFIGNOTACTIVATED")
-      }
-    }
-    if (!style) handler.reply("TEXT", text + "\n", {parse_mode:'Markdown'})
-    else this.sendSocketNotification("DISPLAY_ERROR", text)
-  },
-
   UNCommands: function(command, handler) {
-    var helping = this.translate("HELP_UN") + "\n/update\n/scan\n/stopMM\n/restartMM\n/updateCommands\n/UNConfig\n"
+    var helping = this.translate("HELP_UN") + "\n/update\n/scan\n/stopMM\n/restartMM\n"
     helping += this.translate("HELP_COMMAND")
     handler.reply("TEXT", helping + "\n")
-  },
-
-  UNConfig: function(command, handler) {
-    /** show the config like in config.js file with ALL value **/
-    var text = "{\n"
-    text += "  module: \"EXT-UpdateNotification\",\n",
-    text += "  position: \"" + this.data.position + "\",\n"
-    text += "  config: {\n"
-    text += "    debug: " + this.config.debug + ",\n"
-    text += "    updateInterval: " + this.config.updateInterval + ",\n"
-    text += "    startDelay: " + this.config.startDelay + "\n"
-    text += "    ignoreModules: ["
-    if (this.config.ignoreModules.length > 0) {
-      text += " "
-      this.config.ignoreModules.forEach((moduleName,nb) => {
-        text += "\"" + moduleName
-        if (nb != this.config.ignoreModules.length-1) text += "\", "
-        else text += "\" "
-      })
-      text += "],\n"
-    }
-    else text += " ],\n"
-
-    /** display updateCommands : [] **/
-    /** use this.data.config.updateCommands for fetch real config in config.js **/
-    /** method @bugsounet **/
-    /** maybe not the best method... **/
-    /** if someone can do better make PR :)) **/
-    /** because i'm not so strong with regex ! **/
-    text += "    updateCommands: ["
-    if (this.data.config && this.data.config.updateCommands) {
-      text += "\n"
-      this.data.config.updateCommands.forEach((data,nb) => { // loop on each array value, nb is the number of the value
-        text += "      {\n" // add spaces and open {
-        /** prepare formating **/
-        var field = JSON.stringify(data) // stringify array values
-        field = field.replace(new RegExp(":", "g"), ": ") // add space between 2 values
-        field = field.replace("{","") // delete {
-        field = field.replace("}","") // delete }
-        field = field.replace(",",",\n        ") // to go the line (separate value) and add spaces
-        /** prepare done ! **/
-        text += "        " + field + "\n" // add spaces and send result :)
-        if (nb != this.data.config.updateCommands.length-1) text += "      },\n" // it's not the last array value so it's `},`
-        else text += "      }\n" // it's the last array value so just close `}`
-      })
-      text += "    ],\n"
-    }
-    else text += " ],\n"
-    /** updateCommands process done **/
-
-    text += "    notification: {\n"
-    text += "      useTelegramBot: " + this.config.notification.useTelegramBot + ",\n"
-    text += "      sendReady: " + this.config.notification.sendReady + ",\n"
-    text += "      useScreen: " + this.config.notification.useScreen + ",\n"
-    text += "      useCallback: " + this.config.notification.useCallback + "\n"
-    text += "    },\n"
-    text += "    update: {\n"
-    text += "      autoUpdate: "+ this.config.update.autoUpdate + ",\n"
-    text += "      autoRestart: "+ this.config.update.autoRestart + ",\n"
-    text += "      usePM2: "+ this.config.update.usePM2 + ",\n"
-    text += "      PM2Name: \"" + this.config.update.PM2Name + "\",\n"
-    text += "      defaultCommand: \"" +this.config.update.defaultCommand + "\",\n"
-    text += "      logToConsole: " + this.config.update.logToConsole + "\n"
-    text += "      timeout: " + this.config.update.timeout + "\n"
-    text += "    }\n  }\n},"
-    handler.reply("TEXT", text + "\n")
-    if (this.error) this.updateCommands(command, handler)
   },
 
   Scan: function(command, handler) {
@@ -791,7 +608,6 @@ Module.register("EXT-UpdateNotification", {
   },
 
   updateProcess: function (module) {
-    if (this.error) return
     this.sendNotification("WAKEUP")
     this.sendSocketNotification("UPDATE", module)
   },

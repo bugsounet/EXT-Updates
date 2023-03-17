@@ -39,7 +39,7 @@ class CheckNPM{
     this.npmCheckBugsounet()
     if (!this.npm.length) return
     await this.npmCheckCurrent()
-    if (this.config.debug) console.log("[NPM] Details for " + this.config.moduleName , this.npm)
+    if (this.config.debug) console.log("[UN] [NPM] Details for " + this.config.moduleName , this.npm)
     this.CheckAllLibrary()
   }
 
@@ -56,7 +56,7 @@ class CheckNPM{
         this.npm.push(library)
       } catch (err) { /** library not installed **/ }
     })
-    if (this.config.debug) console.log("[NPM] Found: " + this.npm.length + "/" + this.bugsounet.length + " @bugsounet library", "["+this.config.moduleName+"]")
+    if (this.config.debug) console.log("[UN] [NPM] Found: " + this.npm.length + "/" + this.bugsounet.length + " @bugsounet library", "["+this.config.moduleName+"]")
   }
 
   /** check the lastest version of the module **/
@@ -67,7 +67,7 @@ class CheckNPM{
        (async () => {
           try {
            library.latest = await latestVersion(library.name)
-          } catch (e) { console.log("[NPM] Error", e.message) }
+          } catch (e) { console.log("[UN] [NPM] Error", e.message) }
           if (i == this.npm.length -1 ) resolve()
           else i += 1
         })()
@@ -79,11 +79,11 @@ class CheckNPM{
   CheckAllLibrary() {
     clearTimeout(this.timer)
     this.timer = null
-    if (this.config.debug) console.log("[NPM] Check...", this.config.moduleName)
+    if (this.config.debug) console.log("[UN] [NPM] Check...", this.config.moduleName)
     var update = []
     this.npm.forEach((library) => {
       if (library.latest > library.installed) {
-        if (this.config.debug) console.log("[NPM] " + this.config.moduleName + " - Library: " + library.name + " Update needed to v" + library.latest)
+        if (this.config.debug) console.log("[UN] [NPM] " + this.config.moduleName + " - Library: " + library.name + " Update needed to v" + library.latest)
         var data= {
           module: this.config.moduleName,
           library: library.name,
@@ -94,7 +94,7 @@ class CheckNPM{
       }
     })
     if (update.length > 0) this.cb(update)
-    else if (!update.length && this.config.debug) console.log("[NPM] No update needed for", this.config.moduleName)
+    else if (!update.length && this.config.debug) console.log("[UN] [NPM] No update needed for", this.config.moduleName)
     this.timer= setTimeout(() => { this.start() }, this.config.timer)
   }
 }

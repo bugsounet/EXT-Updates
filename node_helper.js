@@ -2,7 +2,6 @@
 /** modified by @bugsounet for TelegramBot, NPM_UPDATE checker support **/
 /** and add auto-updater **/
 
-const SimpleGit = require("simple-git")
 const fs = require("fs")
 const path = require("path")
 const defaultModules = require(__dirname + "/../default/defaultmodules.js")
@@ -11,56 +10,46 @@ var exec = require('child_process').exec
 var spawn = require('child_process').spawn
 const pm2 = require('pm2')
 var log = (...args) => { /* do nothing */ }
-const express = require("express")
-const npmCheck = require ("./lib/npmCheck.js")
+const npmCheck = require ("./components/npmCheck.js")
+const gitCheck = require("./components/gitCheck.js")
 
 module.exports = NodeHelper.create({
   start: function () {
-    this.simpleGits = []
     this.Checker= []
     this.config= {}
-    this.updateTimer= null
+
     this.ForceCheck = false
     this.init = false
+	  this.updateTimer= null
+	  this.updateProcessStarted= false
+    this.gitCheck= null
+
     console.log("[UN] EXT-UpdateNotification Version:", require('./package.json').version, "rev:", require('./package.json').rev)
     console.log("[UN] MagicMirror is running on pid:", process.pid)
   },
 
-  configureModules: function (modules) {
-    // Push MagicMirror itself , biggest chance it'll show up last in UI and isn't overwritten
-    // others will be added in front
-    // this method returns promises so we can't wait for every one to resolve before continuing
-    this.simpleGits.push({ module: "MagicMirror", git: SimpleGit(path.normalize(__dirname + "/../../")) })
-
-    var promises = []
-
-    modules.forEach(moduleName => {
-      if (!this.ignoreUpdateChecking(moduleName)) {
-        // Default modules are included in the main MagicMirror repo
-        var moduleFolder = path.normalize(__dirname + "/../" + moduleName)
-        try {
-          log("Checking git for module: " + moduleName + " in " + moduleFolder)
-          let stat = fs.statSync(path.join(moduleFolder, ".git"))
-          promises.push(this.resolveRemote(moduleName, moduleFolder))
-        } catch (err) {
-          return console.log("[UN] err: " + err)
-          // Error when directory .git doesn't exist
-          // This module is not managed with git, skip
-        }
-      } else log("Ignore module: " + moduleName)
-    })
-    log("Total modules to Check:", promises.length)
-    return Promise.all(promises)
+  configureModules: async function (modules) {
+		for (const moduleName of modules) {
+			if (!this.ignoreUpdateChecking(moduleName)) {
+				await this.gitCheck.add(moduleName)
+			} else {
+        log("Ignore module: " + moduleName)
+      }
+		}
+		await this.gitCheck.add("MagicMirror")
+    log("Total of Check:", this.gitCheck.gitRepos.length)
   },
 
-  socketNotificationReceived: function (notification, payload) {
+  socketNotificationReceived: async function (notification, payload) {
     switch (notification) {
       case "CONFIG":
         this.config = payload
         if (this.config.debug) log = (...args) => { console.log("[UN]", ...args) }
+        this.gitCheck= new gitCheck(this.config)
         if (this.config.notification.sendReady) this.sendSocketNotification("WELCOME", process.pid)
         break
       case "MODULES":
+      /*
         clearTimeout(this.updateTimer)
         this.updateTimer = null
         this.simpleGits = []
@@ -72,6 +61,15 @@ module.exports = NodeHelper.create({
           this.scheduleNextFetch(this.config.updateInterval)
           this.performNPMCheck(payload)
         })
+        break
+      */
+        if (!this.updateProcessStarted) {
+          this.sendSocketNotification("INITIALIZED", require('./package.json').version)
+				  this.updateProcessStarted = true
+				  await this.configureModules(payload)
+				  await this.performFetch()
+          this.performNPMCheck(payload)
+			  }
         break
       case "DISPLAY_ERROR":
         console.log("[UN] Callbacks errors:\n\n" + payload)
@@ -92,62 +90,16 @@ module.exports = NodeHelper.create({
     }
   },
 
-  resolveRemote: function (moduleName, moduleFolder) {
-    return new Promise((resolve, reject) => {
-      var git = SimpleGit(moduleFolder)
-      git.getRemotes(true, (err, remotes) => {
-        if (remotes.length < 1 || remotes[0].name.length < 1) {
-          // No valid remote for folder, skip
-          return resolve()
-        }
-        // Folder has .git and has at least one git remote, watch this folder
-        this.simpleGits.unshift({ module: moduleName, git: git })
-        resolve()
-      })
-    })
-  },
-
-  dataFetch: function (sg,nb) {
-    return new Promise((resolve, reject) => {
-      sg.git
-        .fetch(err => {
-          if (err) {
-            log("Error: " + sg.module, err)
-            resolve()
-          }
-        })
-        .status((err, data) => {
-          data.module = sg.module
-          log("[" + (nb+1) + "/" + this.simpleGits.length +"] Scan:" , data.module)
-          if (err) {
-            log("Scan Error: " + data.module, err)
-            resolve()
-          } else {
-            /** send ONLY needed info **/
-            moduleGitInfo = {
-              module: data.module,
-              behind: data.behind,
-              current: data.current,
-              tracking: data.tracking
-            }
-            if (!moduleGitInfo.current || !moduleGitInfo.tracking) {
-              log("Scan Infos not complete:", data.module)
-            } else {
-              log("Scan Infos:", moduleGitInfo)
-            }
-            resolve(moduleGitInfo)
-          }
-        })
-    })
-  },
-
-  performFetch: function () {
-    var moduleGitInfo = []
-    var data = []
+	async performFetch() {
     if (this.ForceCheck) log("Force Scan Start")
-    this.simpleGits.forEach((sg,nb) => { data.push(this.dataFetch(sg,nb)) })
-    return Promise.all(data)
-  },
+		const repos = await this.gitCheck.getRepos()
+
+		//for (const repo of repos) {
+			this.sendSocketNotification("STATUS", repos)
+		//}
+
+		this.scheduleNextFetch(this.config.updateInterval)
+	},
 
   updateForce: async function (handler) {
     clearTimeout(this.updateTimer)
@@ -200,11 +152,12 @@ module.exports = NodeHelper.create({
     } else {
       var Path = path.normalize(__dirname + "/../")
       var modulePath = Path + module
-      var Command= this.config.update.defaultCommand
     }
     this.config.updateCommands.forEach(updateCommand => {
       if (updateCommand.module == module) Command = updateCommand.command
     })
+
+    if (!Command) return console.log(`[UN] Update of $(module) not supported.`)
 
     exec(Command, {cwd : modulePath, timeout: this.config.update.timeout } , (error, stdout, stderr) => {
       if (error) {
@@ -228,12 +181,12 @@ module.exports = NodeHelper.create({
           res.results.forEach(value => {
             if (value) final += this.ExtraChars(this.StripColor(value)) + "\n"
           })
-          final += "\n" + this.ExtraChars("[UN] Process update done, i do it... because you are so too lazy :)))") + "\n"
+          final += "\n" + this.ExtraChars("[UN] Process update done") + "\n"
           this.sendSocketNotification("SendResult", final)
         }
         this.sendSocketNotification("UPDATED", module)
         if (this.config.update.autoRestart) {
-          log("Process update done, i do it... because you are so too lazy :)))")
+          log("Process update done")
           setTimeout(() => this.restartMM(), 3000)
         } else {
           log("Process update done, don't forget to restart MagicMirror!")
