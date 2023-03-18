@@ -4,6 +4,7 @@ class Update {
   constructor(that) {
     this.lib= that.lib
     this.config= that.config
+    this.restart = that.tools.restart
     this.sendSocketNotification = (...args) => that.sendSocketNotification(...args)
     if (that.config.debug) log = (...args) => { console.log("[UN] [UPDATE]", ...args) }
   }
@@ -49,7 +50,7 @@ class Update {
         this.sendSocketNotification("UPDATED", module)
         if (this.config.update.autoRestart) {
           log("Process update done")
-          setTimeout(() => this.restartMM(), 3000)
+          setTimeout(() => this.restart(), 3000)
         } else {
           log("Process update done, don't forget to restart MagicMirror!")
           this.sendSocketNotification("NEEDRESTART")
