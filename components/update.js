@@ -14,13 +14,10 @@ class Update {
     var Path = this.lib.path.normalize(__dirname + "/../../")
     var modulePath = Path + module
 
-    if (module.startsWith("EXT-") || module === "MMM-GoogleAssistant") Command = "npm run update"
+    if (module.startsWith("EXT-") || module === "MMM-GoogleAssistant" || module === "Gateway") Command = "npm run update"
 
     if (!Command) return console.warn(`[UN] Update of ${module} is not supported.`)
     console.log(`[UN] [UPDATE] Updating ${module}...`)
-    //console.log("Command:", Command)
-    //console.log("cwd:", modulePath)
-    //console.log("timeout:", this.config.update.timeout)
     //return
     this.lib.childProcess.exec(Command, {cwd : modulePath, timeout: this.config.update.timeout } , (error, stdout, stderr) => {
       if (error) {

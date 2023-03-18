@@ -9,6 +9,7 @@
   "ALERT_UPDATE_ERROR": "Update error: {MODULE_NAME}",
   "UPDATE_INPROGRESS": "Please wait. Update in progress!",
   "UPDATING" : "Updating: {MODULE_NAME}",
+  "NOTAVAILABLE": "Unable to Update {MODULE_NAME}",
   "MODULENOTFOUND": "Module not found: {MODULE_NAME}",
   "INIT_INPROGRESS" : "EXT-UpdateNotification is not yet initialized!",
   "UPDATE_SCAN": "Forced update scanning...",

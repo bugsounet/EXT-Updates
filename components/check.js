@@ -65,8 +65,7 @@ class Check {
 
   sendStatus(data) {
     if (!data) return
-    if (data.gitResultList.length) this.sendSocketNotification("STATUS", data.gitResultList)
-    if (data.npmResultList.length) this.sendSocketNotification("NPM_UPDATE", data.npmResultList)
+    this.sendSocketNotification("STATUS", data)
   }
 }
 

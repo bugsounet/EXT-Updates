@@ -156,7 +156,7 @@ class gitCheck {
           }
         )
         let resultNPM = await npmCheck.check()
-        if (resultNPM.length) npmResultList.push(resultNPM)
+        if (resultNPM) npmResultList.push(resultNPM)
 			} catch (e) {
 				console.error(`[UN] [GIT] Failed to retrieve repo info for ${repo.module}: ${e}`)
 			}

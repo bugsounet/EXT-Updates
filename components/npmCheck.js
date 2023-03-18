@@ -31,7 +31,7 @@ class CheckNPM{
   /** main code **/
   async check () {
     this.npmCheckBugsounet()
-    if (!this.npm.length) return []
+    if (!this.npm.length) return null
     await this.npmCheckCurrent()
     if (this.config.debug) console.log("[UN] [NPM] Details for " + this.config.moduleName , this.npm)
     return this.CheckAllLibrary()
@@ -73,21 +73,20 @@ class CheckNPM{
   /** check if update if needed **/
   CheckAllLibrary() {
     if (this.config.debug) console.log("[UN] [NPM] Check...", this.config.moduleName)
-    var update = []
+    var data = null
     this.npm.forEach((library) => {
       if (library.latest > library.installed) {
         if (this.config.debug) console.log("[UN] [NPM] " + this.config.moduleName + " - Library: " + library.name + " Update needed to v" + library.latest)
-        var data= {
+        data= {
           module: this.config.moduleName,
           library: library.name,
           latest: library.latest,
           installed: library.installed
         }
-        update.push(data)
       }
     })
-    if (!update.length && this.config.debug) console.log("[UN] [NPM] No update needed for", this.config.moduleName)
-    return update
+    if (!data && this.config.debug) console.log("[UN] [NPM] No update needed for", this.config.moduleName)
+    return data
   }
 }
 
