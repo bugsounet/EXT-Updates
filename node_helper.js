@@ -25,9 +25,9 @@ module.exports = NodeHelper.create({
       case "MODULES":
         if (!this.updateProcessStarted) {
           this.sendSocketNotification("INITIALIZED", require('./package.json').version)
-				  this.updateProcessStarted = true
-				  await this.check.configureModules(payload)
-				  await this.check.performFetch()
+          this.updateProcessStarted = true
+          await this.check.configureModules(payload)
+          await this.check.performFetch()
 			  }
         break
       case "DISPLAY_ERROR":
