@@ -1,58 +1,54 @@
-const util = require("util");
-const exec = util.promisify(require("child_process").exec);
-const fs = require("fs");
-const path = require("path");
 var log = (...args) => { /* do nothing */ }
 
-const BASE_DIR = path.normalize(`${__dirname}/../../../`);
-
 class gitCheck {
-	constructor(config) {
-		this.gitRepos = [];
+	constructor(config, lib) {
+		this.gitRepos = []
     if (config.debug) log = (...args) => { console.log("[UN] [GIT]", ...args) }
+    this.debug = config.debug
+    this.lib = lib
+    this.exec = this.lib.util.promisify(this.lib.childProcess.exec)
 	}
 
 	getRefRegex(branch) {
-		return new RegExp(`s*([a-z,0-9]+[.][.][a-z,0-9]+)  ${branch}`, "g");
+		return new RegExp(`s*([a-z,0-9]+[.][.][a-z,0-9]+)  ${branch}`, "g")
 	}
 
 	async execShell(command) {
-		const { stdout = "", stderr = "" } = await exec(command);
-
-		return { stdout, stderr };
+		const { stdout = "", stderr = "" } = await this.exec(command)
+		return { stdout, stderr }
 	}
 
 	async isGitRepo(moduleFolder) {
-		const { stderr } = await this.execShell(`cd ${moduleFolder} && git remote -v`);
+		const { stderr } = await this.execShell(`cd ${moduleFolder} && git remote -v`)
 
 		if (stderr) {
-			console.error(`Failed to fetch git data for ${moduleFolder}: ${stderr}`);
+			console.error(`Failed to fetch git data for ${moduleFolder}: ${stderr}`)
 
-			return false;
+			return false
 		}
 
-		return true;
+		return true
 	}
 
 	async add(moduleName) {
-		let moduleFolder = BASE_DIR;
+		let moduleFolder = this.lib.path.normalize(`${__dirname}/../../../`)
 
 		if (moduleName !== "MagicMirror") {
-			moduleFolder = `${moduleFolder}modules/${moduleName}`;
+			moduleFolder = `${moduleFolder}modules/${moduleName}`
 		}
 
 		try {
-      if (moduleName == "MagicMirror") log("Checking git for main core")
-			else log("Checking git for " + (moduleName.startsWith("EXT") ? "plugin:" : "module:") , moduleName);
+      if (moduleName == "MagicMirror") log("Found git for MagicMirror")
+			else log("Found git for " + (moduleName.startsWith("EXT") ? "plugin:" : "module:") , moduleName)
 			// Throws error if file doesn't exist
-			fs.statSync(path.join(moduleFolder, ".git"));
+			this.lib.fs.statSync(this.lib.path.join(moduleFolder, ".git"))
 
 			// Fetch the git or throw error if no remotes
-			const isGitRepo = await this.isGitRepo(moduleFolder);
+			const isGitRepo = await this.isGitRepo(moduleFolder)
 
 			if (isGitRepo) {
 				// Folder has .git and has at least one git remote, watch this folder
-				this.gitRepos.push({ module: moduleName, folder: moduleFolder });
+				this.gitRepos.push({ module: moduleName, folder: moduleFolder })
 			}
 		} catch (err) {
 			// Error when directory .git doesn't exist or doesn't have any remotes
@@ -77,7 +73,7 @@ class gitCheck {
 		}
 
 		// only the first line of stdout is evaluated
-		let status = stdout.split("\n")[0];
+		let status = stdout.split("\n")[0]
 		// examples for status:
 		// ## develop...origin/develop
 		// ## master...origin/master [behind 8]
@@ -135,20 +131,38 @@ class gitCheck {
 
 	async getRepos() {
 		const gitResultList = []
+    const npmResultList = []
 
 		for (const repo of this.gitRepos) {
+      log("Get git info for", repo.module)
 			try {
-				const gitInfo = await this.getRepoInfo(repo);
+				const gitInfo = await this.getRepoInfo(repo)
 
 				if (gitInfo) {
-					gitResultList.push(gitInfo);
-				}
+					gitResultList.push(gitInfo)
+          log(repo.module, "git return:", gitInfo)
+				} else {
+          log(repo.module, "git return no update")
+        }
+
+        if (repo.module == "MagicMirror") continue
+
+        /** check npm now **/
+        let npmCheck = new this.lib.npmCheck(
+          {
+            dirName: repo.folder,
+            moduleName: repo.module,
+            debug: this.debug
+          }
+        )
+        let resultNPM = await npmCheck.check()
+        if (resultNPM.length) npmResultList.push(resultNPM)
 			} catch (e) {
 				console.error(`[UN] [GIT] Failed to retrieve repo info for ${repo.module}: ${e}`)
 			}
 		}
 
-		return gitResultList
+		return { gitResultList, npmResultList }
 	}
 }
 

@@ -1,5 +1,5 @@
 /* Magic Mirror
- * Module: EXT-UpdateNotification v2
+ * plugin: EXT-UpdateNotification v2
  * @bugsounet ©2023/03
  * MIT Licensed.
  */
@@ -33,156 +33,6 @@ Module.register("EXT-UpdateNotification", {
 
   start: function () {
     console.log("[UN] Start EXT-UpdateNotification")
-    this.internalCommands= [
-      {
-        module: "MMM-GoogleAssistant",
-        command: "npm run update"
-      },
-      /** all EXT **/
-      {
-        module: "Gateway",
-        command: "npm run update"
-      },
-      {
-        module: "EXT-Alert",
-        command: "npm run update"
-      },
-      {
-        module: "EXT-Bring",
-        command: "npm run update"
-      },
-      {
-        module: "EXT-Background",
-        command: "npm run update"
-      },
-      {
-        module: "EXT-Browser",
-        command: "npm run update"
-      },
-      {
-        module: "EXT-Detector",
-        command: "npm run update"
-      },
-      {
-        module: "EXT-FreeboxTV",
-        command: "npm run update"
-      },
-      {
-        module: "EXT-GooglePhotos",
-        command: "npm run update"
-      },
-      {
-        module: "EXT-Governor",
-        command: "npm run update"
-      },
-      {
-        module: "EXT-Internet",
-        command: "npm run update"
-      },
-      {
-        module: "EXT-Librespot",
-        command: "npm run update"
-      },
-      {
-        module: "EXT-Keyboard",
-        command: "npm run update"
-      },
-      {
-        module: "EXT-Motion",
-        command: "npm run update"
-      },
-      {
-        module: "EXT-MusicPlayer",
-        command: "npm run update"
-      },
-      {
-        module: "EXT-Pages",
-        command: "npm run update"
-      },
-      {
-        module: "EXT-Photos",
-        command: "npm run update"
-      },
-      {
-        module: "EXT-Pir",
-        command: "npm run update"
-      },
-      {
-        module: "EXT-Raspotify",
-        command: "npm run update"
-      },
-      {
-        module: "EXT-RadioPlayer",
-        command: "npm run update"
-      },
-      {
-        module: "EXT-Screen",
-        command: "npm run update"
-      },
-      {
-        module: "EXT-ScreenManager",
-        command: "npm run update"
-      },
-      {
-        module: "EXT-ScreenTouch",
-        command: "npm run update"
-      },
-      {
-        module: "EXT-Selfies",
-        command: "npm run update"
-      },
-      {
-        module: "EXT-SelfiesFlash",
-        command: "npm run update"
-      },
-      {
-        module: "EXT-SelfiesSender",
-        command: "npm run update"
-      },
-      {
-        module: "EXT-SelfiesViewer",
-        command: "npm run update"
-      },
-      {
-        module: "EXT-Spotify",
-        command: "npm run update"
-      },
-      {
-        module: "EXT-SpotifyCanvasLyrics",
-        command: "npm run update"
-      },
-      {
-        module: "EXT-StreamDeck",
-        command: "npm run update"
-      },
-      {
-        module: "EXT-Telegrambot",
-        command: "npm run update"
-      },
-      {
-        module: "EXT-UpdateNotification",
-        command: "npm run update"
-      },
-      {
-        module: "EXT-Volume",
-        command: "npm run update"
-      },
-      {
-        module: "EXT-Welcome",
-        command: "npm run update"
-      },
-      {
-        module: "EXT-YouTube",
-        command: "npm run update"
-      },
-      {
-        module: "EXT-YouTubeCast",
-        command: "npm run update"
-      }
-    ]
-    this.nbDefaultCommands= this.internalCommands.length
-    console.warn("[UN] Wow! there is", this.nbDefaultCommands, "@bugsounet modules in database")
-    // merge internal database to config
     this.suspended = !this.config.notification.useScreen
     this.init= false
     this.update = {}
@@ -196,14 +46,15 @@ Module.register("EXT-UpdateNotification", {
     switch (notification) {
       case "DOM_OBJECTS_CREATED":
         this.sendSocketNotification("CONFIG", this.config)
-        /** wait a little time ... every one is loading ! it's just an RPI !!! **/
-        setTimeout(() => this.sendSocketNotification("MODULES", this.modulesName), this.config.startDelay)
         break
       case "GAv5_READY":
-        if (sender.name == "MMM-GoogleAssistant") this.sendNotification("EXT_HELLO", this.name)
+        if (sender.name == "MMM-GoogleAssistant") {
+          this.sendNotification("EXT_HELLO", this.name)
+        }
         break
       case "EXT_UPDATENOTIFICATION-UPDATE":
-        if (!this.updating) this.updateFirstOnly()
+        if (!this.init || this.updating) return
+        this.updateFirstOnly()
         break
     }
   },
@@ -212,6 +63,9 @@ Module.register("EXT-UpdateNotification", {
     switch (notification) {
       case "STATUS":
         this.updateUI(payload)
+        break
+      case "READY":
+        this.sendSocketNotification("MODULES", this.modulesName)
         break
       case "INITIALIZED":
         this.init=true
@@ -430,6 +284,7 @@ Module.register("EXT-UpdateNotification", {
   suspend: function () {
     this.suspended = true
   },
+
   resume: function () {
     if (this.config.notification.useScreen) {
       this.suspended = false
@@ -450,12 +305,12 @@ Module.register("EXT-UpdateNotification", {
       callback: "Scan"
     })
     commander.add({
-      command: "stopMM",
+      command: "close",
       description: this.translate("HELP_STOP"),
-      callback: "Stop"
+      callback: "Close"
     })
     commander.add({
-      command: "restartMM",
+      command: "restart",
       description: this.translate("HELP_RESTART"),
       callback: "Restart"
     })
@@ -500,20 +355,20 @@ Module.register("EXT-UpdateNotification", {
   },
 
   /** TelegramBot Commands **/
-  Stop: function(command, handler) {
+  Close: function(command, handler) {
     handler.reply("TEXT", "Bye Bye!")
-    this.sendSocketNotification("CLOSEMM")
+    this.sendSocketNotification("CLOSE")
   },
 
   Restart: function(command, handler) {
     handler.reply("TEXT", "Restarting MagicMirror...")
     setTimeout(() => {
-      this.sendSocketNotification("RESTARTMM")
+      this.sendSocketNotification("RESTART")
     }, 1000)
   },
 
   UNCommands: function(command, handler) {
-    var helping = this.translate("HELP_UN") + "\n/update\n/scan\n/stopMM\n/restartMM\n"
+    var helping = this.translate("HELP_UN") + "\n/update\n/scan\n/close\n/restart\n"
     helping += this.translate("HELP_COMMAND")
     handler.reply("TEXT", helping + "\n")
   },
