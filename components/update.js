@@ -10,7 +10,7 @@ class Update {
 
   process(module) {
     let Command = null
-    var Path = this.lib.path.normalize(__dirname + "/../")
+    var Path = this.lib.path.normalize(__dirname + "/../../")
     var modulePath = Path + module
 
     if (module.startsWith("EXT-") || module === "MMM-GoogleAssistant") Command = "npm run update"
