@@ -434,7 +434,7 @@ Module.register("EXT-UpdateNotification", {
   },
 
   updateProcess: function (module) {
-    this.sendNotification("WAKEUP") // to verify
+    this.sendNotification("EXT_SCREEN-WAKEUP")
     this.sendSocketNotification("UPDATE", module)
   },
 
