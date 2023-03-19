@@ -42,11 +42,11 @@ Module.register("EXT-UpdateNotification", {
     switch (notification) {
       case "DOM_OBJECTS_CREATED":
         this.modulesName= Object.keys(Module.definitions)
-        this.sendSocketNotification("CONFIG", this.config)
         break
       case "GAv5_READY":
         if (sender.name == "MMM-GoogleAssistant") {
           this.sendNotification("EXT_HELLO", this.name)
+          this.sendSocketNotification("CONFIG", this.config)
         }
         break
       case "EXT_UPDATENOTIFICATION-UPDATE":
