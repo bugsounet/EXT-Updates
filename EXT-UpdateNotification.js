@@ -59,8 +59,6 @@ Module.register("EXT-UpdateNotification", {
   socketNotificationReceived: function (notification, payload) {
     switch (notification) {
       case "STATUS":
-        this.moduleList= {}
-        this.npmList= {}
         this.updateUI(payload)
         break
       case "READY":
@@ -184,13 +182,20 @@ Module.register("EXT-UpdateNotification", {
         this.notify[update.module] = false
       }
     })
-    if (this.moduleList.length) this.sendNotification("EXT_UN-MODULE_UPDATE", this.moduleList)
-    if (this.npmList.length) this.sendNotification("EXT_UN-NPM_UPDATE", this.npmList)
+    if (Object.keys(this.moduleList).length) this.sendNotification("EXT_UN-MODULE_UPDATE", this.moduleList)
+    if (Object.keys(this.npmList).length) this.sendNotification("EXT_UN-NPM_UPDATE", this.npmList)
   },
 
   // Override dom generator.
   getDom: function () {
     var wrapper = document.createElement("div")
+    if (!Object.keys(this.moduleList).length && !Object.keys(this.npmList).length) {
+      wrapper.style.display = 'none'
+      return wrapper
+    } else {
+      wrapper.style.display = 'block'
+    }
+
     // process the hash of module info found
     for (var key of Object.keys(this.moduleList)) {
       let m = this.moduleList[key]
