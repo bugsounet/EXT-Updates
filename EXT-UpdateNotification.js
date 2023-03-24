@@ -43,11 +43,8 @@ Module.register("EXT-UpdateNotification", {
       case "DOM_OBJECTS_CREATED":
         this.modulesName= Object.keys(Module.definitions)
         break
-      case "GAv5_READY":
-        if (sender.name == "MMM-GoogleAssistant") {
-          this.sendNotification("EXT_HELLO", this.name)
-          this.sendSocketNotification("CONFIG", this.config)
-        }
+      case "GW_READY":
+        if (sender.name == "Gateway") this.sendSocketNotification("CONFIG", this.config)
         break
       case "EXT_UPDATENOTIFICATION-UPDATE":
         if (!this.init || this.updating) return
@@ -66,6 +63,7 @@ Module.register("EXT-UpdateNotification", {
         break
       case "INITIALIZED":
         this.init=true
+        this.sendNotification("EXT_HELLO", this.name)
         if (this.config.notification.sendReady) {
           if (this.config.notification.useTelegramBot) this.sendAdmin(this.translate("INITIALIZED", { VERSION: payload }))
           else this.sendAlert(this.translate("INITIALIZED", { VERSION: payload }), 5*1000, "information")
