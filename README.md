@@ -9,20 +9,8 @@ This module is a Fork of `updatenotification` default module of MagicMirror and 
 ---
 
  * This module allow to send a notification if an update is available,
- * This module will auto-update automaticaly any modules
+ * This module will auto-update automaticaly any EXT plugins
  * This module will restart your mirror when process done!
-
-New Version start with this module:
-* Added: EXT plugins support
-* Deleted: auto update of MagicMirror (can have some trouble... manually is better)
-* Added: search NPMCheck result on each @bugsounet modules
-* Added: EXT-Alert Support
-
-Old version from: MMM-UpdateNotification
-* Added: TelegramBot notification and functions
-* Added: NPM Check result for my @bugsounet mpn libraries
-* Added: Auto-updater any module and MagicMirror
-* Added: Auto-restart your mirror (`PM2` version and `npm start` version)
 
 ---
 # Installation, update & Guides
