@@ -41,10 +41,10 @@ module.exports = NodeHelper.create({
         this.check.updateForce(payload)
         break
       case "CLOSE":
-        this.tools.close()
+        this.update.close()
         break
       case "RESTART":
-        this.tools.restart()
+        this.update.restart()
         break
     }
   }
