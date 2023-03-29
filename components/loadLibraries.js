@@ -14,8 +14,7 @@ function libraries(that) {
     { "../components/npmCheck.js": "npmCheck" },
     { "../components/gitCheck.js": "gitCheck" },
     { "../components/check.js": "check" },
-    { "../components/update.js": "update" },
-    { "../components/tools.js": "tools" }
+    { "../components/update.js": "update" }
   ]
   let errors = 0
   return new Promise(resolve => {

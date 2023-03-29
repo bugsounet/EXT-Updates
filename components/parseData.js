@@ -18,7 +18,6 @@ async function parse(that) {
     console.error("[UN] [DATA] Warning:", bugsounet, "needed library not loaded !")
     return
   }
-  that.tools = new that.lib.tools(that)
   that.update = new that.lib.update(that)
   that.gitCheck= new that.lib.gitCheck(that.config, that.lib)
   that.check = new that.lib.check(that)

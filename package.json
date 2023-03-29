@@ -1,7 +1,7 @@
 {
   "name": "EXT-UpdateNotification",
-  "version": "2.0.0",
-  "rev": "230324",
+  "version": "2.0.1",
+  "rev": "230329",
   "description": "Update notification",
   "main": "EXT-UpdateNotification.js",
   "scripts": {

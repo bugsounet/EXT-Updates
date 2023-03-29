@@ -4,7 +4,6 @@ class Update {
   constructor(that) {
     this.lib= that.lib
     this.config= that.config
-    this.restart = that.tools.restart
     this.sendSocketNotification = (...args) => that.sendSocketNotification(...args)
     if (that.config.debug) log = (...args) => { console.log("[UN] [UPDATE]", ...args) }
   }
@@ -18,7 +17,7 @@ class Update {
 
     if (!Command) return console.warn(`[UN] Update of ${module} is not supported.`)
     console.log(`[UN] [UPDATE] Updating ${module}...`)
-    //return
+
     this.lib.childProcess.exec(Command, {cwd : modulePath, timeout: this.config.update.timeout } , (error, stdout, stderr) => {
       if (error) {
         console.error(`[UN] exec error: ${error}`)
@@ -54,6 +53,41 @@ class Update {
         }
       }
     })
+  }
+
+  restart() {
+    if (this.config.update.usePM2) {
+      this.lib.pm2.restart(this.config.update.PM2Name, (err, proc) => {
+        if (err) {
+          console.error("[UN] [UPDATE]" + err)
+          if (this.config.notification.useTelegramBot) that.sendSocketNotification("SendResult", err.toString())
+        }
+      })
+    }
+    else this.doRestart()
+  }
+
+  doRestart() {
+    console.log("[UN] [UPDATE] Restarting MagicMirror...")
+    var MMdir = this.lib.path.normalize(__dirname + "/../../../")
+    const out = this.config.update.logToConsole ? process.stdout : fs.openSync('./MagicMirror.log', 'a')
+    const err = this.config.update.logToConsole ? process.stderr : fs.openSync('./MagicMirror.log', 'a')
+    const subprocess = this.lib.childProcess.spawn("npm start", {cwd: MMdir, shell: true, detached: true , stdio: [ 'ignore', out, err ]})
+    subprocess.unref()
+    process.exit()
+  }
+
+  close() {
+    console.log("[UN] [UPDATE] Closing MagicMirror...")
+    if (!this.config.update.usePM2) process.abort()
+    else {
+      this.lib.pm2.stop(this.config.update.PM2Name, (err, proc) => {
+        if (err) {
+          console.error("[UN] [UPDATE]" + err)
+          if (this.config.notification.useTelegramBot) this.sendSocketNotification("SendResult", err.toString())
+        }
+      })
+    }
   }
 
   /** remove ExtraChars for telegramBot markdown **/
