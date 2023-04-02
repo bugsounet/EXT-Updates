@@ -7,9 +7,9 @@ function libraries(that) {
     // { "library to load" : "store library name" }
     { "fs": "fs" },
     { "path": "path" },
-    { "child_process": "childProcess" },
     { "pm2": "pm2" },
-    { "util" : "util" },
+    { "simple-git": "SimpleGit" },
+    { "child_process": "childProcess" },
     { "../../default/defaultmodules.js": "defaultModules" },
     { "../components/npmCheck.js": "npmCheck" },
     { "../components/gitCheck.js": "gitCheck" },

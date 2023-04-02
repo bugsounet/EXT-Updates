@@ -70,8 +70,8 @@ class Update {
   doRestart() {
     console.log("[UN] [UPDATE] Restarting MagicMirror...")
     var MMdir = this.lib.path.normalize(__dirname + "/../../../")
-    const out = this.config.update.logToConsole ? process.stdout : fs.openSync('./MagicMirror.log', 'a')
-    const err = this.config.update.logToConsole ? process.stderr : fs.openSync('./MagicMirror.log', 'a')
+    const out = this.config.update.logToConsole ? process.stdout : this.lib.fs.openSync('./MagicMirror.log', 'a')
+    const err = this.config.update.logToConsole ? process.stderr : this.lib.fs.openSync('./MagicMirror.log', 'a')
     const subprocess = this.lib.childProcess.spawn("npm start", {cwd: MMdir, shell: true, detached: true , stdio: [ 'ignore', out, err ]})
     subprocess.unref()
     process.exit()

@@ -4,8 +4,6 @@ var _load = require("../components/loadLibraries.js")
 function init(that) {
   that.lib = { error: 0 }
   that.config = {}
-
-
   that.updateProcessStarted= false
   that.gitCheck= null
   that.npmCheck= []

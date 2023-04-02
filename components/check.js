@@ -12,24 +12,24 @@ class Check {
   }
 
   async configureModules(modules) {
-		for (const moduleName of modules) {
-			if (!this.ignoreUpdateChecking(moduleName)) {
-				await this.gitCheck.add(moduleName)
-			} else {
+    for (const moduleName of modules) {
+      if (!this.ignoreUpdateChecking(moduleName)) {
+        await this.gitCheck.add(moduleName)
+      } else {
         log("Ignore module: " + moduleName)
       }
-		}
-		await this.gitCheck.add("MagicMirror")
+    }
+    await this.gitCheck.add("MagicMirror")
     log("Total to Check:", this.gitCheck.gitRepos.length)
   }
 
-	async performFetch() {
+  async performFetch() {
     if (this.ForceCheck) log("Force Scan Start")
-		const result = await this.gitCheck.getRepos()
+    const result = await this.gitCheck.getRepos()
     log("Final Result", result)
-		this.sendStatus(result)
-		this.scheduleNextFetch(this.config.updateInterval)
-	}
+    this.sendStatus(result)
+    this.scheduleNextFetch(this.config.updateInterval)
+  }
 
   async updateForce(handler) {
     clearTimeout(this.updateTimer)
