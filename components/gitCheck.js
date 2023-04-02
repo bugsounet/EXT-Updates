@@ -92,6 +92,7 @@ class gitCheck {
         if (gitInfo && gitInfo.behind) {
           gitResultList.push(gitInfo)
           log(repo.module, "git return:", gitInfo)
+          console.log("[UN] [GIT] Update found for:", repo.module)
         } else {
           log(repo.module, "git return: No update")
         }
