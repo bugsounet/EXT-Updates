@@ -47,7 +47,7 @@ class gitCheck {
     }
   }
 
-  async getStatusInfo(repo) {
+  getStatusInfo(repo) {
     return new Promise(resolve => {
       repo.git
         .fetch(err => {
@@ -70,7 +70,7 @@ class gitCheck {
               tracking: data.tracking
             }
             if (!moduleGitInfo.current || !moduleGitInfo.tracking) {
-              log("Scan Infos not complete:", repo.module)
+              console.warn("[UN] [GIT] Scan Infos not complete:", repo.module)
               resolve()
             } else {
               //log("Scan Infos:", moduleGitInfo)
