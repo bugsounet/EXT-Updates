@@ -1,10 +1,10 @@
 /* Magic Mirror
- * plugin: EXT-UpdateNotification v3
+ * plugin: EXT-Updates v1
  * @bugsounet ©2023/06
  * MIT Licensed.
  */
 
-Module.register("EXT-UpdateNotification", {
+Module.register("EXT-Updates", {
   defaults: {
     debug: false,
     notification: {

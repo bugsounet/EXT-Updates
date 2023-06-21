@@ -1,6 +1,6 @@
 /* Magic Mirror
- * plugin: EXT-UpdateNotification v2
- * @bugsounet ©2023/03
+ * plugin: EXT-Updates v1
+ * @bugsounet ©2023/06
  * MIT Licensed.
  */
 
@@ -18,8 +18,8 @@ module.exports = NodeHelper.create({
       case "CONFIG":
         this.config = payload
         if (this.config.debug) log = (...args) => { console.log("[UN]", ...args) }
-        console.log("[UN] EXT-UpdateNotification Version:", require('./package.json').version, "rev:", require('./package.json').rev)
-        console.log("[UN] MagicMirror is running on pid:", process.pid)
+        console.log("[UPADTES] EXT-Updates Version:", require('./package.json').version, "rev:", require('./package.json').rev)
+        console.log("[UPDATES] MagicMirror is running on pid:", process.pid)
         await parseData.parse(this)
         break
       case "MODULES":

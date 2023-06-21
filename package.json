@@ -1,9 +1,9 @@
 {
-  "name": "EXT-UpdateNotification",
-  "version": "3.0.0",
+  "name": "EXT-Updates",
+  "version": "1.0.0",
   "rev": "230621",
-  "description": "Update notification",
-  "main": "EXT-UpdateNotification.js",
+  "description": "Apply Updates of EXTs",
+  "main": "EXT-Updates.js",
   "scripts": {
     "preinstall": "installer/preinstall.sh",
     "postinstall": "installer/postinstall.sh",
@@ -13,17 +13,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/bugsounet/EXT-UpdateNotification"
+    "url": "https://github.com/bugsounet/EXT-Updates"
   },
   "author": [
-    "Michael Teeuw",
     "@bugsounet"
   ],
   "license": "MIT",
   "bugs": {
     "url": "https://forum.bugsounet.fr"
   },
-  "homepage": "https://wiki.bugsounet.fr/EXT-UpdateNotification",
+  "homepage": "https://wiki.bugsounet.fr/EXT-Updates",
   "dependencies": {
     "check-node-version": "^4.2.1",
     "glob": "^9.3.2",
