@@ -1,7 +1,7 @@
 {
   "name": "EXT-UpdateNotification",
-  "version": "2.1.0",
-  "rev": "230402",
+  "version": "3.0.0",
+  "rev": "230621",
   "description": "Update notification",
   "main": "EXT-UpdateNotification.js",
   "scripts": {
@@ -27,9 +27,7 @@
   "dependencies": {
     "check-node-version": "^4.2.1",
     "glob": "^9.3.2",
-    "latest-version": "^7.0.0",
     "minify": "^9.2.0",
-    "pm2": "^5.2.0",
-    "simple-git": "^3.17.0"
+    "pm2": "^5.2.0"
   }
 }

@@ -8,12 +8,7 @@ function libraries(that) {
     { "fs": "fs" },
     { "path": "path" },
     { "pm2": "pm2" },
-    { "simple-git": "SimpleGit" },
     { "child_process": "childProcess" },
-    { "../../default/defaultmodules.js": "defaultModules" },
-    { "../components/npmCheck.js": "npmCheck" },
-    { "../components/gitCheck.js": "gitCheck" },
-    { "../components/check.js": "check" },
     { "../components/update.js": "update" }
   ]
   let errors = 0

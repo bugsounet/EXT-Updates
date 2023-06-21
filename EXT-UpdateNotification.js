@@ -1,19 +1,15 @@
 /* Magic Mirror
- * plugin: EXT-UpdateNotification v2
- * @bugsounet ©2023/03
+ * plugin: EXT-UpdateNotification v3
+ * @bugsounet ©2023/06
  * MIT Licensed.
  */
 
 Module.register("EXT-UpdateNotification", {
   defaults: {
     debug: false,
-    updateInterval: 10 * 60 * 1000, // every 10 minutes
-    startDelay: 60 * 1000, // delay before 1st scan
-    ignoreModules: [],
     notification: {
       useTelegramBot: true,
       sendReady: true,
-      useScreen: true,
       useCallback: true
     },
     update: {
@@ -27,7 +23,6 @@ Module.register("EXT-UpdateNotification", {
   },
 
   start: function () {
-    this.suspended = !this.config.notification.useScreen
     this.init= false
     this.update = {}
     this.updating= false
@@ -40,6 +35,9 @@ Module.register("EXT-UpdateNotification", {
 
   notificationReceived: function (notification, payload, sender) {
     switch (notification) {
+      case "UPDATES":
+        console.log("updates:", payload)
+        this.checkUpdate(payload)
       case "DOM_OBJECTS_CREATED":
         this.modulesName= Object.keys(Module.definitions)
         break
@@ -56,7 +54,8 @@ Module.register("EXT-UpdateNotification", {
   socketNotificationReceived: function (notification, payload) {
     switch (notification) {
       case "STATUS":
-        this.updateUI(payload)
+        //this.updateUI(payload)
+        console.log("!!!!!!!", payload)
         break
       case "READY":
         this.sendSocketNotification("MODULES", this.modulesName)
@@ -111,14 +110,12 @@ Module.register("EXT-UpdateNotification", {
     })
   },
 
-  updateUI: function (updates) {
-    updates.gitResultList.forEach((update) => {
+  checkUpdate: function (updates) {
+    updates.forEach((update) => {
       if (update.behind > 0) {
         // if we haven't seen info for this module
         if (this.moduleList[update.module] === undefined) {
-          // save it
           this.moduleList[update.module] = update
-          this.updateDom(2)
         }
         if (typeof this.notify[update.module] === "undefined") {
           this.notify[update.module] = true
@@ -149,133 +146,25 @@ Module.register("EXT-UpdateNotification", {
       } else if (update.behind === 0) {
         // if the module WAS in the list, but shouldn't be
         if (this.notify[update.module] !== undefined) {
-          // remove from TelegramBot
           delete this.notify[update.module]
         }
         if (this.moduleList[update.module] !== undefined) {
-          // remove it
           delete this.moduleList[update.module]
-          this.updateDom(2)
         }
-      }
-    })
-    updates.npmResultList.forEach((update) => {
-      if (this.npmList[update.module] === undefined) {
-        this.npmList[update.module] = update
-        this.updateDom(2)
-      }
-      if (typeof this.notify[update.module] === "undefined") {
-        this.notify[update.module] = true
-      }
-      if (this.notify[update.module]) { // don't notify again if in gitResultList
-        if (this.config.notification.useTelegramBot) {
-          let TB = this.translate("UPDATE_NOTIFICATION_MODULE", { MODULE_NAME: update.module }) + "\n"
-          TB += "[NPM] " + update.library + " v" + update.installed +" -> v" + update.latest + "\n"
-          this.sendAdmin(TB)
-        }
-        if (this.config.update.autoUpdate && !this.updating && this.canBeUpdated(update.module)) {
-          this.updateProcess(update.module)
-          this.updating = true
-        }
-        this.notify[update.module] = false
       }
     })
     if (Object.keys(this.moduleList).length) this.sendNotification("EXT_UN-MODULE_UPDATE", this.moduleList)
-    if (Object.keys(this.npmList).length) this.sendNotification("EXT_UN-NPM_UPDATE", this.npmList)
   },
 
   // Override dom generator.
   getDom: function () {
     var wrapper = document.createElement("div")
-    if (!Object.keys(this.moduleList).length && !Object.keys(this.npmList).length) {
-      wrapper.style.display = 'none'
-      return wrapper
-    } else {
-      wrapper.style.display = 'block'
-    }
-
-    // process the hash of module info found
-    for (var key of Object.keys(this.moduleList)) {
-      let m = this.moduleList[key]
-      var updateInfoKeyName = m.behind === 1 ? "UPDATE_INFO_SINGLE" : "UPDATE_INFO_MULTIPLE"
-
-      if (this.suspended === false) {
-        var message = document.createElement("div")
-        message.className = "small bright"
-
-        var icon = document.createElement("i")
-        icon.className = "fa fa-exclamation-circle"
-        icon.innerHTML = "&nbsp;"
-        message.appendChild(icon)
-
-        var subtextHtml = this.translate(updateInfoKeyName, {
-          COMMIT_COUNT: m.behind,
-          BRANCH_NAME: m.current
-        })
-
-        var text = document.createElement("span")
-        if (m.module === "MagicMirror") {
-          text.innerHTML = this.translate("UPDATE_NOTIFICATION")
-          subtextHtml = ""
-        } else {
-          text.innerHTML = this.translate("UPDATE_NOTIFICATION_MODULE", {
-          MODULE_NAME: m.module
-          })
-        }
-
-        message.appendChild(text)
-        wrapper.appendChild(message)
-
-        var subtext = document.createElement("div")
-        subtext.innerHTML = subtextHtml
-        subtext.className = "xsmall dimmed"
-        wrapper.appendChild(subtext)
-      }
-    }
-
-    /** display NPN module update **/
-    for (var key of Object.keys(this.npmList)) {
-      let npm = this.npmList[key]
-
-      if (this.suspended === false) {
-        var message = document.createElement("div")
-        message.className = "small bright"
-
-        var icon = document.createElement("i")
-        icon.className = "fa fa-exclamation-circle"
-        icon.innerHTML = "&nbsp;"
-        message.appendChild(icon)
-
-        var subtextHtml = "[NPM] " + npm.library + " v" + npm.installed +" --> v" + npm.latest
-
-        var text = document.createElement("span")
-        text.innerHTML = this.translate("UPDATE_NOTIFICATION_MODULE", { MODULE_NAME: npm.module })
-
-        message.appendChild(text)
-        wrapper.appendChild(message)
-
-        var subtext = document.createElement("div")
-        subtext.innerHTML = subtextHtml
-        subtext.className = "xsmall dimmed"
-        wrapper.appendChild(subtext)
-      }
-    }
+    wrapper.style.display = 'none'
     return wrapper
   },
 
   getStyles: function() {
     return [ "font-awesome.css" ]
-  },
-
-  suspend: function () {
-    this.suspended = true
-  },
-
-  resume: function () {
-    if (this.config.notification.useScreen) {
-      this.suspended = false
-      this.updateDom(2)
-    }
   },
 
   getTranslations: function() {
@@ -287,12 +176,6 @@ Module.register("EXT-UpdateNotification", {
       es: "translations/es.json",
       nl: "translations/nl.json"
     }
-  },
-
-  getScripts: function () {
-    return [
-     //"configMerged.js"
-    ]
   },
 
   /** Update from Telegram **/

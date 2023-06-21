@@ -26,19 +26,13 @@ module.exports = NodeHelper.create({
         if (!this.updateProcessStarted) {
           this.sendSocketNotification("INITIALIZED", require('./package.json').version)
           this.updateProcessStarted = true
-          await this.check.configureModules(payload)
-          await this.check.performFetch()
-			  }
+        }
         break
       case "DISPLAY_ERROR":
         console.error("[UN] Callbacks errors:\n\n" + payload)
         break
       case "UPDATE":
         this.update.process(payload)
-        break
-      case "FORCE_CHECK":
-        this.check.ForceCheck = true
-        this.check.updateForce(payload)
         break
       case "CLOSE":
         this.update.close()

@@ -17,14 +17,10 @@ async function parse(that) {
     return
   }
   that.update = new that.lib.update(that)
-  that.gitCheck= new that.lib.gitCheck(that.config, that.lib)
-  that.check = new that.lib.check(that)
 
   if (that.config.notification.sendReady) that.sendSocketNotification("WELCOME", process.pid)
-  setTimeout(() => {
-    that.sendSocketNotification("READY")
-    that.init = true
-  }, that.config.startDelay)
+  that.sendSocketNotification("READY")
+  that.init = true
 }
 
 exports.init = init
