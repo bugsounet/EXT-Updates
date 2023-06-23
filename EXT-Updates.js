@@ -311,7 +311,7 @@ Module.register("EXT-Updates", {
 
   /** send a reply after all info received **/
   Reply: function(command, handler, message, session, markdown = false) {
-    if (!message || !session) return console.log("[UN] Reply -- wrong Format!", message, session)
+    if (!message || !session) return console.log("[UPDATES] Reply -- wrong Format!", message, session)
     handler.reply("TEXT", message, markdown )
     delete this.session[session]
   },
@@ -328,11 +328,11 @@ Module.register("EXT-Updates", {
       if (this.canBeUpdated(module) && !this.updating) {
         if (this.npmList[module] || this.moduleList[module]) {
           this.updating = true
-          console.log("[UN] Updating:", module)
+          console.log("[UPDATES] Updating:", module)
           this.updateProcess(module)
         }
       }
-      else console.log("[UN] Can't Update", module)
+      else console.log("[UPDATES] Can't Update", module)
     })
   },
 
