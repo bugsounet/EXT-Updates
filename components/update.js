@@ -5,7 +5,7 @@ class Update {
     this.lib= that.lib
     this.config= that.config
     this.sendSocketNotification = (...args) => that.sendSocketNotification(...args)
-    if (that.config.debug) log = (...args) => { console.log("[UN] [UPDATE]", ...args) }
+    if (that.config.debug) log = (...args) => { console.log("[UPDATES] [UPDATE]", ...args) }
   }
 
   process(module) {
@@ -15,24 +15,24 @@ class Update {
 
     if (module.startsWith("EXT-") || module === "MMM-GoogleAssistant" || module === "Gateway") Command = "npm run update"
 
-    if (!Command) return console.warn(`[UN] Update of ${module} is not supported.`)
-    console.log(`[UN] [UPDATE] Updating ${module}...`)
+    if (!Command) return console.warn(`[UPDATES] Update of ${module} is not supported.`)
+    console.log(`[UPDATES] [UPDATE] Updating ${module}...`)
 
     this.lib.childProcess.exec(Command, {cwd : modulePath, timeout: this.config.update.timeout } , (error, stdout, stderr) => {
       if (error) {
-        console.error(`[UN] exec error: ${error}`)
+        console.error(`[UPDATES] exec error: ${error}`)
         if (this.config.notification.useTelegramBot && this.config.notification.useCallback) {
           var res = {'results': error.toString().split('\n')}
           var final = "Update logs of " + module + ":\n\n"
           res.results.forEach(value => {
             if (value) final += this.ExtraChars(this.StripColor(value)) + "\n"
           })
-          final += "\n" + this.ExtraChars("[UN] Update error!") + "\n"
+          final += "\n" + this.ExtraChars("[UPDATES] Update error!") + "\n"
           this.sendSocketNotification("SendResult", final)
         }
         this.sendSocketNotification("ERROR_UPDATE" , module)
       } else {
-        console.log(`[UN] Update logs of ${module}: ${stdout}`)
+        console.log(`[UPDATES] Update logs of ${module}: ${stdout}`)
         if (this.config.notification.useTelegramBot && this.config.notification.useCallback) {
           /** trying to parse stdout to Telegram without errors ... it's horrible ! **/
           var res = {'results': stdout.split('\n')}
@@ -40,7 +40,7 @@ class Update {
           res.results.forEach(value => {
             if (value) final += this.ExtraChars(this.StripColor(value)) + "\n"
           })
-          final += "\n" + this.ExtraChars("[UN] Process update done") + "\n"
+          final += "\n" + this.ExtraChars("[UPDATES] Process update done") + "\n"
           this.sendSocketNotification("SendResult", final)
         }
         this.sendSocketNotification("UPDATED", module)
@@ -59,7 +59,7 @@ class Update {
     if (this.config.update.usePM2) {
       this.lib.pm2.restart(this.config.update.PM2Name, (err, proc) => {
         if (err) {
-          console.error("[UN] [UPDATE]" + err)
+          console.error("[UPDATES] [UPDATE]" + err)
           if (this.config.notification.useTelegramBot) that.sendSocketNotification("SendResult", err.toString())
         }
       })
@@ -68,7 +68,7 @@ class Update {
   }
 
   doRestart() {
-    console.log("[UN] [UPDATE] Restarting MagicMirror...")
+    console.log("[UPDATES] [UPDATE] Restarting MagicMirror...")
     var MMdir = this.lib.path.normalize(__dirname + "/../../../")
     const out = this.config.update.logToConsole ? process.stdout : this.lib.fs.openSync('./MagicMirror.log', 'a')
     const err = this.config.update.logToConsole ? process.stderr : this.lib.fs.openSync('./MagicMirror.log', 'a')
@@ -78,12 +78,12 @@ class Update {
   }
 
   close() {
-    console.log("[UN] [UPDATE] Closing MagicMirror...")
+    console.log("[UPDATES] [UPDATE] Closing MagicMirror...")
     if (!this.config.update.usePM2) process.abort()
     else {
       this.lib.pm2.stop(this.config.update.PM2Name, (err, proc) => {
         if (err) {
-          console.error("[UN] [UPDATE]" + err)
+          console.error("[UPDATES] [UPDATE]" + err)
           if (this.config.notification.useTelegramBot) this.sendSocketNotification("SendResult", err.toString())
         }
       })

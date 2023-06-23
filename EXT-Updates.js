@@ -5,6 +5,7 @@
  */
 
 Module.register("EXT-Updates", {
+  requiresVersion: "2.24.0",
   defaults: {
     debug: false,
     notification: {
@@ -53,10 +54,6 @@ Module.register("EXT-Updates", {
 
   socketNotificationReceived: function (notification, payload) {
     switch (notification) {
-      case "STATUS":
-        //this.updateUI(payload)
-        console.log("!!!!!!!", payload)
-        break
       case "READY":
         this.sendSocketNotification("MODULES", this.modulesName)
         break
@@ -106,7 +103,7 @@ Module.register("EXT-Updates", {
       type: type ,
       message: text,
       timer: timer,
-      icon: "modules/EXT-UpdateNotification/resources/update.png"
+      icon: "modules/EXT-Updates/resources/update.png"
     })
   },
 
@@ -153,7 +150,7 @@ Module.register("EXT-Updates", {
         }
       }
     })
-    if (Object.keys(this.moduleList).length) this.sendNotification("EXT_UN-MODULE_UPDATE", this.moduleList)
+    if (Object.keys(this.moduleList).length) this.sendNotification("EXT_UPDATES-MODULE_UPDATE", this.moduleList)
   },
 
   // Override dom generator.

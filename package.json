@@ -1,7 +1,7 @@
 {
   "name": "EXT-Updates",
   "version": "1.0.0",
-  "rev": "230621",
+  "rev": "230623",
   "description": "Apply Updates of EXTs",
   "main": "EXT-Updates.js",
   "scripts": {
@@ -10,6 +10,9 @@
     "update": "installer/update.sh",
     "reset": "git reset --hard",
     "clean": "rm -rf node_modules package-lock.json"
+  },
+  "engines": {
+    "node": ">=18"
   },
   "repository": {
     "type": "git",
@@ -24,7 +27,6 @@
   },
   "homepage": "https://wiki.bugsounet.fr/EXT-Updates",
   "dependencies": {
-    "check-node-version": "^4.2.1",
     "glob": "^9.3.2",
     "minify": "^9.2.0",
     "pm2": "^5.2.0"

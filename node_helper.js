@@ -17,8 +17,8 @@ module.exports = NodeHelper.create({
     switch (notification) {
       case "CONFIG":
         this.config = payload
-        if (this.config.debug) log = (...args) => { console.log("[UN]", ...args) }
-        console.log("[UPADTES] EXT-Updates Version:", require('./package.json').version, "rev:", require('./package.json').rev)
+        if (this.config.debug) log = (...args) => { console.log("[UPDATES]", ...args) }
+        console.log("[UPDATES] EXT-Updates Version:", require('./package.json').version, "rev:", require('./package.json').rev)
         console.log("[UPDATES] MagicMirror is running on pid:", process.pid)
         await parseData.parse(this)
         break
@@ -29,7 +29,7 @@ module.exports = NodeHelper.create({
         }
         break
       case "DISPLAY_ERROR":
-        console.error("[UN] Callbacks errors:\n\n" + payload)
+        console.error("[UPDATES] Callbacks errors:\n\n" + payload)
         break
       case "UPDATE":
         this.update.process(payload)

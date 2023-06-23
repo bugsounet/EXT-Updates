@@ -2,7 +2,7 @@
 var log = (...args) => { /* do nothing */ }
 
 function libraries(that) {
-  if (that.config.debug) log = (...args) => { console.log("[UN] [LIB]", ...args) }
+  if (that.config.debug) log = (...args) => { console.log("[UPDATES] [LIB]", ...args) }
   let libraries= [
     // { "library to load" : "store library name" }
     { "fs": "fs" },
@@ -24,7 +24,7 @@ function libraries(that) {
             log("Loaded:", libraryToLoad, "->", "this.lib."+libraryName)
           }
         } catch (e) {
-          console.error("[UN] [LIB]", libraryToLoad, "Loading error!" , e.toString(), e)
+          console.error("[UPDATES] [LIB]", libraryToLoad, "Loading error!" , e.toString(), e)
           that.sendSocketNotification("WARNING" , {library: libraryToLoad })
           errors++
           that.lib.error = errors
@@ -32,7 +32,7 @@ function libraries(that) {
       }
     })
     resolve(errors)
-    if (!errors) console.log("[UN] [LIB] All libraries loaded!")
+    if (!errors) console.log("[UPDATES] [LIB] All libraries loaded!")
   })
 }
 

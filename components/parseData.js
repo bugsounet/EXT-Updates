@@ -13,7 +13,7 @@ function init(that) {
 async function parse(that) {
   let bugsounet = await _load.libraries(that)
   if (bugsounet) {
-    console.error("[UN] [DATA] Warning:", bugsounet, "needed library not loaded !")
+    console.error("[UPDATES] [DATA] Warning:", bugsounet, "needed library not loaded !")
     return
   }
   that.update = new that.lib.update(that)
