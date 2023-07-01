@@ -1,6 +1,6 @@
 /* Magic Mirror
  * plugin: EXT-Updates v1
- * @bugsounet ©2023/06
+ * @bugsounet ©2023/07
  * MIT Licensed.
  */
 
@@ -8,19 +8,12 @@ Module.register("EXT-Updates", {
   requiresVersion: "2.24.0",
   defaults: {
     debug: false,
-    notification: {
-      useTelegramBot: true,
-      sendReady: true,
-      useCallback: true
-    },
-    update: {
-      autoUpdate: true,
-      autoRestart: true,
-      usePM2: true,
-      PM2Name: "0",
-      logToConsole: true,
-      timeout: 2*60*1000
-    }
+    autoUpdate: false,
+    autoRestart: true,
+    usePM2: true,
+    PM2Name: "0",
+    logToConsole: true,
+    timeout: 2*60*1000
   },
 
   start: function () {
@@ -30,14 +23,12 @@ Module.register("EXT-Updates", {
     this.modulesName= []
     this.session= {}
     this.moduleList= {}
-    this.npmList= {}
     this.notify= {}
   },
 
   notificationReceived: function (notification, payload, sender) {
     switch (notification) {
       case "UPDATES":
-        console.log("updates:", payload)
         this.checkUpdate(payload)
       case "DOM_OBJECTS_CREATED":
         this.modulesName= Object.keys(Module.definitions)
@@ -45,7 +36,7 @@ Module.register("EXT-Updates", {
       case "GW_READY":
         if (sender.name == "Gateway") this.sendSocketNotification("CONFIG", this.config)
         break
-      case "EXT_UPDATENOTIFICATION-UPDATE":
+      case "EXT_UPDATES-UPDATE":
         if (!this.init || this.updating) return
         this.updateFirstOnly()
         break
@@ -60,35 +51,28 @@ Module.register("EXT-Updates", {
       case "INITIALIZED":
         this.init=true
         this.sendNotification("EXT_HELLO", this.name)
-        if (this.config.notification.sendReady) {
-          if (this.config.notification.useTelegramBot) this.sendAdmin(this.translate("INITIALIZED", { VERSION: payload }))
-          else this.sendAlert(this.translate("INITIALIZED", { VERSION: payload }), 5*1000, "information")
-        }
         break
       case "WELCOME":
-        if (this.config.notification.useTelegramBot) this.sendAdmin(this.translate(this.config.update.usePM2 ? "TB_WELCOME" : "TB_WELCOMEPID", this.config.update.usePM2 ? {} : { PID: payload }))
-        else if (!this.config.update.usePM2) {
+        if (!this.config.usePM2) {
+          this.sendAdmin(this.translate("TB_WELCOMEPID", { PID: payload }))
           this.sendAlert(this.translate("ALERT_WELCOMEPID", { PID: payload }), 5*1000, "information")
         }
         break
       case "UPDATED":
         this.updating = false
-        if (this.config.notification.useTelegramBot) this.sendAdmin(this.translate("UPDATE_DONE", { MODULE_NAME: payload }))
-        else this.sendAlert(this.translate("UPDATE_DONE", { MODULE_NAME: payload }), 5*1000, "information")
+        this.sendAdmin(this.translate("UPDATE_DONE", { MODULE_NAME: payload }))
+        this.sendAlert(this.translate("UPDATE_DONE", { MODULE_NAME: payload }), 5*1000, "information")
         break
       case "NEEDRESTART":
-        if (this.config.notification.useTelegramBot) this.sendAdmin(this.translate("NEEDRESTART"))
-        else this.sendAlert(this.translate("NEEDRESTART"), 5*1000, "warning")
+        this.sendAdmin(this.translate("NEEDRESTART"))
+        this.sendAlert(this.translate("NEEDRESTART"), 5*1000, "warning")
         break
       case "ERROR_UPDATE":
-        if (this.config.notification.useTelegramBot) this.sendAdmin(this.translate("TB_UPDATE_ERROR", { MODULE_NAME: payload }))
-        else this.sendAlert(this.translate("ALERT_UPDATE_ERROR", { MODULE_NAME: payload }), 5*1000, "error")
+        this.sendAdmin(this.translate("TB_UPDATE_ERROR", { MODULE_NAME: payload }))
+        this.sendAlert(this.translate("ALERT_UPDATE_ERROR", { MODULE_NAME: payload }), 5*1000, "error")
         break
       case "SendResult":
         this.sendAdmin(payload, true)
-        break
-      case "SCAN_COMPLETE":
-        this.checkCallback(payload)
         break
     }
   },
@@ -113,41 +97,32 @@ Module.register("EXT-Updates", {
         // if we haven't seen info for this module
         if (this.moduleList[update.module] === undefined) {
           this.moduleList[update.module] = update
+          this.moduleList[update.module].canBeUpdated = this.canBeUpdated(update.module)
         }
-        if (typeof this.notify[update.module] === "undefined") {
-          this.notify[update.module] = true
-        }
+        if (typeof this.notify[update.module] === "undefined") this.notify[update.module] = true
+
         if (this.notify[update.module]) {
-          if (this.config.notification.useTelegramBot) {
-            let TB = null
-            let updateInfoKeyName = update.behind === 1 ? "UPDATE_INFO_SINGLE" : "UPDATE_INFO_MULTIPLE"
-            if (update.module === "MagicMirror") {
-              TB = this.translate("UPDATE_NOTIFICATION") + "\n"
-            } else {
-              TB = this.translate("UPDATE_NOTIFICATION_MODULE", { MODULE_NAME: update.module }) + "\n"
-            }
-            TB += this.translate(updateInfoKeyName, { COMMIT_COUNT: update.behind, BRANCH_NAME: update.current }) + "\n"
-            this.sendAdmin(TB)
-          }
-          if (this.config.update.autoUpdate && !this.updating) {
-            if (update.module == "MagicMirror" || !this.canBeUpdated(update.module)) {
+          let TB = null
+          let updateInfoKeyName = update.behind === 1 ? "UPDATE_INFO_SINGLE" : "UPDATE_INFO_MULTIPLE"
+          TB = this.translate("UPDATE_NOTIFICATION_MODULE", { MODULE_NAME: update.module }) + "\n"
+          TB += this.translate(updateInfoKeyName, { COMMIT_COUNT: update.behind, BRANCH_NAME: update.current }) + "\n"
+          this.sendAdmin(TB)
+
+          if (this.config.autoUpdate && !this.updating) {
+            if (!this.moduleList[update.module].canBeUpdated) {
               this.updating = false
-            }
-            else {
+            } else {
               this.updateProcess(update.module)
               this.updating = true
             }
           }
+
           this.notify[update.module] = false
         }
       } else if (update.behind === 0) {
         // if the module WAS in the list, but shouldn't be
-        if (this.notify[update.module] !== undefined) {
-          delete this.notify[update.module]
-        }
-        if (this.moduleList[update.module] !== undefined) {
-          delete this.moduleList[update.module]
-        }
+        if (this.notify[update.module] !== undefined) delete this.notify[update.module]
+        if (this.moduleList[update.module] !== undefined) delete this.moduleList[update.module]
       }
     })
     if (Object.keys(this.moduleList).length) this.sendNotification("EXT_UPDATES-MODULE_UPDATE", this.moduleList)
@@ -197,11 +172,6 @@ Module.register("EXT-Updates", {
       description: this.translate("HELP_RESTART"),
       callback: "Restart"
     })
-    commander.add({
-      command: "UN",
-      description: this.translate("HELP_UN"),
-      callback: "UNCommands"
-    })
   },
 
   /** TelegramBot Commands **/
@@ -217,27 +187,10 @@ Module.register("EXT-Updates", {
     }, 1000)
   },
 
-  UNCommands: function(command, handler) {
-    var helping = this.translate("HELP_UN") + "\n/update\n/scan\n/close\n/restart\n"
-    helping += this.translate("HELP_COMMAND")
-    handler.reply("TEXT", helping + "\n")
-  },
-
   Scan: function(command, handler) {
     if (!this.init) return handler.reply("TEXT", this.translate("INIT_INPROGRESS"))
-    var found = 0
-    for (let [name, value] of Object.entries(this.notify)) {
-      if (this.npmList[name] || this.moduleList[name]) found += 1
-    }
-    this.update.old = found
     handler.reply("TEXT", this.translate("UPDATE_SCAN"))
-    /** try to manage session ... **/
-    var chatId = handler.message.chat.id
-    var userId = handler.message.from.id
-    var messageId = handler.message.message_id
-    var sessionId = messageId + ":" + userId + ":" + chatId
-    this.session[sessionId] = handler
-    this.sendSocketNotification("FORCE_CHECK", sessionId)
+    this.sendNotification("SCAN_UPDATES")
   },
 
   Update: function(command, handler) {
@@ -249,14 +202,14 @@ Module.register("EXT-Updates", {
       for (let [name, value] of Object.entries(this.notify)) {
         if (this.updating) return
         if (name) {
-          if ((this.npmList[name] && this.npmList[name].module == handler.args) || (this.moduleList[name] && this.moduleList[name].module == handler.args)) {
-            if (this.canBeUpdated(handler.args)) {
+          if (this.moduleList[name] && this.moduleList[name].module == handler.args) {
+            if (this.moduleList[name].canBeUpdated) {
               found = true
               this.updating = true
-              handler.reply("TEXT", this.translate("UPDATING", { MODULE_NAME: handler.args}))
-              return this.updateProcess(handler.args)
+              handler.reply("TEXT", this.translate("UPDATING", { MODULE_NAME: name}))
+              return this.updateProcess(name)
             } else {
-              handler.reply("TEXT", this.translate("NOTAVAILABLE", { MODULE_NAME: handler.args}))
+              handler.reply("TEXT", this.translate("NOTAVAILABLE", { MODULE_NAME: name}))
               return
             }
           }
@@ -270,54 +223,33 @@ Module.register("EXT-Updates", {
       }
     } else {
       /** List of all update **/
-      var updateTxt = ""
+      var manualUpdateTxt = ""
+      var autoUpdateTxt = ""
+      var finalUpdateTxt = ""
       for (let [name, value] of Object.entries(this.notify)) {
         if (name) {
-          if (this.moduleList[name]) {
-            if (this.moduleList[name].module === "MagicMirror") {
-              updateTxt += "- *MagicMirror*: "
-            } else {
-              updateTxt += "- *" + this.moduleList[name].module + "*: "
-            }
-            var updateInfoKeyName = this.moduleList[name].behind === 1 ? "UPDATE_INFO_SINGLE" : "UPDATE_INFO_MULTIPLE"
-            updateTxt += this.translate(updateInfoKeyName, { COMMIT_COUNT: this.moduleList[name].behind, BRANCH_NAME: this.moduleList[name].current }) + "\n"
+          if (this.moduleList[name] && this.moduleList[name].canBeUpdated) {
+            autoUpdateTxt += "- *" + this.moduleList[name].module + "*\n"
           }
-          if (this.npmList[name]) {
-            updateTxt += "- *" + this.npmList[name].module + "*: " + this.npmList[name].library + " v" + this.npmList[name].installed + " --> v" +  this.npmList[name].latest + "\n"
+          if (this.moduleList[name] && !this.moduleList[name].canBeUpdated) {
+            manualUpdateTxt += "- *" + this.moduleList[name].module + "*\n"
           }
         }
       }
-      if (updateTxt) {
-        updateTxt += "\n"+ this.translate("UPDATE_HELPTB")
-        handler.reply("TEXT", this.translate("UPDATE_TB") + "\n" + updateTxt, {parse_mode:'Markdown'})
+      if (manualUpdateTxt) {
+        finalUpdateTxt = this.translate("UPDATE_MANUAL") + manualUpdateTxt + "\n"
       }
+      if (autoUpdateTxt) {
+        autoUpdateTxt += "\n"+ this.translate("UPDATE_HELPTB")
+        finalUpdateTxt += this.translate("UPDATE_AUTO") + autoUpdateTxt
+      }
+      if (finalUpdateTxt) handler.reply("TEXT", finalUpdateTxt, {parse_mode:'Markdown'})
       else handler.reply("TEXT", this.translate("NOUPDATE_TB"), {parse_mode:'Markdown'})
     }
   },
 
-  checkCallback: function (session) {
-    /** callback for update found **/
-    var found = 0
-    for (let [name, value] of Object.entries(this.notify)) {
-      if (this.npmList[name] || this.moduleList[name]) found += 1
-    }
-    this.update.new = found
-
-    let result = parseInt(this.update.new-this.update.old)
-    if (!result || result <= 0) this.Reply("scan", this.session[session], this.translate("NOUPDATE_TB"), session)
-    else if (result == 1) this.Reply("scan", this.session[session], this.translate("ONEUPDATE_TB"), session)
-    else this.Reply("scan", this.session[session], this.translate("SOMEUPDATE_TB", { update: result }), session)
-  },
-
-  /** send a reply after all info received **/
-  Reply: function(command, handler, message, session, markdown = false) {
-    if (!message || !session) return console.log("[UPDATES] Reply -- wrong Format!", message, session)
-    handler.reply("TEXT", message, markdown )
-    delete this.session[session]
-  },
-
   updateProcess: function (module) {
-    this.sendNotification("EXT_SCREEN-WAKEUP")
+    this.sendNotification("EXT_SCREEN-GH_FORCE_WAKEUP") // force wake up !
     this.sendSocketNotification("UPDATE", module)
   },
 
@@ -325,12 +257,10 @@ Module.register("EXT-Updates", {
     if (!this.init || this.updating) return
     var modules= Object.keys(this.notify)
     modules.forEach(module => {
-      if (this.canBeUpdated(module) && !this.updating) {
-        if (this.npmList[module] || this.moduleList[module]) {
-          this.updating = true
-          console.log("[UPDATES] Updating:", module)
-          this.updateProcess(module)
-        }
+      if (this.moduleList[module].canBeUpdated && !this.updating) {
+        this.updating = true
+        console.log("[UPDATES] Updating:", module)
+        this.updateProcess(module)
       }
       else console.log("[UPDATES] Can't Update", module)
     })

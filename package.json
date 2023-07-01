@@ -1,7 +1,7 @@
 {
   "name": "EXT-Updates",
   "version": "1.0.0",
-  "rev": "230623",
+  "rev": "230701",
   "description": "Apply Updates of EXTs",
   "main": "EXT-Updates.js",
   "scripts": {
@@ -12,15 +12,13 @@
     "clean": "rm -rf node_modules package-lock.json"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=16"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/bugsounet/EXT-Updates"
   },
-  "author": [
-    "@bugsounet"
-  ],
+  "author": "@bugsounet",
   "license": "MIT",
   "bugs": {
     "url": "https://forum.bugsounet.fr"
