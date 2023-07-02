@@ -50,7 +50,7 @@ Module.register("EXT-Updates", {
       case "WELCOME":
         if (!payload.PM2) {
           this.sendAdmin(this.translate("TB_WELCOMEPID", { PID: payload.PID }))
-          this.sendAlert(this.translate("ALERT_WELCOMEPID", { PID: payload }), 5*1000, "information")
+          this.sendAlert(this.translate("ALERT_WELCOMEPID", { PID: payload.PID }), 5*1000, "information")
         }
         break
       case "UPDATED":
