@@ -1,0 +1,16 @@
+{
+  "name": "EXT-Updates",
+  "version": "0.0.0",
+  "rev": "230702",
+  "description": "Apply Updates of EXTs",
+  "main": "EXT-Updates.js",
+  "engines": {
+    "node": ">=16"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bugsounet/EXT-Updates"
+  },
+  "author": "@bugsounet",
+  "license": "MIT"
+}
