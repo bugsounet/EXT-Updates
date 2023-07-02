@@ -88,6 +88,7 @@ Module.register("EXT-Updates", {
   },
 
   checkUpdate: function (updates) {
+    if (!this.init) return console.warn("[UPDATES] Hey, i'm not ready... please wait!")
     updates.forEach((update) => {
       if (update.behind > 0) {
         // if we haven't seen info for this module
