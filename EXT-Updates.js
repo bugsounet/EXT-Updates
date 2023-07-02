@@ -1,5 +1,5 @@
 /* Magic Mirror
- * plugin: EXT-Updates v1
+ * plugin: EXT-Updates
  * @bugsounet ©2023/07
  * MIT Licensed.
  */
@@ -8,22 +8,17 @@ Module.register("EXT-Updates", {
   requiresVersion: "2.24.0",
   defaults: {
     debug: false,
-    autoUpdate: false,
+    autoUpdate: true,
     autoRestart: true,
-    usePM2: true,
-    PM2Name: "0",
     logToConsole: true,
     timeout: 2*60*1000
   },
 
   start: function () {
     this.init= false
-    this.update = {}
     this.updating= false
     this.modulesName= []
-    this.session= {}
     this.moduleList= {}
-    this.notify= {}
   },
 
   notificationReceived: function (notification, payload, sender) {
@@ -53,8 +48,8 @@ Module.register("EXT-Updates", {
         this.sendNotification("EXT_HELLO", this.name)
         break
       case "WELCOME":
-        if (!this.config.usePM2) {
-          this.sendAdmin(this.translate("TB_WELCOMEPID", { PID: payload }))
+        if (!payload.PM2) {
+          this.sendAdmin(this.translate("TB_WELCOMEPID", { PID: payload.PID }))
           this.sendAlert(this.translate("ALERT_WELCOMEPID", { PID: payload }), 5*1000, "information")
         }
         break
@@ -66,6 +61,7 @@ Module.register("EXT-Updates", {
       case "NEEDRESTART":
         this.sendAdmin(this.translate("NEEDRESTART"))
         this.sendAlert(this.translate("NEEDRESTART"), 5*1000, "warning")
+        this.sendNotification("SCAN_UPDATES")
         break
       case "ERROR_UPDATE":
         this.sendAdmin(this.translate("TB_UPDATE_ERROR", { MODULE_NAME: payload }))
@@ -98,10 +94,9 @@ Module.register("EXT-Updates", {
         if (this.moduleList[update.module] === undefined) {
           this.moduleList[update.module] = update
           this.moduleList[update.module].canBeUpdated = this.canBeUpdated(update.module)
+          this.moduleList[update.module].notify = true
         }
-        if (typeof this.notify[update.module] === "undefined") this.notify[update.module] = true
-
-        if (this.notify[update.module]) {
+        if (this.moduleList[update.module].notify) {
           let TB = null
           let updateInfoKeyName = update.behind === 1 ? "UPDATE_INFO_SINGLE" : "UPDATE_INFO_MULTIPLE"
           TB = this.translate("UPDATE_NOTIFICATION_MODULE", { MODULE_NAME: update.module }) + "\n"
@@ -117,11 +112,10 @@ Module.register("EXT-Updates", {
             }
           }
 
-          this.notify[update.module] = false
+          this.moduleList[update.module].notify = false
         }
       } else if (update.behind === 0) {
         // if the module WAS in the list, but shouldn't be
-        if (this.notify[update.module] !== undefined) delete this.notify[update.module]
         if (this.moduleList[update.module] !== undefined) delete this.moduleList[update.module]
       }
     })
@@ -133,10 +127,6 @@ Module.register("EXT-Updates", {
     var wrapper = document.createElement("div")
     wrapper.style.display = 'none'
     return wrapper
-  },
-
-  getStyles: function() {
-    return [ "font-awesome.css" ]
   },
 
   getTranslations: function() {
@@ -199,7 +189,7 @@ Module.register("EXT-Updates", {
     if (handler.args) {
       var found = false
       /** update process **/
-      for (let [name, value] of Object.entries(this.notify)) {
+      for (let [name, value] of Object.entries(this.moduleList)) {
         if (this.updating) return
         if (name) {
           if (this.moduleList[name] && this.moduleList[name].module == handler.args) {
@@ -226,14 +216,12 @@ Module.register("EXT-Updates", {
       var manualUpdateTxt = ""
       var autoUpdateTxt = ""
       var finalUpdateTxt = ""
-      for (let [name, value] of Object.entries(this.notify)) {
-        if (name) {
-          if (this.moduleList[name] && this.moduleList[name].canBeUpdated) {
-            autoUpdateTxt += "- *" + this.moduleList[name].module + "*\n"
-          }
-          if (this.moduleList[name] && !this.moduleList[name].canBeUpdated) {
-            manualUpdateTxt += "- *" + this.moduleList[name].module + "*\n"
-          }
+      for (let [name, value] of Object.entries(this.moduleList)) {
+        if (this.moduleList[name] && this.moduleList[name].canBeUpdated) {
+          autoUpdateTxt += "- *" + this.moduleList[name].module + "*\n"
+        }
+        if (this.moduleList[name] && !this.moduleList[name].canBeUpdated) {
+          manualUpdateTxt += "- *" + this.moduleList[name].module + "*\n"
         }
       }
       if (manualUpdateTxt) {
@@ -255,7 +243,7 @@ Module.register("EXT-Updates", {
 
   updateFirstOnly: function() {
     if (!this.init || this.updating) return
-    var modules= Object.keys(this.notify)
+    var modules= Object.keys(this.moduleList)
     modules.forEach(module => {
       if (this.moduleList[module].canBeUpdated && !this.updating) {
         this.updating = true

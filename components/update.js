@@ -4,13 +4,16 @@ class Update {
   constructor(that) {
     this.lib= that.lib
     this.config= that.config
+    this.usePM2= that.usePM2
+    this.PM2 = that.PM2
+    this.root_path = that.root_path
     this.sendSocketNotification = (...args) => that.sendSocketNotification(...args)
     if (that.config.debug) log = (...args) => { console.log("[UPDATES] [UPDATE]", ...args) }
   }
 
   process(module) {
     let Command = null
-    var Path = this.lib.path.normalize(__dirname + "/../../")
+    var Path = this.root_path+"/modules/"
     var modulePath = Path + module
 
     if (module.startsWith("EXT-") || module === "MMM-GoogleAssistant" || module === "Gateway") Command = "npm run update"
@@ -56,8 +59,8 @@ class Update {
   }
 
   restart() {
-    if (this.config.usePM2) {
-      this.lib.pm2.restart(this.config.PM2Name, (err, proc) => {
+    if (this.usePM2) {
+      this.lib.pm2.restart(this.PM2, (err, proc) => {
         if (err) {
           console.error("[UPDATES] [UPDATE]" + err)
           that.sendSocketNotification("SendResult", err.toString())
@@ -69,19 +72,18 @@ class Update {
 
   doRestart() {
     console.log("[UPDATES] [UPDATE] Restarting MagicMirror...")
-    var MMdir = this.lib.path.normalize(__dirname + "/../../../")
-    const out = this.config.logToConsole ? process.stdout : this.lib.fs.openSync('./MagicMirror.log', 'a')
-    const err = this.config.logToConsole ? process.stderr : this.lib.fs.openSync('./MagicMirror.log', 'a')
-    const subprocess = this.lib.childProcess.spawn("npm start", {cwd: MMdir, shell: true, detached: true , stdio: [ 'ignore', out, err ]})
+    const out = process.stdout
+    const err = process.stderr
+    const subprocess = this.lib.childProcess.spawn("npm start", {cwd: this.root_path, shell: true, detached: true , stdio: [ 'ignore', out, err ]})
     subprocess.unref()
     process.exit()
   }
 
   close() {
     console.log("[UPDATES] [UPDATE] Closing MagicMirror...")
-    if (!this.config.usePM2) process.abort()
+    if (!this.usePM2) process.abort()
     else {
-      this.lib.pm2.stop(this.config.PM2Name, (err, proc) => {
+      this.lib.pm2.stop(this.PM2, (err, proc) => {
         if (err) {
           console.error("[UPDATES] [UPDATE]" + err)
           this.sendSocketNotification("SendResult", err.toString())
