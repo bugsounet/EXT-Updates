@@ -26,7 +26,7 @@
   "homepage": "https://wiki.bugsounet.fr/EXT-Updates",
   "dependencies": {
     "glob": "^10.3.1",
-    "minify": "^10.2.0",
+    "minify": "^9.2.0",
     "pm2": "^5.3.0"
   }
 }
