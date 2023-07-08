@@ -6,4 +6,3 @@
 ---
 # Installation, update & Guides
 Read the docs in [wiki](https://wiki.bugsounet.fr/EXT-Updates)<br>
-
