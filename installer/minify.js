@@ -1,5 +1,4 @@
-/** Code minifier v1.3 **/
-/** 2023/02/28 **/
+/** Code minifier **/
 /** @busgounet **/
 
 const fs = require('fs')
