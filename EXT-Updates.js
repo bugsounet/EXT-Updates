@@ -238,7 +238,7 @@ Module.register("EXT-Updates", {
   },
 
   updateProcess: function (module) {
-    this.sendNotification("EXT_SCREEN-GH_FORCE_WAKEUP") // force wake up !
+    this.sendNotification("EXT_SCREEN-FORCE_WAKEUP")
     this.sendSocketNotification("UPDATE", module)
   },
 
