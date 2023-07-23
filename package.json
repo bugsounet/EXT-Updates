@@ -1,12 +1,12 @@
 {
   "name": "EXT-Updates",
-  "version": "1.0.0",
-  "rev": "230708",
+  "version": "1.0.1",
+  "rev": "230723",
   "description": "Apply Updates of EXTs",
   "main": "EXT-Updates.js",
   "scripts": {
     "preinstall": "installer/preinstall.sh",
-    "postinstall": "installer/postinstall.sh",
+    "postinstall": "installer/postinstall.sh -m -b",
     "update": "installer/update.sh",
     "reset": "git reset --hard",
     "clean": "rm -rf node_modules package-lock.json"
@@ -25,8 +25,8 @@
   },
   "homepage": "https://wiki.bugsounet.fr/EXT-Updates",
   "dependencies": {
-    "glob": "^10.3.1",
-    "minify": "^9.2.0",
+    "esbuild": "^0.18.16",
+    "glob": "^10.3.3",
     "pm2": "^5.3.0"
   }
 }
