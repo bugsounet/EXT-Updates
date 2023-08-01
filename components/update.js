@@ -4,8 +4,6 @@ class Update {
   constructor(that) {
     this.lib= that.lib
     this.config= that.config
-    this.usePM2= that.usePM2
-    this.PM2 = that.PM2
     this.root_path = that.root_path
     this.sendSocketNotification = (...args) => that.sendSocketNotification(...args)
     if (that.config.debug) log = (...args) => { console.log("[UPDATES] [UPDATE]", ...args) }
@@ -49,47 +47,13 @@ class Update {
         this.sendSocketNotification("UPDATED", module)
         if (this.config.autoRestart) {
           log("Process update done")
-          setTimeout(() => this.restart(), 3000)
+          setTimeout(() => this.sendSocketNotification("RESTART"), 3000)
         } else {
           log("Process update done, don't forget to restart MagicMirror!")
           this.sendSocketNotification("NEEDRESTART")
         }
       }
     })
-  }
-
-  restart() {
-    if (this.usePM2) {
-      this.lib.pm2.restart(this.PM2, (err, proc) => {
-        if (err) {
-          console.error("[UPDATES] [UPDATE]" + err)
-          that.sendSocketNotification("SendResult", err.toString())
-        }
-      })
-    }
-    else this.doRestart()
-  }
-
-  doRestart() {
-    console.log("[UPDATES] [UPDATE] Restarting MagicMirror...")
-    const out = process.stdout
-    const err = process.stderr
-    const subprocess = this.lib.childProcess.spawn("npm start", {cwd: this.root_path, shell: true, detached: true , stdio: [ 'ignore', out, err ]})
-    subprocess.unref()
-    process.exit()
-  }
-
-  close() {
-    console.log("[UPDATES] [UPDATE] Closing MagicMirror...")
-    if (!this.usePM2) process.abort()
-    else {
-      this.lib.pm2.stop(this.PM2, (err, proc) => {
-        if (err) {
-          console.error("[UPDATES] [UPDATE]" + err)
-          this.sendSocketNotification("SendResult", err.toString())
-        }
-      })
-    }
   }
 
   /** remove ExtraChars for telegramBot markdown **/

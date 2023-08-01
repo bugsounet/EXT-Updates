@@ -1,7 +1,7 @@
 {
   "name": "EXT-Updates",
-  "version": "1.0.1",
-  "rev": "230723",
+  "version": "1.1.0",
+  "rev": "230801",
   "description": "Apply Updates of EXTs",
   "main": "EXT-Updates.js",
   "scripts": {
@@ -26,7 +26,6 @@
   "homepage": "https://wiki.bugsounet.fr/EXT-Updates",
   "dependencies": {
     "esbuild": "^0.18.16",
-    "glob": "^10.3.3",
-    "pm2": "^5.3.0"
+    "glob": "^10.3.3"
   }
 }

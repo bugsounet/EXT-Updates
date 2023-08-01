@@ -48,15 +48,16 @@ Module.register("EXT-Updates", {
         this.sendNotification("EXT_HELLO", this.name)
         break
       case "WELCOME":
-        if (!payload.PM2) {
-          this.sendAdmin(this.translate("TB_WELCOMEPID", { PID: payload.PID }))
-          this.sendAlert(this.translate("ALERT_WELCOMEPID", { PID: payload.PID }), 5*1000, "information")
-        }
+        this.sendAdmin(this.translate("TB_WELCOMEPID", { PID: payload.PID }))
+        this.sendAlert(this.translate("ALERT_WELCOMEPID", { PID: payload.PID }), 5*1000, "information")
         break
       case "UPDATED":
         this.updating = false
         this.sendAdmin(this.translate("UPDATE_DONE", { MODULE_NAME: payload }))
         this.sendAlert(this.translate("UPDATE_DONE", { MODULE_NAME: payload }), 5*1000, "information")
+        break
+      case "RESTART":
+        this.sendNotification("EXT_GATEWAY-Restart")
         break
       case "NEEDRESTART":
         this.sendAdmin(this.translate("NEEDRESTART"))
@@ -168,13 +169,13 @@ Module.register("EXT-Updates", {
   /** TelegramBot Commands **/
   Close: function(command, handler) {
     handler.reply("TEXT", "Bye Bye!")
-    this.sendSocketNotification("CLOSE")
+    this.sendNotification("EXT_GATEWAY-Close")
   },
 
   Restart: function(command, handler) {
     handler.reply("TEXT", "Restarting MagicMirror...")
     setTimeout(() => {
-      this.sendSocketNotification("RESTART")
+      this.sendNotification("EXT_GATEWAY-Restart")
     }, 1000)
   },
 
