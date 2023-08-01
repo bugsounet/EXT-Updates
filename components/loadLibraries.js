@@ -7,7 +7,6 @@ function libraries(that) {
     // { "library to load" : "store library name" }
     { "fs": "fs" },
     { "path": "path" },
-    { "pm2": "pm2" },
     { "child_process": "childProcess" },
     { "../components/update.js": "update" }
   ]
