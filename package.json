@@ -26,6 +26,6 @@
   "homepage": "https://wiki.bugsounet.fr/EXT-Updates",
   "dependencies": {
     "esbuild": "^0.19.3",
-    "glob": "^10.3.4"
+    "glob": "^10.3.6"
   }
 }
