@@ -138,7 +138,8 @@ Module.register("EXT-Updates", {
       it: "translations/it.json",
       de: "translations/de.json",
       es: "translations/es.json",
-      nl: "translations/nl.json"
+      nl: "translations/nl.json",
+      tr: "translations/tr.json"
     }
   },
 
