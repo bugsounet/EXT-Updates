@@ -8,7 +8,7 @@
   "INIT_INPROGRESS": "EXT-Updates ist noch nicht bereit!",
   "MODULENOTFOUND": "Modul {MODULE_NAME} nicht gefunden.",
   "NEEDRESTART": "Bitte MagicMirror neu starten!",
-  "NOTAVAILABLE": "Unable to Update {MODULE_NAME}",
+  "NOTAVAILABLE": "Aktualisierung von {MODULE_NAME} nicht möglich.",
   "NOUPDATE_TB": "Keine neue Aktualisierung verfügbar.",
   "TB_UPDATE_ERROR": "Aktualisierungsfehler: {MODULE_NAME}\nBitte eigenständig lösen.",
   "TB_WELCOMEPID": "Willkommen.\nMagicMirror läuft unter PID {PID}\n",
@@ -16,7 +16,7 @@
   "UPDATE_HELPTB": "Module können mit `/update <module_name>` aktualisiert werden.",
   "UPDATE_INPROGRESS": "Bitte den Abschluss des Aktualisierungsprozesses abwarten!",
   "UPDATE_SCAN": "Überprüfung auf Aktualisierungen...",
-  "UPDATE_AUTO": "Automatic Update available:\n",
-  "UPDATE_MANUAL": "Manual Update:\n",
+  "UPDATE_AUTO": "Automatische Aktualisierung verfügbar:\n",
+  "UPDATE_MANUAL": "Manuelle Aktualisierung:\n",
   "UPDATING": "Aktualisiere {MODULE_NAME}"
 }
