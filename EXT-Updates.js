@@ -1,6 +1,6 @@
 /* Magic Mirror
  * plugin: EXT-Updates
- * @bugsounet ©2023/07
+ * @bugsounet ©2023/11
  * MIT Licensed.
  */
 
@@ -19,6 +19,7 @@ Module.register("EXT-Updates", {
     this.updating= false
     this.modulesName= []
     this.moduleList= {}
+    this.scanTimer = null
   },
 
   notificationReceived: function (notification, payload, sender) {
@@ -90,6 +91,7 @@ Module.register("EXT-Updates", {
 
   checkUpdate: function (updates) {
     if (!this.init) return console.warn("[UPDATES] Hey, i'm not ready... please wait!")
+    clearTimeout(this.scanTimer)
     updates.forEach((update) => {
       if (update.behind > 0) {
         // if we haven't seen info for this module
@@ -182,8 +184,12 @@ Module.register("EXT-Updates", {
 
   Scan: function(command, handler) {
     if (!this.init) return handler.reply("TEXT", this.translate("INIT_INPROGRESS"))
+    clearTimeout(this.scanTimer)
     handler.reply("TEXT", this.translate("UPDATE_SCAN"))
     this.sendNotification("SCAN_UPDATES")
+    this.scanTimer = setTimeout(() => {
+      handler.reply("TEXT", this.translate("NOUPDATE_TB"))
+    }, 30000)
   },
 
   Update: function(command, handler) {
