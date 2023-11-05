@@ -189,7 +189,7 @@ Module.register("EXT-Updates", {
     this.sendNotification("SCAN_UPDATES")
     this.scanTimer = setTimeout(() => {
       handler.reply("TEXT", this.translate("NOUPDATE_TB"))
-    }, 30000)
+    }, 60000)
   },
 
   Update: function(command, handler) {
