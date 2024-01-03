@@ -29,8 +29,8 @@ Module.register("EXT-Updates", {
       case "DOM_OBJECTS_CREATED":
         this.modulesName= Object.keys(Module.definitions)
         break
-      case "GW_READY":
-        if (sender.name == "Gateway") this.sendSocketNotification("CONFIG", this.config)
+      case "GA_READY":
+        if (sender.name == "MMM-GoogleAssistant") this.sendSocketNotification("CONFIG", this.config)
         break
       case "EXT_UPDATES-UPDATE":
         if (!this.init || this.updating) return
