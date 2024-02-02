@@ -1,6 +1,6 @@
 /* Magic Mirror
  * plugin: EXT-Updates
- * @bugsounet ©2023/11
+ * @bugsounet ©2024/01
  * MIT Licensed.
  */
 
@@ -11,7 +11,8 @@ Module.register("EXT-Updates", {
     autoUpdate: true,
     autoRestart: true,
     logToConsole: true,
-    timeout: 2*60*1000
+    timeout: 2*60*1000,
+    welcome: true
   },
 
   start: function () {
@@ -49,8 +50,10 @@ Module.register("EXT-Updates", {
         this.sendNotification("EXT_HELLO", this.name)
         break
       case "WELCOME":
-        this.sendAdmin(this.translate("TB_WELCOMEPID", { PID: payload.PID }))
-        this.sendAlert(this.translate("ALERT_WELCOMEPID", { PID: payload.PID }), 5*1000, "information")
+        if (this.config.welcome) {
+          this.sendAdmin(this.translate("TB_WELCOMEPID", { PID: payload.PID }))
+          this.sendAlert(this.translate("ALERT_WELCOMEPID", { PID: payload.PID }), 5*1000, "information")
+        }
         break
       case "UPDATED":
         this.updating = false
