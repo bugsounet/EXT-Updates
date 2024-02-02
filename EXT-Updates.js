@@ -12,7 +12,7 @@ Module.register("EXT-Updates", {
     autoRestart: true,
     logToConsole: true,
     timeout: 2*60*1000,
-    welcome: false
+    welcome: true
   },
 
   start: function () {

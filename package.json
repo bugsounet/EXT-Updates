@@ -1,7 +1,7 @@
 {
   "name": "EXT-Updates",
   "version": "1.2.1",
-  "rev": "240111",
+  "rev": "240202",
   "description": "Apply Updates of EXTs",
   "main": "EXT-Updates.js",
   "scripts": {
