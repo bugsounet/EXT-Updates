@@ -11,7 +11,7 @@
   "NOTAVAILABLE": "Güncellenemiyor {MODULE_NAME}",
   "NOUPDATE_TB": "Yeni güncelleme mevcut değil.",
   "TB_UPDATE_ERROR": "Güncelleme hatası: {MODULE_NAME}\nLütfen sorunu manuel olarak çözün",
-  "TB_WELCOMEPID": "EXT-Updates'e hoş geldiniz,\nMagicMirror PID {PID} üzerinde çalışıyor\n",
+  "TB_WELCOMEPID": "EXT-Updates'e hoş geldiniz,\nMagicMirror² PID {PID} üzerinde çalışıyor\n",
   "UPDATE_DONE": "Güncelleme başarılı: {MODULE_NAME}",
   "UPDATE_HELPTB": "Modülleri `/update <module_name>` ile güncelleyebilirsiniz.",
   "UPDATE_INPROGRESS": "Lütfen bekleyin. Güncelleme devam ediyor!",
