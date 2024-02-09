@@ -27,6 +27,7 @@ Module.register("EXT-Updates", {
     switch (notification) {
       case "UPDATES":
         this.checkUpdate(payload)
+        break
       case "DOM_OBJECTS_CREATED":
         this.modulesName= Object.keys(Module.definitions)
         break
@@ -189,6 +190,7 @@ Module.register("EXT-Updates", {
     if (!this.init) return handler.reply("TEXT", this.translate("INIT_INPROGRESS"))
     clearTimeout(this.scanTimer)
     handler.reply("TEXT", this.translate("UPDATE_SCAN"))
+    this.sendNotification("EXT_SCREEN-FORCE_WAKEUP")
     this.sendNotification("SCAN_UPDATES")
     this.scanTimer = setTimeout(() => {
       handler.reply("TEXT", this.translate("NOUPDATE_TB"))
@@ -280,7 +282,7 @@ Module.register("EXT-Updates", {
   },
 
   canBeUpdated: function(module) {
-    if (module.startsWith("EXT-") || module === "MMM-GoogleAssistant" || module === "Gateway") return true
+    if (module.startsWith("EXT-") || module === "MMM-GoogleAssistant") return true
     else return false
   }
 });
