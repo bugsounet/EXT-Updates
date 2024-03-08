@@ -1,45 +1,58 @@
-/* Magic Mirror
- * plugin: EXT-Updates v1
- * @bugsounet ©2023/06
- * MIT Licensed.
+/*
+ * EXT-Updates
  */
 
-var parseData = require("./components/parseData.js")
-const NodeHelper = require("node_helper")
-var log = (...args) => { /* do nothing */ }
+const NodeHelper = require("node_helper");
+const Updater = require("./components/update.js");
+
+var log = (...args) => { /* do nothing */ };
 
 module.exports = NodeHelper.create({
-  start: function () {
-    parseData.init(this)
+  start () {
+    this.config = {};
+    this.updateProcessStarted= false;
+    this.init = false;
+    this.version = global.version;
+    this.root_path = global.root_path;
   },
 
-  socketNotificationReceived: async function (notification, payload) {
+  socketNotificationReceived (notification, payload) {
     switch (notification) {
       case "CONFIG":
-        this.config = payload
-        if (this.config.debug) log = (...args) => { console.log("[UPDATES]", ...args) }
-        console.log("[UPDATES] EXT-Updates Version:", require('./package.json').version, "rev:", require('./package.json').rev)
-        console.log("[UPDATES] MagicMirror is running on pid:", process.pid)
-        await parseData.parse(this)
-        break
+        this.config = payload;
+        this.config.root_path = this.root_path;
+        if (this.config.debug) log = (...args) => { console.log("[UPDATES]", ...args); };
+        this.initialize();
+        break;
       case "MODULES":
         if (!this.updateProcessStarted) {
-          this.sendSocketNotification("INITIALIZED", require('./package.json').version)
-          this.updateProcessStarted = true
+          this.sendSocketNotification("INITIALIZED", require("./package.json").version);
+          this.updateProcessStarted = true;
         }
-        break
+        break;
       case "DISPLAY_ERROR":
-        console.error("[UPDATES] Callbacks errors:\n\n" + payload)
-        break
+        console.error(`[UPDATES] Callbacks errors:\n\n${payload}`);
+        break;
       case "UPDATE":
-        this.update.process(payload)
-        break
+        this.update.process(payload);
+        break;
       case "CLOSE":
-        this.update.close()
-        break
+        this.update.close();
+        break;
       case "RESTART":
-        this.update.restart()
-        break
+        this.update.restart();
+        break;
     }
+  },
+
+  initialize () {
+    console.log("[UPDATES] EXT-Updates Version:", require("./package.json").version, "rev:", require("./package.json").rev);
+    console.log("[UPDATES] MagicMirror is running on pid:", process.pid);
+    let Tools = {
+      sendSocketNotification: (...args) => { this.sendSocketNotification(...args); }
+    };
+    this.update = new Updater(this.config, Tools);
+    this.sendSocketNotification("WELCOME", { PID: process.pid });
+    this.sendSocketNotification("READY");
   }
 });
