@@ -57,7 +57,7 @@ Module.register("EXT-Updates", {
       case "UPDATED":
         this.updating = false;
         this.sendAdmin(this.translate("UPDATE_DONE", { MODULE_NAME: payload }));
-        this.sendAlert(this.translate("UPDATE_DONE", { MODULE_NAME: payload }), 5*1000, "information");
+        this.sendAlert(this.translate("UPDATE_DONE", { MODULE_NAME: payload }), 5*1000, "success");
         break;
       case "RESTART":
         this.sendNotification("EXT_GATEWAY-Restart");
