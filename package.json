@@ -36,7 +36,7 @@
   "homepage": "https://wiki.bugsounet.fr/EXT-Updates",
   "dependencies": {
     "esbuild": "^0.20.2",
-    "glob": "^10.3.10"
+    "glob": "^10.3.12"
   },
   "devDependencies": {
     "@eslint/js": "^8.57.0",
