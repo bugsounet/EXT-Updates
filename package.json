@@ -1,12 +1,12 @@
 {
   "name": "EXT-Updates",
-  "version": "1.3.2",
-  "rev": "240528",
+  "version": "1.4.0",
+  "rev": "240701",
   "description": "Apply Updates of EXTs",
   "main": "EXT-Updates.js",
   "scripts": {
     "preinstall": "installer/preinstall.sh",
-    "postinstall": "installer/postinstall.sh -m -b",
+    "postinstall": "installer/postinstall.sh -m",
     "update": "installer/update.sh",
     "reset": "git reset --hard",
     "clean": "rm -rf node_modules package-lock.json",
@@ -22,7 +22,7 @@
     "update"
   ],
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   },
   "repository": {
     "type": "git",
@@ -31,7 +31,7 @@
   "author": "@bugsounet",
   "license": "MIT",
   "bugs": {
-    "url": "https://forum.bugsounet.fr"
+    "url": "https://github.com/bugsounet/EXT-Updates/issues"
   },
   "homepage": "https://wiki.bugsounet.fr/EXT-Updates",
   "dependencies": {
