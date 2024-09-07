@@ -3,8 +3,6 @@
   "ALERT_WELCOMEPID": "Willkommen.<br>MagicMirror² läuft unter PID {PID}",
   "HELP_UPDATE": "Aktualisierungen manuell starten.",
   "HELP_SCAN": "Überprüfung auf Aktualisierungen manuell starten",
-  "HELP_STOP": "MagicMirror² beenden",
-  "HELP_RESTART": "MagicMirror² neu starten.",
   "INIT_INPROGRESS": "EXT-Updates ist noch nicht bereit!",
   "MODULENOTFOUND": "Modul {MODULE_NAME} nicht gefunden.",
   "NEEDRESTART": "Bitte MagicMirror² neu starten!",
