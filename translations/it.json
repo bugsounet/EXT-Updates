@@ -3,8 +3,6 @@
   "ALERT_WELCOMEPID": "Benvenuto in EXT-Updates,<br>MagicMirror² è avvio in PID {PID}",
   "HELP_UPDATE": "Aiuto per i comandi di aggiornamento",
   "HELP_SCAN": "Esegue la ricerca degli aggiornamenti da eseguire",
-  "HELP_STOP": "Comando per la chiusura forzata di MagicMirror²",
-  "HELP_RESTART": "Comando per il riavvio di MagicMirror²",
   "INIT_INPROGRESS" : "EXT-Updates non è ancora attivo!",
   "MODULENOTFOUND": "Modulo non trovato: {MODULE_NAME}",
   "NEEDRESTART": "Non dimenticare di riavviare il tuo MagicMirror²!",

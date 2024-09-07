@@ -3,8 +3,6 @@
   "ALERT_WELCOMEPID": "Welkom bij EXT-Updates,<br>MagicMirror² draait op PID {PID}",
   "HELP_UPDATE": "Update commando beheren",
   "HELP_SCAN": "Scan forceren om te controleren of er updates beschikbaar zijn",
-  "HELP_STOP": "Verlaat MagicMirror²",
-  "HELP_RESTART": "Herstart MagicMirror²",
   "INIT_INPROGRESS" : "EXT-Updates is nog niet geïnitialiseerd!",
   "MODULENOTFOUND": "Module niet gevonden: {MODULE_NAME}",
   "NEEDRESTART": "Vegeet niet MagicMirror² te herstarten!",

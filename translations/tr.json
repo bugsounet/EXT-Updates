@@ -3,8 +3,6 @@
   "ALERT_WELCOMEPID": "EXT-Güncellemelerine hoş geldiniz,<br>Sihirli Ayna PID üzerinde çalışıyor {PID}",
   "HELP_UPDATE": "Komut yöneticisini güncelle",
   "HELP_SCAN": "Güncellemelerin mevcut olup olmadığını kontrol etmek için taramayı zorlayın",
-  "HELP_STOP": "Sihirli Ayna'dan çıkın",
-  "HELP_RESTART": "Sihirli Ayna'yı yeniden başlatın",
   "INIT_INPROGRESS" : "EXT-Güncellemeler henüz başlatılmadı!",
   "MODULENOTFOUND": "Modül bulunamadı: {MODULE_NAME}",
   "NEEDRESTART": "Sihirli Ayna'yı yeniden başlatmayı unutmayın!",

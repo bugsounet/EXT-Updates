@@ -159,31 +159,9 @@ Module.register("EXT-Updates", {
       description: this.translate("HELP_SCAN"),
       callback: "Scan"
     });
-    commander.add({
-      command: "close",
-      description: this.translate("HELP_STOP"),
-      callback: "Close"
-    });
-    commander.add({
-      command: "restart",
-      description: this.translate("HELP_RESTART"),
-      callback: "Restart"
-    });
   },
 
   /** TelegramBot Commands **/
-  Close (command, handler) {
-    handler.reply("TEXT", "Bye Bye!");
-    this.sendNotification("EXT_GATEWAY-Close");
-  },
-
-  Restart (command, handler) {
-    handler.reply("TEXT", "Restarting MagicMirror...");
-    setTimeout(() => {
-      this.sendNotification("EXT_GATEWAY-Restart");
-    }, 1000);
-  },
-
   Scan (command, handler) {
     if (!this.init) return handler.reply("TEXT", this.translate("INIT_INPROGRESS"));
     clearTimeout(this.scanTimer);
