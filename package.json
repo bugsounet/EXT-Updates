@@ -35,7 +35,7 @@
   },
   "homepage": "https://wiki.bugsounet.fr/EXT-Updates",
   "dependencies": {
-    "esbuild": "^0.23.1",
+    "esbuild": "^0.24.0",
     "glob": "^10.4.5"
   },
   "devDependencies": {
