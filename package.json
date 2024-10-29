@@ -1,7 +1,7 @@
 {
   "name": "EXT-Updates",
-  "version": "1.4.1",
-  "rev": "240907",
+  "version": "1.5.0",
+  "rev": "241029",
   "description": "Apply Updates of EXTs",
   "main": "EXT-Updates.js",
   "scripts": {
@@ -39,9 +39,8 @@
     "glob": "^10.4.5"
   },
   "devDependencies": {
-    "@eslint/js": "^8.57.1",
-    "@stylistic/eslint-plugin": "^1.8.1",
-    "eslint": "^8.57.1",
-    "eslint-plugin-import": "^2.29.1"
+    "@stylistic/eslint-plugin": "^2.9.0",
+    "eslint": "^9.13.0",
+    "eslint-plugin-import": "^2.31.0"
   }
 }
