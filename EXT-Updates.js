@@ -83,7 +83,7 @@ Module.register("EXT-Updates", {
   },
 
   sendAlert (text, timer = 0, type) {
-    this.sendNotification("EXT_ALERT", {
+    this.sendNotification("GA_ALERT", {
       type: type ,
       message: text,
       timer: timer,
