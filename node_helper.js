@@ -3,14 +3,12 @@
  */
 
 const NodeHelper = require("node_helper");
-const Updater = require("./components/update.js");
-
-var log = (...args) => { /* do nothing */ };
+const Updater = require("./components/update");
 
 module.exports = NodeHelper.create({
   start () {
     this.config = {};
-    this.updateProcessStarted= false;
+    this.updateProcessStarted = false;
     this.init = false;
     this.version = global.version;
     this.root_path = global.root_path;
@@ -21,7 +19,6 @@ module.exports = NodeHelper.create({
       case "CONFIG":
         this.config = payload;
         this.config.root_path = this.root_path;
-        if (this.config.debug) log = (...args) => { console.log("[UPDATES]", ...args); };
         this.initialize();
         break;
       case "MODULES":
