@@ -20,7 +20,7 @@ class Update {
     if (!Command) return console.warn(`[UPDATES] Update of ${module} is not supported.`);
     console.log(`[UPDATES] [UPDATE] Updating ${module}...`);
 
-    childProcess.exec(Command, { cwd : modulePath, timeout: this.config.timeout } , (error, stdout, stderr) => {
+    childProcess.exec(Command, { cwd: modulePath, timeout: this.config.timeout }, (error, stdout, stderr) => {
       if (error) {
         console.error(`[UPDATES] exec error: ${error}`);
 
@@ -32,7 +32,7 @@ class Update {
         final += `\n${this.ExtraChars("[UPDATES] Update error!")}\n`;
         this.sendSocketNotification("SendResult", final);
 
-        this.sendSocketNotification("ERROR_UPDATE" , module);
+        this.sendSocketNotification("ERROR_UPDATE", module);
       } else {
         console.log(`[UPDATES] Update logs of ${module}: ${stdout}`);
 
@@ -60,10 +60,10 @@ class Update {
   /** remove ExtraChars for telegramBot markdown **/
   ExtraChars (str) {
     let result = str;
-    result = result.replace(/[\s]{2,}/g," "); // delete space doubles, and more
+    result = result.replace(/[\s]{2,}/g, " "); // delete space doubles, and more
     result = result.replace(/^[\s]/, ""); // delete space on the begin
-    result = result.replace(/[\s]$/,""); // delete space on the end
-    result = result.replace("|",":"); // simple replace | to : for more visibility
+    result = result.replace(/[\s]$/, ""); // delete space on the end
+    result = result.replace("|", ":"); // simple replace | to : for more visibility
     /** special markdown for Telegram **/
     result = result.replace(new RegExp("_", "g"), "\\_"); //
     result = result.replace(new RegExp("\\*", "g"), "\\*");

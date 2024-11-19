@@ -10,7 +10,7 @@ var log = (...args) => { /* do nothing */ };
 module.exports = NodeHelper.create({
   start () {
     this.config = {};
-    this.updateProcessStarted= false;
+    this.updateProcessStarted = false;
     this.init = false;
     this.version = global.version;
     this.root_path = global.root_path;
