@@ -1,4 +1,4 @@
-/* 
+/*
  * EXT-Updates
  */
 
@@ -9,15 +9,15 @@ Module.register("EXT-Updates", {
     autoUpdate: true,
     autoRestart: true,
     logToConsole: true,
-    timeout: 2*60*1000,
+    timeout: 2 * 60 * 1000,
     welcome: true
   },
 
   start () {
-    this.init= false;
-    this.updating= false;
-    this.modulesName= [];
-    this.moduleList= {};
+    this.init = false;
+    this.updating = false;
+    this.modulesName = [];
+    this.moduleList = {};
     this.scanTimer = null;
   },
 
@@ -27,7 +27,7 @@ Module.register("EXT-Updates", {
         this.checkUpdate(payload);
         break;
       case "DOM_OBJECTS_CREATED":
-        this.modulesName= Object.keys(Module.definitions);
+        this.modulesName = Object.keys(Module.definitions);
         break;
       case "GA_READY":
         if (sender.name === "MMM-GoogleAssistant") this.sendSocketNotification("CONFIG", this.config);
@@ -45,31 +45,31 @@ Module.register("EXT-Updates", {
         this.sendSocketNotification("MODULES", this.modulesName);
         break;
       case "INITIALIZED":
-        this.init=true;
+        this.init = true;
         this.sendNotification("EXT_HELLO", this.name);
         break;
       case "WELCOME":
         if (this.config.welcome) {
           this.sendAdmin(this.translate("TB_WELCOMEPID", { PID: payload.PID }));
-          this.sendAlert(this.translate("ALERT_WELCOMEPID", { PID: payload.PID }), 5*1000, "information");
+          this.sendAlert(this.translate("ALERT_WELCOMEPID", { PID: payload.PID }), 5 * 1000, "information");
         }
         break;
       case "UPDATED":
         this.updating = false;
         this.sendAdmin(this.translate("UPDATE_DONE", { MODULE_NAME: payload }));
-        this.sendAlert(this.translate("UPDATE_DONE", { MODULE_NAME: payload }), 5*1000, "success");
+        this.sendAlert(this.translate("UPDATE_DONE", { MODULE_NAME: payload }), 5 * 1000, "success");
         break;
       case "RESTART":
         this.sendNotification("EXT_GATEWAY-Restart");
         break;
       case "NEEDRESTART":
         this.sendAdmin(this.translate("NEEDRESTART"));
-        this.sendAlert(this.translate("NEEDRESTART"), 5*1000, "warning");
+        this.sendAlert(this.translate("NEEDRESTART"), 5 * 1000, "warning");
         this.sendNotification("SCAN_UPDATES");
         break;
       case "ERROR_UPDATE":
         this.sendAdmin(this.translate("TB_UPDATE_ERROR", { MODULE_NAME: payload }));
-        this.sendAlert(this.translate("ALERT_UPDATE_ERROR", { MODULE_NAME: payload }), 5*1000, "error");
+        this.sendAlert(this.translate("ALERT_UPDATE_ERROR", { MODULE_NAME: payload }), 5 * 1000, "error");
         break;
       case "SendResult":
         this.sendAdmin(payload, true);
@@ -78,13 +78,13 @@ Module.register("EXT-Updates", {
   },
 
   sendAdmin (text, parse) {
-    if (parse) this.sendNotification("EXT_TELBOT-TELL_ADMIN", text, { parse_mode:"Markdown" });
+    if (parse) this.sendNotification("EXT_TELBOT-TELL_ADMIN", text, { parse_mode: "Markdown" });
     else this.sendNotification("EXT_TELBOT-TELL_ADMIN", text);
   },
 
   sendAlert (text, timer = 0, type) {
     this.sendNotification("GA_ALERT", {
-      type: type ,
+      type: type,
       message: text,
       timer: timer,
       icon: "modules/EXT-Updates/resources/update.png"
@@ -178,8 +178,9 @@ Module.register("EXT-Updates", {
     if (this.updating) return handler.reply("TEXT", this.translate("UPDATE_INPROGRESS"));
     if (handler.args) {
       var found = false;
+
       /** update process **/
-      for (let [name, value] of Object.entries(this.moduleList)) {
+      for (let [name] of Object.entries(this.moduleList)) {
         if (this.updating) return;
         if (name) {
           if (this.moduleList[name] && this.moduleList[name].module === handler.args) {
@@ -197,16 +198,17 @@ Module.register("EXT-Updates", {
       }
       if (!found) {
         if (this.modulesName.indexOf(handler.args) > 0) {
-          handler.reply("TEXT", this.translate("NOUPDATE_TB",  { MODULE_NAME: handler.args }));
+          handler.reply("TEXT", this.translate("NOUPDATE_TB", { MODULE_NAME: handler.args }));
         }
-        else handler.reply("TEXT", this.translate("MODULENOTFOUND",  { MODULE_NAME: handler.args }));
+        else handler.reply("TEXT", this.translate("MODULENOTFOUND", { MODULE_NAME: handler.args }));
       }
     } else {
+
       /** List of all update **/
       var manualUpdateTxt = "";
       var autoUpdateTxt = "";
       var finalUpdateTxt = "";
-      for (let [name, value] of Object.entries(this.moduleList)) {
+      for (let [name] of Object.entries(this.moduleList)) {
         if (this.moduleList[name] && this.moduleList[name].canBeUpdated) {
           autoUpdateTxt += `- *${this.moduleList[name].module}*\n`;
         }
@@ -221,8 +223,8 @@ Module.register("EXT-Updates", {
         autoUpdateTxt += `\n${this.translate("UPDATE_HELPTB")}`;
         finalUpdateTxt += this.translate("UPDATE_AUTO") + autoUpdateTxt;
       }
-      if (finalUpdateTxt) handler.reply("TEXT", finalUpdateTxt, { parse_mode:"Markdown" });
-      else handler.reply("TEXT", this.translate("NOUPDATE_TB"), { parse_mode:"Markdown" });
+      if (finalUpdateTxt) handler.reply("TEXT", finalUpdateTxt, { parse_mode: "Markdown" });
+      else handler.reply("TEXT", this.translate("NOUPDATE_TB"), { parse_mode: "Markdown" });
     }
   },
 
@@ -233,7 +235,7 @@ Module.register("EXT-Updates", {
 
   updateFirstOnly () {
     if (!this.init || this.updating) return;
-    var modules= Object.keys(this.moduleList);
+    var modules = Object.keys(this.moduleList);
     modules.forEach((module) => {
       if (this.moduleList[module].canBeUpdated && !this.updating) {
         this.updating = true;
