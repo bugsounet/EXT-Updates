@@ -1,4 +1,4 @@
-var log = (...args) => { /* do nothing */ };
+var log = () => { /* do nothing */ };
 
 const childProcess = require("child_process");
 
@@ -20,12 +20,14 @@ class Update {
     if (!Command) return console.warn(`[UPDATES] Update of ${module} is not supported.`);
     console.log(`[UPDATES] [UPDATE] Updating ${module}...`);
 
-    childProcess.exec(Command, { cwd: modulePath, timeout: this.config.timeout }, (error, stdout, stderr) => {
+    childProcess.exec(Command, { cwd: modulePath, timeout: this.config.timeout }, (error, stdout) => {
+      var res = {};
+      var final = "";
       if (error) {
         console.error(`[UPDATES] exec error: ${error}`);
 
-        var res = { results: error.toString().split("\n") };
-        var final = `Update logs of ${module}:\n\n`;
+        res = { results: error.toString().split("\n") };
+        final = `Update logs of ${module}:\n\n`;
         res.results.forEach((value) => {
           if (value) final += `${this.ExtraChars(this.StripColor(value))}\n`;
         });
@@ -37,8 +39,8 @@ class Update {
         console.log(`[UPDATES] Update logs of ${module}: ${stdout}`);
 
         /** trying to parse stdout to Telegram without errors ... it's horrible ! **/
-        var res = { results: stdout.split("\n") };
-        var final = `Update logs of ${module}:\n\n`;
+        res = { results: stdout.split("\n") };
+        final = `Update logs of ${module}:\n\n`;
         res.results.forEach((value) => {
           if (value) final += `${this.ExtraChars(this.StripColor(value))}\n`;
         });
